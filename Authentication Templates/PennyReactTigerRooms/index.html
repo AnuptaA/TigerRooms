@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Penny.com</title>
+   </head>
+
+   <body>
+
+      <div id="root"></div>
+
+      <script src=
+         "https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js">
+      </script>
+
+      <script src=
+         "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js">
+      </script>
+
+      <script src=
+         "https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js">
+      </script>
+
+      <script type="text/babel">
+
+         'use strict';
+
+         //-------------------------------------------------------------
+
+         function PennyHeader() {
+            const [datetime, setDatetime] = React.useState(new Date());
+
+            function updateHeader() {
+               window.setInterval(
+                  () => {setDatetime(new Date());},
+                  1000
+               );
+            }
+
+            React.useEffect(updateHeader, []);
+
+            let hours = datetime.getHours();
+            let ampm = (hours < 12) ? 'morning' : 'afternoon';
+            return (
+               <div>
+                  <hr />
+                  Good {ampm} and welcome to Penny.com
+                  <hr />
+               </div>
+            );
+         }
+
+         //-------------------------------------------------------------
+
+         function PennyInput(props) {
+            return (
+               <div>
+                  <h1>Author Search</h1>
+                  Please enter an author name:&nbsp;
+                  <input
+                      type='text'
+                      onInput={ (event) => {
+                         props.callback(event.target.value);
+                      }}
+                      autoFocus
+                  />
+                  <hr />
+               </div>
+            );
+         }
+
+         //-------------------------------------------------------------
+
+         function PennyOutput(props) {
+            return (
+               <div>
+                  {props.books.map((book) => (
+                     <div key={book.isbn}>
+                        {book.isbn}:&nbsp;
+                        <strong>{book.author}</strong>:&nbsp;
+                        {book.title}
+                        <br />
+                     </div>
+                  ))}
+               </div>
+            );
+         }
+
+         //-------------------------------------------------------------
+
+         function PennySearch() {
+            const [author, setAuthor] = React.useState('');
+            const [books, setBooks] = React.useState([]);
+
+            function fetchBooks() {
+               function handleResponse() {
+                  if (this.status !== 200) {
+                     alert('Error: Failed to fetch data from server');
+                     return;
+                  }
+                  let books = JSON.parse(this.response);
+                  setBooks(books);
+               }
+
+               function handleError(request) {
+                  if (request.statusText !== 'abort')
+                     alert('Error: Failed to fetch data from server');
+               }
+
+               let encodedAuthor = encodeURIComponent(author);
+               let url = '/searchresults?author=' + encodedAuthor;
+               let request = new XMLHttpRequest();
+               request.onload = handleResponse;
+               request.onerror = handleError;
+               request.open('GET', url);
+               request.send();
+               return () => {request.abort();}
+            }
+
+            //function fetchBooks() {
+            //   let controller = new AbortController();
+            //   let encodedAuthor = encodeURIComponent(author);
+            //   let url = '/searchresults?author=' + encodedAuthor;
+            //   fetch(url, {signal: controller.signal})
+            //      .then((resp) => {
+            //         if (! resp.ok) throw new Error();
+            //         return resp.text();
+            //      })
+            //      .then((text) => {setBooks(JSON.parse(text));})
+            //      .catch(() => {
+            //         alert('Error: Failed to fetch data from server');
+            //      });
+            //   return () => {controller.abort();};
+            //}
+
+            //function fetchBooks() {
+            //   let controller = new AbortController();
+            //   let encodedAuthor = encodeURIComponent(author);
+            //   let url = '/searchresults?author=' + encodedAuthor;
+            //   async function fetchBooksHelp() {
+            //      try {
+            //         let resp =
+            //            await fetch(url, {signal: controller.signal});
+            //         if (! resp.ok) throw new Error();
+            //         let text = await resp.text();
+            //         setBooks(JSON.parse(text));
+            //      }
+            //      catch (err) {
+            //         alert('Error: Failed to fetch data from server');
+            //      }
+            //   }
+            //   fetchBooksHelp();
+            //   return () => {controller.abort();};
+            //}
+
+            React.useEffect(fetchBooks, [author]);
+
+            let timer = null;
+
+            function debouncedSetAuthor(author) {
+               clearTimeout(timer);
+               timer = setTimeout(()=>{setAuthor(author);}, 500);
+            }
+
+            return (
+               <div>
+                   <PennyInput callback={debouncedSetAuthor} />
+                   <PennyOutput books={books} />
+               </div>
+            );
+         }
+
+         //-------------------------------------------------------------
+
+         function PennyFooter() {
+            const [datetime, setDatetime] = React.useState(new Date());
+
+            function updateFooter() {
+               window.setInterval(
+                  () => {setDatetime(new Date());},
+                  1000
+               );
+            }
+
+            React.useEffect(updateFooter, []);
+
+            return (
+               <div>
+                  <hr />
+                  Date and time: {datetime.toLocaleString()}
+                  <br />
+                  Created by&nbsp;
+                  <a href="https://www.cs.princeton.edu/~rdondero">
+                  Bob Dondero</a>
+               </div>
+            );
+         }
+
+         //-------------------------------------------------------------
+
+         function App() {
+            return (
+               <div>
+                  <PennyHeader />
+                  <PennySearch />
+                  <PennyFooter />
+               </div>
+            );
+         }
+
+         //-------------------------------------------------------------
+
+         let domRoot = document.getElementById('root');
+         let reactRoot = ReactDOM.createRoot(domRoot);
+         reactRoot.render(
+            <React.StrictMode>
+               <App />
+            </React.StrictMode>
+         );
+
+      </script>
+   </body>
+</html>
