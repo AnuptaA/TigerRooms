@@ -16,6 +16,17 @@ from pdfparser import parse_pdf
 conn = sqlite3.connect('room_draw.db')
 cursor = conn.cursor()
 
+# Function to print all rooms and their availability for debugging purposes
+def print_room_availability():
+    cursor.execute("SELECT room_number, isAvailable FROM RoomOverview")
+    rooms = cursor.fetchall()
+
+    print("Room Number | Availability")
+    print("----------------------------")
+    for room_number, is_available in rooms:
+        availability = "Available" if is_available == 1 else "Unavailable"
+        print(f"{room_number} | {availability}")
+
 # Function to mark rooms as unavailable if they are not in the new PDF data
 def update_room_availability(processed_table):
     # Get all current room numbers from the database
@@ -23,7 +34,7 @@ def update_room_availability(processed_table):
     current_rooms = cursor.fetchall()
 
     # Extract room numbers from the processed_table
-    pdf_rooms = processed_table[0].tolist()  # Assuming room numbers are in the first column
+    pdf_rooms = processed_table[2].tolist()
 
     # Iterate through the current rooms in the database
     for room_id, room_number in current_rooms:
@@ -50,6 +61,9 @@ def main():
     
     # Update the room availability based on the new PDF data
     update_room_availability(processed_table)
+
+    # Print out the room availability for debugging
+    print_room_availability()
 
     print("Room availability updated based on PDF data.")
     
