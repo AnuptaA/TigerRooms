@@ -196,3 +196,12 @@ footer {
   padding: 0.85% 3.5%;
   position: fixed;
 }
+
+.floor-plan-title {
+  margin-top: 80px; /* Adjust this value based on your header's height */
+  font-size: 30px;
+  font-weight: bold;
+  /* text-align: center; */
+  margin-left: 300px; 
+  color: orange ;
+}

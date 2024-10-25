@@ -34,7 +34,7 @@ const WendellB3rdFloor = () => {
 
   return (
     <div>
-      <h1 style={{ marginLeft: '300px', color: 'orange' }}>Whitman College, Wendell Hall, Floor 3</h1>
+      <h1 className='floor-plan-title'>Whitman College, Wendell Hall, Floor 3</h1>
       <img src={image} alt="HallMap" className="image" />
       <RoomInfoTable
         roomInfo={roomInfo}
@@ -42,7 +42,7 @@ const WendellB3rdFloor = () => {
         toggleExpandRow={toggleExpandRow}
       />
       <h3 style={{ marginLeft: '400px', color: 'orange' }}>
-        <a href="/floorplans" style={{ textDecoration: 'none', color: 'blue' }}>Click here to return to floor plans list</a>
+        <a href="/floorplans" style={{ textDecoration: 'none', color: 'orange' }}>Click here to return to floor plans list</a>
       </h3>
     </div>
   );
