@@ -52,3 +52,9 @@ def searchresults():
 def cart():
 
     print('hello')
+
+#-----------------------------------------------------------------------
+    
+@app.route('/uploadpdfs', method='[POST]')
+def uploadpdfs():
+    print('hello')
