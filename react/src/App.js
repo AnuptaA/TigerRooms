@@ -147,7 +147,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/floorplans" element={<FloorPlans />} />
-        <Route path="/floorplans/wendell-3rd-floor" element={<WendellB3rdFloor />} />
+        <Route path="/floorplans/wendell-b-3rd-floor" element={<WendellB3rdFloor />} />
       </Routes>
     </BrowserRouter>
   );

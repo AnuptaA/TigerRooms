@@ -36,7 +36,7 @@ const WendellB3rdFloor = () => {
 
   return (
     <div>
-      <h1 className='floor-plan-title'>Whitman College, Wendell Hall, Floor 3</h1>
+      <h1 className='floor-plan-title'>Whitman College, Wendell B Hall, Floor 3</h1>
       <img src={image} alt="HallMap" className="image" />
       <RoomInfoTable
         roomInfo={roomInfo}
