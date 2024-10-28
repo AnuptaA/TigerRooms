@@ -32,6 +32,8 @@ const WendellB3rdFloor = () => {
     }
   };
 
+//----------------------------------------------------------------------
+
   return (
     <div>
       <h1 className='floor-plan-title'>Whitman College, Wendell Hall, Floor 3</h1>
@@ -47,6 +49,8 @@ const WendellB3rdFloor = () => {
     </div>
   );
 };
+
+//----------------------------------------------------------------------
 
 // Table component
 const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {

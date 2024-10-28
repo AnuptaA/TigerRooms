@@ -205,3 +205,16 @@ footer {
   margin-left: 300px; 
   color: orange ;
 }
+
+.results-page-title {
+  margin-top: 80px;
+  font-size: 40px;
+  font-weight: bold;
+  color: orange;
+  text-align: center;
+}
+
+.res-college-title {
+  color: orange;
+  text-align: center;
+}
