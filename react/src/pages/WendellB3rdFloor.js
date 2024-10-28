@@ -44,7 +44,7 @@ const WendellB3rdFloor = () => {
         toggleExpandRow={toggleExpandRow}
       />
       <h3 style={{ marginLeft: '400px', color: 'orange' }}>
-        <a href="/floorplans" style={{ textDecoration: 'none', color: 'orange' }}>Click here to return to floor plans list</a>
+        <a href="/floorplans" style={{ textDecoration: 'none', color: 'orange' }}>Click <u>here</u> to return to floor plans list</a>
       </h3>
     </div>
   );
