@@ -1,6 +1,7 @@
 // src/FloorPlans.js
 import React from 'react';
 import { Link } from 'react-router-dom';
+import '../App.css';
 
 const FloorPlans = () => {
     console.log("hello");
