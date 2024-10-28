@@ -138,7 +138,7 @@ import React from 'react';
 // import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';  // Import Routes and Route
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import FloorPlans from './FloorPlans';  // The page listing all floor plans
-import WendellB3rdFloor from './WendellB3rdFloor';  // The detailed view of Wendell B 3rd floor
+import WendellB3rdFloor from './pages/WendellB3rdFloor';  // The detailed view of Wendell B 3rd floor
 import './App.css';
 // import image from './img/floorplans/Wendell_B_Hall_Floor_3.png';
 

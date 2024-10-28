@@ -1,7 +1,7 @@
 // src/WendellB3rdFloor.js
 import React, { useState } from 'react';
-import './App.css';
-import image from './img/floorplans/Wendell_B_Hall_Floor_3.png';
+import '../App.css';
+import image from '../img/floorplans/Wendell_B_Hall_Floor_3.png';
 
 const WendellB3rdFloor = () => {
   // Initial state for roomInfo
