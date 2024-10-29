@@ -48,34 +48,32 @@ const AvailabilityTable = ({availabilityInfo}) => {
     };
 
     return (
-        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-            <thead>
-                <tr>
-                    {availabilityInfo.map((info, index) => (
-                        <th key={index} style={{ border: 'none', padding: '8px', textAlign: 'left' }}>
-                            {info.hall}
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {[...Array(maxFloors)].map((_, rowIndex) => (
-                    <tr key={rowIndex}>
-                        {availabilityInfo.map((info, colIndex) => (
-                            <td key={colIndex} style={{ border: 'none', padding: '8px', textAlign: 'left' }}>
-                                {info.floors[rowIndex] ? (
-                                    <a href={generateLink(info.hall, info.floors[rowIndex])}>
-                                        {info.floors[rowIndex]}
-                                    </a>
-                                ) : (
-                                    ''
-                                )}
-                            </td>
+        <div className="table-container">
+            <table className="availability-table">
+                <thead>
+                    <tr>
+                        {availabilityInfo.map((info, index) => (
+                            <th key={index}>{info.hall}</th>
                         ))}
                     </tr>
-                ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {[...Array(maxFloors)].map((_, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {availabilityInfo.map((info, colIndex) => (
+                                <td key={colIndex}>
+                                    {info.floors[rowIndex] ? (
+                                        <a href={generateLink(info.hall, info.floors[rowIndex])}>
+                                            {info.floors[rowIndex]}
+                                        </a>
+                                    ) : ''}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 };
 

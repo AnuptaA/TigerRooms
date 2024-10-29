@@ -218,3 +218,40 @@ footer {
   color: orange;
   text-align: center;
 }
+
+/* Center container */
+.table-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* Adds space from the top of the page */
+  width: 100%;
+}
+
+/* Table styles */
+.availability-table {
+  border-collapse: collapse;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow styling */
+  width: auto;
+  max-width: 100%;
+  background-color: #f9f9f9; /* Light background color */
+}
+
+/* Header cell styles */
+.availability-table th {
+  border-bottom: 2px solid #ddd;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+/* Body cell styles */
+.availability-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+/* Link styles */
+.availability-table a {
+  text-decoration: none;
+  color: #007bff; /* Link color */
+}
