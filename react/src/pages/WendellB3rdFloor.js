@@ -1,29 +1,30 @@
-// src/WendellB3rdFloor.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../App.css';
 import image from '../img/floorplans/Wendell_B_Hall_Floor_3.png';
 
 const WendellB3rdFloor = () => {
-  // Initial state for roomInfo
-  const [roomInfo] = useState([
-    { name: 'Wendell B308', size: 'Size: 152 sqft', occupancy: 'Occupancy: Single', isAvailable: 'T' },
-    { name: 'Wendell B309', size: 'Size: 300 sqft', occupancy: 'Occupancy: Double', isAvailable: 'F' },
-    { name: 'Wendell B310', size: 'Size: 432 sqft', occupancy: 'Occupancy: Quad', isAvailable: 'T' },
-    { name: 'Wendell B311', size: 'Size: 500 sqft', occupancy: 'Occupancy: Triple', isAvailable: 'F' },
-    { name: 'Wendell B312', size: 'Size: 3000 sqft', occupancy: 'Occupancy: Single', isAvailable: 'T' },
-    { name: 'Wendell B313', size: 'Size: 4 sqft', occupancy: 'Occupancy: Quad', isAvailable: 'F' },
-    { name: 'Wendell B314', size: 'Size: 152 sqft', occupancy: 'Occupancy: Single', isAvailable: 'T' },
-    { name: 'Wendell B315', size: 'Size: 300 sqft', occupancy: 'Occupancy: Double', isAvailable: 'F' },
-    { name: 'Wendell B316', size: 'Size: 432 sqft', occupancy: 'Occupancy: Quad', isAvailable: 'T' },
-    { name: 'Wendell B317', size: 'Size: 500 sqft', occupancy: 'Occupancy: Triple', isAvailable: 'F' },
-    { name: 'Wendell B318', size: 'Size: 3000 sqft', occupancy: 'Occupancy: Single', isAvailable: 'T' },
-    { name: 'Wendell B320', size: 'Size: 4 sqft', occupancy: 'Occupancy: Quad', isAvailable: 'F' }
-  ]);
-
-  // State to track which rows are expanded
+  // State for room information and expanded rows
+  const [roomInfo, setRoomInfo] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
 
-  // Function to handle row expansion
+  // Fetch room data from the backend
+  useEffect(() => {
+    console.log("Fetching room data...");
+    fetch('http://127.0.0.1:5000/api/floorplans/wendell-b-3rd-floor')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Fetched data:", data);  // Debugging line
+        setRoomInfo(data);
+      })
+      .catch((error) => console.error('Error fetching room data:', error));
+  }, []);
+
+  // Toggle row expansion
   const toggleExpandRow = (index) => {
     if (expandedRows.includes(index)) {
       setExpandedRows(expandedRows.filter((i) => i !== index));
@@ -31,8 +32,6 @@ const WendellB3rdFloor = () => {
       setExpandedRows([...expandedRows, index]);
     }
   };
-
-//----------------------------------------------------------------------
 
   return (
     <div>
@@ -50,15 +49,13 @@ const WendellB3rdFloor = () => {
   );
 };
 
-//----------------------------------------------------------------------
-
-// Table component
+// RoomInfoTable component
 const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
   return (
     <table border="1" cellPadding="10">
       <thead>
         <tr>
-          <th>Availabilty Info</th>
+          <th>Availability Info</th>
         </tr>
       </thead>
       <tbody>
