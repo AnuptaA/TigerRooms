@@ -16,3 +16,11 @@
    python pdfparser.py somepath
 
 5. View output
+
+
+
+# Database
+pip install psycopg2-binary
+brew install postgresql
+export PATH="/usr/local/opt/postgresql/bin:$PATH"
+pip install psycopg2

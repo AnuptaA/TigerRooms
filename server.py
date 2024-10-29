@@ -7,14 +7,20 @@
 
 import flask
 from flask_cors import CORS
-import update_database
-import sqlite3
+import psycopg2
+from db_config import DATABASE_URL
 
 #-----------------------------------------------------------------------
 
 # app instance
 app = flask.Flask(__name__)
 CORS(app)
+
+#-----------------------------------------------------------------------
+
+def get_db_connection():
+    conn = psycopg2.connect(DATABASE_URL)
+    return conn
 
 #-----------------------------------------------------------------------
 
@@ -27,33 +33,29 @@ def index():
 
 @app.route('/api/floorplans', methods=['GET'])
 def get_unique_halls_and_floors():
-    conn = sqlite3.connect('room_draw.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Query for unique halls and floors
+    # Query to distinguish between Wendell B and Wendell C without including room_number in GROUP BY
     cursor.execute('''
-        SELECT hall, floor, room_number
+        SELECT 
+            CASE 
+                WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'B' THEN 'Wendell B Hall'
+                WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'C' THEN 'Wendell C Hall'
+                ELSE hall 
+            END AS hall_display,
+            floor
         FROM RoomOverview
-        GROUP BY hall, floor
-        ORDER BY hall, floor
+        GROUP BY hall_display, floor
+        ORDER BY hall_display, floor
     ''')
     
     results = cursor.fetchall()
     conn.close()
     
-    # Process the results to apply the "Wendell B" and "Wendell C" rule
+    # Process results into desired format
     halls = {}
-    for hall, floor, room_number in results:
-        if hall == "Wendell":
-            if room_number.startswith("B"):
-                hall_display = "Wendell B Hall"
-            elif room_number.startswith("C"):
-                hall_display = "Wendell C Hall"
-            else:
-                hall_display = "Wendell Hall"
-        else:
-            hall_display = hall
-        
+    for hall_display, floor in results:
         if hall_display not in halls:
             halls[hall_display] = []
         
@@ -74,12 +76,12 @@ def get_unique_halls_and_floors():
     
     return flask.jsonify(hall_floor_data)
 
+
 #-----------------------------------------------------------------------
 
 @app.route('/api/floorplans/wendell-b-3rd-floor', methods=['GET'])
 def get_wendell_b_3rd_floor():
-    # Connect to the database
-    conn = sqlite3.connect('room_draw.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
     
     # Query for Wendell Hall, floor 3, room numbers starting with 'B'
@@ -148,3 +150,4 @@ def uploadpdfs():
 
 if __name__ == '__main__':
     app.run(debug=True)
+j
