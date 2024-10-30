@@ -307,12 +307,17 @@ footer {
   margin-bottom: 2vh;
 }
 
+#file-upload * {
+    cursor: pointer;
+}
+
 #file-upload img {
   height: 5vh;
   width: auto;
   margin-bottom: 2vh;
   filter: invert(42%) sepia(97%) saturate(964%) hue-rotate(7deg) brightness(95%)
     contrast(105%);
+  cursor: pointer;
 }
 
 #file-upload span {
@@ -358,7 +363,7 @@ footer {
   font-size: 0.85em;
   display: flex;
   align-items: center;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
