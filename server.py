@@ -6,8 +6,11 @@
 #-----------------------------------------------------------------------
 
 import flask
+from flask import request, jsonify
 from flask_cors import CORS
 import psycopg2
+import os
+import subprocess
 from db_config import DATABASE_URL
 
 #-----------------------------------------------------------------------
@@ -15,6 +18,11 @@ from db_config import DATABASE_URL
 # app instance
 app = flask.Flask(__name__)
 CORS(app)
+
+# Directory for storing uploaded PDFs
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 #-----------------------------------------------------------------------
 
@@ -36,7 +44,6 @@ def get_unique_halls_and_floors():
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Query to distinguish between Wendell B and Wendell C without including room_number in GROUP BY
     cursor.execute('''
         SELECT 
             CASE 
@@ -55,13 +62,11 @@ def get_unique_halls_and_floors():
     results = cursor.fetchall()
     conn.close()
     
-    # Process results into desired format
     halls = {}
     for hall_display, floor in results:
         if hall_display not in halls:
             halls[hall_display] = []
         
-        # Convert floor number to a readable format
         floor_label = f"{floor}rd Floor" if floor == 3 else f"{floor}th Floor"
         if floor == 1:
             floor_label = "1st Floor"
@@ -73,10 +78,9 @@ def get_unique_halls_and_floors():
         if floor_label not in halls[hall_display]:
             halls[hall_display].append(floor_label)
     
-    # Convert to a list of dictionaries for JSON serialization
     hall_floor_data = [{"hall": hall, "floors": floors} for hall, floors in halls.items()]
     
-    return flask.jsonify(hall_floor_data)
+    return jsonify(hall_floor_data)
 
 
 #-----------------------------------------------------------------------
@@ -86,7 +90,6 @@ def get_wendell_b_3rd_floor():
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Query for Wendell Hall, floor 3, room numbers starting with 'B'
     cursor.execute('''
         SELECT RoomOverview.room_number, RoomOverview.isAvailable, RoomDetails.occupancy, RoomDetails.square_footage
         FROM RoomOverview
@@ -94,11 +97,9 @@ def get_wendell_b_3rd_floor():
         WHERE RoomOverview.hall = 'Wendell' AND RoomOverview.floor = 3 AND RoomOverview.room_number LIKE 'B%'
     ''')
     
-    # Fetch results and close the connection
     rooms = cursor.fetchall()
     conn.close()
     
-    # Format the results into JSON-serializable data
     room_info = [
         {
             "name": f"Wendell {room[0]}",
@@ -109,19 +110,14 @@ def get_wendell_b_3rd_floor():
         for room in rooms
     ]
     
-    return flask.jsonify(room_info)
+    return jsonify(room_info)
 
 #-----------------------------------------------------------------------
-    
+
 @app.route('/allfloorplans', methods=['GET'])
 def allfloorplans():
-
-    # replace example_function() with helper function to get object
     room_details = example_function()
-
-    return flask.jsonify(room_details)
-
-#-----------------------------------------------------------------------
+    return jsonify(room_details)
 
 @app.route('/floorplan', methods=['GET', 'POST'])
 def floorplan():
@@ -143,10 +139,30 @@ def cart():
     print('hello')
 
 #-----------------------------------------------------------------------
-    
-@app.route('/uploadpdfs', methods=['POST'])
-def uploadpdfs():
-    print('hello')
+
+@app.route('/api/uploadpdf', methods=['POST'])
+def upload_pdf():
+    print('we are in the server')
+    if 'rooms-pdf' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+
+    file = request.files['rooms-pdf']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    if file and file.filename.endswith('.pdf'):
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        print(file_path)
+        file.save(file_path)
+        
+        result = subprocess.run(['python', 'update_database.py', file_path], capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            return jsonify({"error": "Database update failed", "details": result.stderr}), 500
+        
+        return jsonify({"message": "PDF uploaded and database updated successfully"}), 200
+    else:
+        return jsonify({"error": "Invalid file type. Only PDF is allowed."}), 400
 
 #-----------------------------------------------------------------------
 
