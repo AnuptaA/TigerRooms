@@ -1,0 +1,85 @@
+.filter-container {
+    padding: 0px;
+    border-radius: 8px;
+    max-width: 700px;
+    margin: 200px auto;
+}
+
+.filter-container-title {
+    color: orange;
+    text-align: center;
+}
+
+.dropdown-container {
+    display: flex;
+    flex-direction: row;
+    gap: 35px; /* Spacing between each filter */
+    margin-bottom: 20px;
+    justify-content: center; /* Center-align filters within the container */
+    align-items: flex-start; /* Keeps filters vertically aligned */
+    padding: 35px;
+}
+
+.dropdown-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Ensures equal width for each filter */
+    min-width: 200px;
+    max-width: 250px;
+    align-items: flex-end; /* Aligns elements to the right */
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
+    text-align: left; /* Right-aligns the label text */
+    width: 100%;
+}
+
+select {
+    padding: 8px;
+    font-size: 0.8em;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+/* Target the placeholder option */
+.placeholder-option {
+    color: #888; /* Optional: lighter color for placeholder text */
+    font-size: 0.5em; /* Reduced font size for placeholder */
+}
+
+
+button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.submit-button{
+    background-color: orange;
+    color: white;
+}
+
+.reset-button{
+    background-color: white;
+    color: orange;
+    border-color: orange ;
+    border-style: solid;
+}
+
+button:hover {
+    background-color: #a09c9c;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Centers the buttons horizontally */
+    margin-top: 10px;
+ }
+ 
