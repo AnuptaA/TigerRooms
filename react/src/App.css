@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -12,7 +12,7 @@ table {
   border-collapse: collapse;
 }
 
-.image{
+.image {
   width: 1100px;
   height: auto;
   border-radius: 10px;
@@ -21,7 +21,8 @@ thead {
   background-color: orange;
 }
 
-td, th {
+td,
+th {
   padding: 10px;
   text-align: left;
 }
@@ -37,7 +38,6 @@ button {
 
 button:hover {
   background-color: #007bff;
-
 }
 
 tr:hover {
@@ -70,7 +70,7 @@ nav {
 }
 
 .logo-cont {
-    padding-left: 3vw;
+  padding-left: 3vw;
 }
 
 nav ul li {
@@ -202,8 +202,8 @@ footer {
   font-size: 30px;
   font-weight: bold;
   /* text-align: center; */
-  margin-left: 300px; 
-  color: orange ;
+  margin-left: 300px;
+  color: orange;
 }
 
 .results-page-title {
@@ -254,4 +254,112 @@ footer {
 .availability-table a {
   text-decoration: none;
   color: #007bff; /* Link color */
+}
+
+/*--------------------------------------------------------------------*/
+/* This is the styling for the upload pdfs route.                     */
+/*--------------------------------------------------------------------*/
+
+.pdf-upload-page-cont {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#upload-pdfs-cont {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+#pdf-upload-text {
+  margin-top: 12.5vh; /* when adjusting this, adjust margin-top in pdf-form accordingly */
+  margin-bottom: 0;
+}
+
+#pdf-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40%;
+  margin-top: 5vh; /* sum of this and margin-top in pdf-upload-text should be 17.5vh */
+  padding: 2vh;
+  border: 1px solid #333333;
+  border-radius: 2vh;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+
+#file-upload {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #e77500;
+  padding: 12.5vh 20vh;
+  border-radius: 1vh;
+  margin-bottom: 2vh;
+}
+
+#file-upload img {
+  height: 5vh;
+  width: auto;
+  margin-bottom: 2vh;
+  filter: invert(42%) sepia(97%) saturate(964%) hue-rotate(7deg) brightness(95%)
+    contrast(105%);
+}
+
+#file-upload span {
+  font-size: 1.5em;
+  color: #333333;
+}
+
+#file-upload label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#file-upload input[type="file"] {
+  display: none;
+}
+
+#file-upload small {
+  margin-top: 1vh;
+  font-size: 0.9em;
+  color: #333333;
+}
+
+#upload-pdfs-cont button {
+  padding: 10px 15px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  user-select: none;
+}
+
+#upload-pdfs-cont button:hover {
+  background-color: #0056b3;
+}
+
+.uploaded-file-name {
+  margin-top: 2vh;
+  color: #333333;
+  font-size: 0.85em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -1,0 +1,97 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "DM Sans", sans-serif, Helvetica;
+}
+
+.pdf-upload-page-cont {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#upload-pdfs-cont {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+#pdf-upload-text {
+    margin-top: 10vh;
+    margin-bottom: 0;
+}
+
+#pdf-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40%;
+  margin-top: 10vh;
+  padding: 2vh;
+  border: 1px solid #333333;
+  border-radius: 2vh;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  background-color: white;
+}
+
+#file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #e77500;
+  padding: 12.5vh 20vh;
+  border-radius: 1vh;
+  margin-bottom: 2vh;
+}
+
+#file-upload img {
+    height: 5vh;
+    width: auto;
+    margin-bottom: 2vh;
+    filter: invert(42%) sepia(97%) saturate(964%) hue-rotate(7deg) brightness(95%) contrast(105%);
+}
+
+#file-upload span {
+  font-size: 1.5em;
+  color: #333333;
+}
+
+#file-upload label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#file-upload input[type="file"] {
+  display: none;
+}
+
+#file-upload small {
+  margin-top: 1vh;
+  font-size: 0.9em;
+  color: #333333;
+}
+
+#upload-pdfs-cont button {
+  padding: 10px 15px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#upload-pdfs-cont button:hover {
+  background-color: #0056b3;
+}
