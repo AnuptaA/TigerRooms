@@ -42,6 +42,8 @@ def get_unique_halls_and_floors():
             CASE 
                 WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'B' THEN 'Wendell B Hall'
                 WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'C' THEN 'Wendell C Hall'
+                WHEN hall = 'Baker' AND LEFT(room_number, 1) = 'E' THEN 'Baker E Hall'
+                WHEN hall = 'Baker' AND LEFT(room_number, 1) = 'S' THEN 'Baker S Hall'
                 ELSE hall 
             END AS hall_display,
             floor
