@@ -167,6 +167,10 @@ footer {
   border-radius: 1.4728vh;
 }
 
+.availability {
+  display: inline-flex;
+  align-items: center;
+}
 .room-info-thead {
   background-color: orange;
 }
@@ -250,6 +254,15 @@ tbody tr td[colspan="3"] {
 /* Hardcoding all table rows to be grey when we hover */
 tr:hover {
   background-color: #f2f2f2;
+}
+
+.back-link {
+  margin-left: 57.6vh;
+  color: orange;
+}
+.back-to-floorplans {
+  color: blue;
+  text-decoration: underline;
 }
 
 /*--------------------------------------------------------------------*/

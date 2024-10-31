@@ -44,12 +44,9 @@ const WendellB3rdFloor = () => {
         expandedRows={expandedRows}
         toggleExpandRow={toggleExpandRow}
       />
-      <h3 style={{ marginLeft: "400px", color: "orange" }}>
+      <h3 className="back-link">
         Click{" "}
-        <a
-          href="/floorplans"
-          style={{ color: "blue", textDecoration: "underline" }}
-        >
+        <a href="/floorplans" className="back-to-floorplans">
           here
         </a>{" "}
         to return to floor plans list
@@ -74,18 +71,17 @@ const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
               <td
                 className="availability-table-td"
                 onClick={() => toggleExpandRow(index)}
-                style={{ cursor: "pointer" }}
               >
-                <div style={{ display: "inline-flex", alignItems: "center" }}>
+                <div className="availability">
                   <div
                     style={{
-                      width: "10px",
-                      height: "10px",
+                      width: "1.4vh",
+                      height: "1.4vh",
                       backgroundColor:
                         oneRoomInfo.isAvailable === "T" ? "green" : "red",
                       borderRadius:
                         oneRoomInfo.isAvailable === "T" ? "50%" : "0",
-                      marginRight: "10px",
+                      marginRight: "1.4vh",
                     }}
                   ></div>
                   <strong>{oneRoomInfo.name}</strong>{" "}
