@@ -378,6 +378,13 @@ tr:hover {
 .filter-container-title {
   color: orange;
   text-align: center;
+  font-size: 3.7em;
+}
+
+.filter-container-subtitle {
+  color: orange;
+  text-align: center;
+  font-size: 1.8em;
 }
 
 .dropdown-container {
@@ -442,6 +449,7 @@ tr:hover {
   border-radius: 1.4728vh;
   cursor: pointer;
   margin-top: 1.4728vh;
+  margin-left: 1.4728vh;
 }
 
 .filter-reset-button:hover,
@@ -453,6 +461,11 @@ tr:hover {
   display: flex;
   justify-content: center;
   margin-top: 1.4728vh;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9em;
 }
 
 /*--------------------------------------------------------------------*/

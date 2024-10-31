@@ -78,7 +78,10 @@ const FilterComponent = () => {
   return (
     <div className="filter-container">
       <h1 className="filter-container-title">Welcome to TigerRooms</h1>
-      <h3 className="filter-container-title">Looking for an available room?</h3>
+      <br></br>
+      <h3 className="filter-container-subtitle">
+        Looking for an available room?
+      </h3>
       <div className="dropdown-container">
         <div className="dropdown-group">
           <label className="filter-label" htmlFor="residentialCollege">
@@ -101,7 +104,7 @@ const FilterComponent = () => {
             ))}
           </select>
           {error && (
-            <p style={{ color: "red", fontSize: "0.9em" }}>
+            <p className="error-message">
               Please select a Residential College.
             </p>
           )}
@@ -175,11 +178,7 @@ const FilterComponent = () => {
         <button className="filter-submit-button" onClick={handleSubmit}>
           <strong>SUBMIT</strong>
         </button>
-        <button
-          className="filter-reset-button"
-          onClick={handleResetFilters}
-          style={{ marginLeft: "10px" }}
-        >
+        <button className="filter-reset-button" onClick={handleResetFilters}>
           <strong>RESET</strong>
         </button>
       </div>
