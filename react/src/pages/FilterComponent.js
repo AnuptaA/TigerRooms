@@ -1,7 +1,7 @@
 // src/components/FilterComponent.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../FilterComponent.css";
+import "../App.css";
 
 const FilterComponent = () => {
   const [residentialCollege, setResidentialCollege] = useState("");
@@ -81,8 +81,11 @@ const FilterComponent = () => {
       <h3 className="filter-container-title">Looking for an available room?</h3>
       <div className="dropdown-container">
         <div className="dropdown-group">
-          <label htmlFor="residentialCollege">Residential College*</label>
+          <label className="filter-label" htmlFor="residentialCollege">
+            Residential College*
+          </label>
           <select
+            className="filter-select"
             id="residentialCollege"
             value={residentialCollege}
             onChange={(e) => setResidentialCollege(e.target.value)}
@@ -105,8 +108,11 @@ const FilterComponent = () => {
         </div>
 
         <div className="dropdown-group">
-          <label htmlFor="hall">Hall</label>
+          <label className="filter-label" htmlFor="hall">
+            Hall
+          </label>
           <select
+            className="filter-select"
             id="hall"
             value={hall}
             onChange={(e) => setHall(e.target.value)}
@@ -123,8 +129,11 @@ const FilterComponent = () => {
         </div>
 
         <div className="dropdown-group">
-          <label htmlFor="floor">Floor</label>
+          <label className="filter-label" htmlFor="floor">
+            Floor
+          </label>
           <select
+            className="filter-select"
             id="floor"
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
@@ -141,8 +150,11 @@ const FilterComponent = () => {
         </div>
 
         <div className="dropdown-group">
-          <label htmlFor="occupancy">Occupancy</label>
+          <label className="filter-label" htmlFor="occupancy">
+            Occupancy
+          </label>
           <select
+            className="filter-select"
             id="occupancy"
             value={occupancy}
             onChange={(e) => setOccupancy(e.target.value)}
