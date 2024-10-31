@@ -34,23 +34,27 @@ const WendellB3rdFloor = () => {
   };
 
   return (
-    <div>
-      <h1 className="floor-plan-title">
-        Whitman College, Wendell B Hall, Floor 3
-      </h1>
-      <img src={image} alt="HallMap" className="floor-plan-image" />
-      <RoomInfoTable
-        roomInfo={roomInfo}
-        expandedRows={expandedRows}
-        toggleExpandRow={toggleExpandRow}
-      />
-      <h3 className="back-link">
-        Click{" "}
-        <a href="/floorplans" className="back-to-floorplans">
-          here
-        </a>{" "}
-        to return to floor plans list
-      </h3>
+    <div className="floor-plan-flexbox">
+      <div>
+        <h1 className="floor-plan-title">
+          Whitman College, Wendell B Hall, Floor 3
+        </h1>
+        <img src={image} alt="HallMap" className="floor-plan-image" />
+        <h3 className="back-link">
+          Click{" "}
+          <a href="/floorplans" className="back-to-floorplans">
+            here
+          </a>{" "}
+          to return to floor plans list
+        </h3>
+      </div>
+      <div>
+        <RoomInfoTable
+          roomInfo={roomInfo}
+          expandedRows={expandedRows}
+          toggleExpandRow={toggleExpandRow}
+        />
+      </div>
     </div>
   );
 };
