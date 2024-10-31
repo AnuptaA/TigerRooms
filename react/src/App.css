@@ -301,6 +301,7 @@ tr:hover {
   padding: 12.5vh 20vh;
   border-radius: 1vh;
   margin-bottom: 2vh;
+  cursor: pointer;
 }
 
 #file-upload * {

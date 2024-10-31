@@ -1,48 +1,92 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import image from "../img/misc/upload-file-svgrepo-com.svg";
 import "../App.css";
 
 const UploadPDFs = () => {
+  // displayed pdf filename and file itself
   const [fileName, setFileName] = useState("No file selected");
   const [file, setFile] = useState(null);
+  const [canSubmit, setCanSubmit] = useState(true);
+  const MySwal = withReactContent(Swal);
 
+  // get uploaded file, set filename and file
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     setFileName(selectedFile ? selectedFile.name : "No file selected");
     setFile(selectedFile || null);
   };
 
+  // make entire dashed box clickable
   const handleDivClick = () => {
     document.getElementById("upload-pdf").click();
   };
 
+  // wait for user to submit
   const handleSubmit = async (event) => {
+    // prevent default and multiple submission
     event.preventDefault();
+    if (!canSubmit) return;
+
+    setCanSubmit(false);
+    MySwal.fire({
+      title: "Loading...",
+      html: "Please wait a moment",
+    });
+    MySwal.showLoading();
+
     if (!file) {
-      alert("Please select a file to upload.");
+      //   alert("Please select a file to upload.");
+      MySwal.hideLoading();
+      MySwal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Please select a file to upload.",
+      });
+      setCanSubmit(true);
       return;
     }
 
+    // store PDF file in FormData object
     const formData = new FormData();
     formData.append("rooms-pdf", file);
 
+    // send POST request with file
     try {
       const response = await fetch("http://127.0.0.1:5000/api/uploadpdf", {
         method: "POST",
         body: formData,
       });
+
       const result = await response.json();
+
+      // display server response
+      MySwal.hideLoading();
       if (response.ok) {
-        alert(result.message);
+        // alert(result.message);
+        MySwal.fire({
+          title: "Thank you!",
+          text: result.message,
+          icon: "success",
+        });
       } else {
-        alert(result.error);
+        // alert(result.error);
+        MySwal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: result.error,
+        });
       }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      // debugging
-      console.log("The file is " + file);
-      alert("An error occurred while uploading the file.");
+      //   alert("An error occurred while uploading the file.");
+      MySwal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "An error occurred while uploading the file.",
+      });
     }
+    setCanSubmit(true);
   };
 
   return (
