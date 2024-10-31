@@ -33,6 +33,7 @@ const UploadPDFs = () => {
     MySwal.fire({
       title: "Loading...",
       html: "Please wait a moment",
+      allowOutsideClick: false,
     });
     MySwal.showLoading();
 
