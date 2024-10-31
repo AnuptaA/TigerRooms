@@ -162,9 +162,9 @@ footer {
 }
 
 .floor-plan-image {
-  width: 1100px;
+  width: 162.0002vh;
   height: auto;
-  border-radius: 10px;
+  border-radius: 1.4728vh;
 }
 
 .room-info-thead {
@@ -173,33 +173,33 @@ footer {
 
 .availability-table-td {
   cursor: pointer;
-  padding: 10px;
+  padding: 1.4728vh;
   text-align: left;
 }
 
 .availability-table-th {
-  padding: 10px;
+  padding: 1.4728vh;
   text-align: left;
 }
 
 tbody tr td[colspan="3"] {
   background-color: #f9f9f9;
   text-align: left;
-  padding-left: 20px;
+  padding-left: 2.9455vh;
 }
 
 .floor-plan-title {
-  margin-top: 80px; /* Adjust this value based on your header's height */
-  font-size: 30px;
+  margin-top: 11.8173vh; /* Adjust this value based on your header's height */
+  font-size: 4.4176vh;
   font-weight: bold;
   /* text-align: center; */
-  margin-left: 300px;
+  margin-left: 44.1541vh;
   color: orange;
 }
 
 .results-page-title {
-  margin-top: 80px;
-  font-size: 40px;
+  margin-top: 11.8173vh;
+  font-size: 5.8824vh;
   font-weight: bold;
   color: orange;
   text-align: center;
@@ -214,14 +214,14 @@ tbody tr td[colspan="3"] {
 .table-container {
   display: flex;
   justify-content: center;
-  margin-top: 20px; /* Adds space from the top of the page */
+  margin-top: 2.9455vh; /* Adds space from the top of the page */
   width: 100%;
 }
 
 /* Table styles */
 .availability-table {
   border-collapse: collapse;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow styling */
+  box-shadow: 0 0.589vh 1.178vh rgba(0, 0, 0, 0.2); /* Optional shadow styling */
   width: auto;
   max-width: 100%;
   background-color: #f9f9f9; /* Light background color */
@@ -229,15 +229,15 @@ tbody tr td[colspan="3"] {
 
 /* Header cell styles */
 .availability-table th {
-  border-bottom: 2px solid #ddd;
-  padding: 8px 16px;
+  border-bottom: 0.2946vh solid #ddd;
+  padding: 1.1782vh 2.3529vh;
   text-align: center;
 }
 
 /* Body cell styles */
 .availability-table td {
-  border-bottom: 1px solid #ddd;
-  padding: 8px 16px;
+  border-bottom: 0.1473vh solid #ddd;
+  padding: 1.1782vh 2.3529vh;
   text-align: center;
 }
 
