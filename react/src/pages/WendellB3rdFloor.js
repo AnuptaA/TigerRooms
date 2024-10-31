@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import '../App.css';
-import image from '../img/floorplans/Wendell_B_Hall_Floor_3.png';
+import React, { useState, useEffect } from "react";
+import "../App.css";
+import image from "../img/floorplans/Wendell_B_Hall_Floor_3.png";
 
 const WendellB3rdFloor = () => {
   // State for room information and expanded rows
@@ -10,7 +10,7 @@ const WendellB3rdFloor = () => {
   // Fetch room data from the backend
   useEffect(() => {
     console.log("Fetching room data...");
-    fetch('http://127.0.0.1:5000/api/floorplans/wendell-b-3rd-floor')
+    fetch("http://127.0.0.1:5000/api/floorplans/wendell-b-3rd-floor")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -18,10 +18,10 @@ const WendellB3rdFloor = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Fetched data:", data);  // Debugging line
+        console.log("Fetched data:", data); // Debugging line
         setRoomInfo(data);
       })
-      .catch((error) => console.error('Error fetching room data:', error));
+      .catch((error) => console.error("Error fetching room data:", error));
   }, []);
 
   // Toggle row expansion
@@ -35,15 +35,24 @@ const WendellB3rdFloor = () => {
 
   return (
     <div>
-      <h1 className='floor-plan-title'>Whitman College, Wendell B Hall, Floor 3</h1>
-      <img src={image} alt="HallMap" className="image" />
+      <h1 className="floor-plan-title">
+        Whitman College, Wendell B Hall, Floor 3
+      </h1>
+      <img src={image} alt="HallMap" className="floor-plan-image" />
       <RoomInfoTable
         roomInfo={roomInfo}
         expandedRows={expandedRows}
         toggleExpandRow={toggleExpandRow}
       />
-      <h3 style={{ marginLeft: '400px', color: 'orange' }}>
-    Click <a href="/floorplans" style={{ color: 'blue', textDecoration: 'underline' }}>here</a> to return to floor plans list
+      <h3 style={{ marginLeft: "400px", color: "orange" }}>
+        Click{" "}
+        <a
+          href="/floorplans"
+          style={{ color: "blue", textDecoration: "underline" }}
+        >
+          here
+        </a>{" "}
+        to return to floor plans list
       </h3>
     </div>
   );
@@ -52,36 +61,44 @@ const WendellB3rdFloor = () => {
 // RoomInfoTable component
 const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
   return (
-    <table border="1" cellPadding="10">
-      <thead>
+    <table border="1" cellPadding="10" className="room-availability-table">
+      <thead className="room-info-thead">
         <tr>
-          <th>Availability Info</th>
+          <th className="availability-table-th">Availability Info</th>
         </tr>
       </thead>
       <tbody>
         {roomInfo.map((oneRoomInfo, index) => (
           <React.Fragment key={index}>
             <tr>
-              <td onClick={() => toggleExpandRow(index)} style={{ cursor: 'pointer' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <td
+                className="availability-table-td"
+                onClick={() => toggleExpandRow(index)}
+                style={{ cursor: "pointer" }}
+              >
+                <div style={{ display: "inline-flex", alignItems: "center" }}>
                   <div
                     style={{
-                      width: '10px',
-                      height: '10px',
-                      backgroundColor: oneRoomInfo.isAvailable === 'T' ? 'green' : 'red',
-                      borderRadius: oneRoomInfo.isAvailable === 'T' ? '50%' : '0',
-                      marginRight: '10px'
+                      width: "10px",
+                      height: "10px",
+                      backgroundColor:
+                        oneRoomInfo.isAvailable === "T" ? "green" : "red",
+                      borderRadius:
+                        oneRoomInfo.isAvailable === "T" ? "50%" : "0",
+                      marginRight: "10px",
                     }}
                   ></div>
-                  <strong>{oneRoomInfo.name}</strong> {expandedRows.includes(index) ? '➖' : '➕'}
+                  <strong>{oneRoomInfo.name}</strong>{" "}
+                  {expandedRows.includes(index) ? "➖" : "➕"}
                 </div>
               </td>
             </tr>
             {expandedRows.includes(index) && (
               <tr>
-                <td colSpan="3">
-                  <div style={{ padding: '10px', backgroundColor: '#f9f9f9' }}>
-                    <strong>{oneRoomInfo.size}</strong> <br /> <strong>{oneRoomInfo.occupancy}</strong>
+                <td className="availability-table-td" colSpan="3">
+                  <div style={{ padding: "10px", backgroundColor: "#f9f9f9" }}>
+                    <strong>{oneRoomInfo.size}</strong> <br />{" "}
+                    <strong>{oneRoomInfo.occupancy}</strong>
                   </div>
                 </td>
               </tr>
@@ -91,28 +108,35 @@ const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
       </tbody>
       <tfoot>
         <tr>
-          <td>
-            <strong>Draw Availability Key</strong><br />
-            <div style={{ display: 'block', marginTop: '10px' }}>
-              <div style={{ marginBottom: '5px', display: 'flex', alignItems: 'center' }}>
+          <td className="availability-table-td">
+            <strong>Draw Availability Key</strong>
+            <br />
+            <div style={{ display: "block", marginTop: "10px" }}>
+              <div
+                style={{
+                  marginBottom: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 <div
                   style={{
-                    width: '10px',
-                    height: '10px',
-                    backgroundColor: 'green',
-                    borderRadius: '50%',
-                    marginRight: '5px'
+                    width: "10px",
+                    height: "10px",
+                    backgroundColor: "green",
+                    borderRadius: "50%",
+                    marginRight: "5px",
                   }}
                 ></div>
                 <span>Available</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
-                    width: '10px',
-                    height: '10px',
-                    backgroundColor: 'red',
-                    marginRight: '5px'
+                    width: "10px",
+                    height: "10px",
+                    backgroundColor: "red",
+                    marginRight: "5px",
                   }}
                 ></div>
                 <span>Unavailable</span>
