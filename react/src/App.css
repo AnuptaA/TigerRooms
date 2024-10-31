@@ -454,3 +454,66 @@ tr:hover {
   justify-content: center; /* Centers the buttons horizontally */
   margin-top: 10px;
 }
+
+/*--------------------------------------------------------------------*/
+/* This is the styling for  Floorplan Results page.                   */
+/*--------------------------------------------------------------------*/
+.results-page-title {
+  margin-top: 12.4vh;
+  font-size: 1em;
+  font-weight: bold;
+  color: orange;
+  text-align: center;
+}
+
+/* Center container */
+.table-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3.1vh; /* Adds space from the top of the page */
+  width: 100%;
+}
+
+.res-college-title {
+  color: orange;
+  text-align: center;
+}
+
+/* Table styles */
+.availability-table {
+  border-collapse: collapse;
+  box-shadow: 0 0.6vh 1.24vh rgba(0, 0, 0, 0.2); /* Optional shadow styling */
+  width: auto;
+  max-width: 100%;
+  background-color: #f9f9f9; /* Light background color */
+}
+
+/* Header cell styles */
+.availability-table th {
+  border-bottom: 0.3vh solid #ddd;
+  padding: 1.24vh 2.48vh;
+  text-align: center;
+}
+
+/* Body cell styles */
+.availability-table td {
+  border-bottom: 0.15vh solid #ddd;
+  padding: 1.24vh 2.48vh;
+  text-align: center;
+}
+
+/* Link styles */
+.availability-table a {
+  text-decoration: none;
+  color: #007bff; /* Link color */
+}
+
+.availability-table thead {
+  background-color: orange;
+}
+
+.floorplan-table tr td[colspan="3"] {
+  background-color: #f9f9f9;
+  text-align: left;
+  padding-left: 3.1vh;
+}
