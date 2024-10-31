@@ -172,11 +172,11 @@ const FilterComponent = () => {
       </div>
 
       <div className="button-container">
-        <button className="submit-button" onClick={handleSubmit}>
+        <button className="filter-submit-button" onClick={handleSubmit}>
           <strong>SUBMIT</strong>
         </button>
         <button
-          className="reset-button"
+          className="filter-reset-button"
           onClick={handleResetFilters}
           style={{ marginLeft: "10px" }}
         >
