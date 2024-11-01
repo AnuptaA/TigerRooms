@@ -154,7 +154,7 @@ footer {
 /*--------------------------------------------------------------------*/
 
 .room-availability-table {
-  width: 120%;
+  width: 100%;
   float: right;
   margin: 10vh auto 12vh;
   margin-right: 1vh;
@@ -162,7 +162,7 @@ footer {
 }
 
 .floor-plan-image {
-  width: 162.0002vh;
+  width: 100%;
   height: auto;
   border-radius: 1.4728vh;
 }
@@ -177,13 +177,30 @@ footer {
 
 .availability-table-td {
   cursor: pointer;
-  padding: 1.4728vh;
+  padding: 2vh 1vh;
   text-align: left;
+  display: flex;
+  justify-content: space-between;
+  white-space: nowrap; /* Ensures the content stays on one line */
+  width: 100%;
+}
+
+#availability-key-td {
+  cursor: pointer;
+  padding: 1vh 1vh;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* justify-content: space-between; */
+  white-space: nowrap;
+  width: 100%;
 }
 
 .availability-table-th {
   padding: 1.4728vh;
-  text-align: left;
+  text-align: center;
 }
 
 tbody tr td[colspan="3"] {

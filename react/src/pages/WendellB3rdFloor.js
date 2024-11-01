@@ -89,6 +89,8 @@ const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
                     }}
                   ></div>
                   <strong>{oneRoomInfo.name}</strong>{" "}
+                </div>
+                <div style={{ userSelect: "none" }}>
                   {expandedRows.includes(index) ? "➖" : "➕"}
                 </div>
               </td>
@@ -108,9 +110,9 @@ const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
       </tbody>
       <tfoot>
         <tr>
-          <td className="availability-table-td">
+          <td id="availability-key-td">
             <strong>Draw Availability Key</strong>
-            <br />
+            {/* <br /> */}
             <div style={{ display: "block", marginTop: "10px" }}>
               <div
                 style={{
