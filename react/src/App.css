@@ -203,7 +203,9 @@ tbody tr td[colspan="3"] {
 
 .floor-plan-flexbox {
   display: flex;
-  gap: 15.528vh; /* Optional spacing between items */
+  width: 100%;
+  justify-content: space-between;
+  /* gap: 15.528vh; Optional spacing between items */
 }
 
 .results-page-title {
@@ -254,11 +256,6 @@ tbody tr td[colspan="3"] {
 .availability-table a {
   text-decoration: none;
   color: #007bff; /* Link color */
-}
-
-/* Hardcoding all table rows to be grey when we hover */
-tr:hover {
-  background-color: #f2f2f2;
 }
 
 .back-link {
