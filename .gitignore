@@ -2,6 +2,9 @@ __pycache__/
 
 # Node modules
 react/node_modules/
+node_modules/
+react/package-lock.json
+react/package.json
 
 # Build output
 build/
