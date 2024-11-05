@@ -5,7 +5,7 @@ from db_config import DATABASE_URL
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
-# Drop existing tables
+# Drop existing tables if they exist
 cursor.execute('DROP TABLE IF EXISTS RoomOverview')
 cursor.execute('DROP TABLE IF EXISTS RoomDetails')
 cursor.execute('DROP TABLE IF EXISTS RoomSaves')
@@ -23,17 +23,18 @@ cursor.execute('''
 
 cursor.execute('''
     CREATE TABLE RoomDetails (
-        room_id INTEGER PRIMARY KEY,
+        room_id INTEGER PRIMARY KEY REFERENCES RoomOverview(room_id),
         occupancy INTEGER,
         square_footage INTEGER,
-        num_saves INTEGER
+        num_saves INTEGER DEFAULT 0
     )
 ''')
 
 cursor.execute('''
     CREATE TABLE RoomSaves (
         user_id INTEGER,
-        saved_rooms TEXT
+        room_id INTEGER REFERENCES RoomOverview(room_id),
+        PRIMARY KEY (user_id, room_id)
     )
 ''')
 
@@ -69,4 +70,3 @@ for i in range(len(room_numbers)):
 conn.commit()
 conn.close()
 print("Database setup and initial data population complete.")
-
