@@ -86,12 +86,12 @@ def get_saved_rooms(netid):
 
 # Example usage (comment out if not testing directly)
 # Save a room and retrieve saves for different rooms and users
-save_room("netid1", "B320", "Wendell")  # Save room B320 for user with netid 'netid1'
-save_room("netid2", "B320", "Wendell")  # Save room B320 for user with netid 'netid2'
-print("Total saves for room B320:", get_total_saves("B320", "Wendell"))
+# save_room("netid1", "B320", "Wendell")  # Save room B320 for user with netid 'netid1'
+# save_room("netid2", "B320", "Wendell")  # Save room B320 for user with netid 'netid2'
+# print("Total saves for room B320:", get_total_saves("B320", "Wendell"))
 
-save_room("netid1", "B310", "Wendell")  # Save room B310 for user with netid 'netid1'
-print("Total saves for room B310:", get_total_saves("B310", "Wendell"))
+# save_room("netid1", "B310", "Wendell")  # Save room B310 for user with netid 'netid1'
+# print("Total saves for room B310:", get_total_saves("B310", "Wendell"))
 
-print("Saved rooms for netid1:", get_saved_rooms("netid1"))
-print("Saved rooms for netid2:", get_saved_rooms("netid2"))
+# print("Saved rooms for netid1:", get_saved_rooms("netid1"))
+# print("Saved rooms for netid2:", get_saved_rooms("netid2"))
