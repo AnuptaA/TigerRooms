@@ -566,3 +566,64 @@ tbody tr td[colspan="3"] {
   text-align: left;
   padding-left: 3.1vh;
 }
+
+.cart-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px; /* Adjusted padding to move everything slightly down */
+  box-sizing: border-box;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.cart-title {
+  font-size: 2.5em;
+  color: #333;
+  margin-top: 40px; /* Adds space between the header and the title */
+  margin-bottom: 30px;
+}
+
+.saved-rooms-table {
+  width: 80%;
+  max-width: 800px;
+  margin: 20px auto;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+.saved-rooms-table th,
+.saved-rooms-table td {
+  padding: 15px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.saved-rooms-table th {
+  background-color: #f7a600;
+  color: #fff;
+  font-weight: bold;
+}
+
+.saved-rooms-table td {
+  color: #555;
+}
+
+.no-saved-rooms {
+  font-size: 1.2em;
+  color: #777;
+  margin-top: 20px;
+}
+
+.trash-button {
+  background-color: transparent;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: #ff4c4c;
+}
+
+.trash-button:hover {
+  color: #ff0000;
+}

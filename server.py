@@ -12,7 +12,7 @@ import psycopg2
 import os
 import subprocess
 from db_config import DATABASE_URL
-from database_saves import get_room_id, save_room, unsave_room, get_total_saves, get_saved_rooms, is_room_saved
+from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
 #-----------------------------------------------------------------------
 
@@ -171,7 +171,7 @@ def api_get_total_saves():
 # Get all saved rooms for a specific user
 @app.route('/api/saved_rooms/<netid>', methods=['GET'])
 def api_get_saved_rooms(netid):
-    saved_rooms = get_saved_rooms(netid)
+    saved_rooms = get_saved_rooms_with_saves(netid)
     return jsonify({"netid": netid, "saved_rooms": saved_rooms}), 200
 
 #-----------------------------------------------------------------------
