@@ -6,11 +6,14 @@ const WendellB3rdFloor = () => {
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
+  const userNetId = "user123"; // Assume this is fetched or passed as a prop
 
-  // Fetch room data from the backend
+  // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
     console.log("Fetching room data...");
-    fetch("http://127.0.0.1:5000/api/floorplans/wendell-b-3rd-floor")
+    fetch(
+      `http://127.0.0.1:5000/api/floorplans/wendell-b-3rd-floor?netid=${userNetId}`
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -18,11 +21,11 @@ const WendellB3rdFloor = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Fetched data:", data); // Debugging line
+        console.log("Fetched data:", data);
         setRoomInfo(data);
       })
       .catch((error) => console.error("Error fetching room data:", error));
-  }, []);
+  }, [userNetId]);
 
   // Toggle row expansion
   const toggleExpandRow = (index) => {
@@ -31,6 +34,42 @@ const WendellB3rdFloor = () => {
     } else {
       setExpandedRows([...expandedRows, index]);
     }
+  };
+
+  // Handle Save/Unsave action
+  const handleSaveToggle = (roomNumber, hall, isSaved) => {
+    const url = `http://127.0.0.1:5000/api/${
+      isSaved ? "unsave_room" : "save_room"
+    }`;
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        netid: userNetId,
+        room_number: roomNumber,
+        hall: hall,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Update the saved status and total saves in the roomInfo state
+        setRoomInfo((prevRoomInfo) =>
+          prevRoomInfo.map((room) =>
+            room.name === `Wendell ${roomNumber}`
+              ? {
+                  ...room,
+                  isSaved: !isSaved,
+                  total_saves: isSaved
+                    ? room.total_saves - 1
+                    : room.total_saves + 1,
+                }
+              : room
+          )
+        );
+      })
+      .catch((error) => console.error("Error toggling save status:", error));
   };
 
   return (
@@ -53,6 +92,7 @@ const WendellB3rdFloor = () => {
           roomInfo={roomInfo}
           expandedRows={expandedRows}
           toggleExpandRow={toggleExpandRow}
+          handleSaveToggle={handleSaveToggle}
         />
       </div>
     </div>
@@ -60,7 +100,12 @@ const WendellB3rdFloor = () => {
 };
 
 // RoomInfoTable component
-const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
+const RoomInfoTable = ({
+  roomInfo,
+  expandedRows,
+  toggleExpandRow,
+  handleSaveToggle,
+}) => {
   return (
     <table border="1" cellPadding="10" className="room-availability-table">
       <thead className="room-info-thead">
@@ -99,9 +144,26 @@ const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
               <tr>
                 <td className="availability-table-td" colSpan="3">
                   <div style={{ padding: "10px", backgroundColor: "#f9f9f9" }}>
-                    <strong>{oneRoomInfo.size}</strong> <br />{" "}
+                    <strong>{oneRoomInfo.size}</strong> <br />
                     <strong>{oneRoomInfo.occupancy}</strong> <br />
                     <strong>Total Saves: {oneRoomInfo.total_saves}</strong>
+                    <br />
+                    <button
+                      onClick={() =>
+                        handleSaveToggle(
+                          oneRoomInfo.name.split(" ")[1], // Extract room number from name
+                          "Wendell",
+                          oneRoomInfo.isSaved
+                        )
+                      }
+                      style={{
+                        marginTop: "10px",
+                        padding: "5px 10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {oneRoomInfo.isSaved ? "Unsave" : "Save"}
+                    </button>
                   </div>
                 </td>
               </tr>

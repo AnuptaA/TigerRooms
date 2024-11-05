@@ -53,6 +53,40 @@ def save_room(netid, room_number, hall):
         conn.rollback()
         print("Error saving room:", e)
 
+def unsave_room(netid, room_number, hall):
+    """Unsave a room for a user identified by netid, using room_number and hall."""
+    room_id = get_room_id(room_number, hall)
+    if room_id is None:
+        print(f"Room {room_number} in {hall} not found.")
+        return
+
+    try:
+        # Delete the save from RoomSaves table
+        cursor.execute(
+            '''
+            DELETE FROM RoomSaves
+            WHERE netid = %s AND room_id = %s
+            ''',
+            (netid, room_id)
+        )
+        
+        # Decrement the num_saves in RoomDetails if the delete was successful
+        if cursor.rowcount > 0:  # Check if a row was deleted
+            cursor.execute(
+                '''
+                UPDATE RoomDetails
+                SET num_saves = num_saves - 1
+                WHERE room_id = %s AND num_saves > 0
+                ''',
+                (room_id,)
+            )
+        
+        conn.commit()
+        print(f"Room {room_number} in {hall} unsaved successfully for netid {netid}.")
+    except Exception as e:
+        conn.rollback()
+        print("Error unsaving room:", e)
+
 def get_total_saves(room_number, hall):
     """Retrieve the total number of saves for a specific room based on room_number and hall."""
     room_id = get_room_id(room_number, hall)
@@ -84,14 +118,81 @@ def get_saved_rooms(netid):
     )
     return cursor.fetchall()
 
+def is_room_saved(netid, room_number, hall):
+    """Check if a specific room is saved by the user with the given netid."""
+    room_id = get_room_id(room_number, hall)
+    if room_id is None:
+        print(f"Room {room_number} in {hall} not found.")
+        return False
+
+    cursor.execute(
+        '''
+        SELECT 1
+        FROM RoomSaves
+        WHERE netid = %s AND room_id = %s
+        ''',
+        (netid, room_id)
+    )
+    result = cursor.fetchone()
+    return result is not None
+
 # Example usage (comment out if not testing directly)
-# Save a room and retrieve saves for different rooms and users
-# save_room("netid1", "B320", "Wendell")  # Save room B320 for user with netid 'netid1'
-# save_room("netid2", "B320", "Wendell")  # Save room B320 for user with netid 'netid2'
-# print("Total saves for room B320:", get_total_saves("B320", "Wendell"))
+def test():
+    print("Starting database operations...\n")
 
-# save_room("netid1", "B310", "Wendell")  # Save room B310 for user with netid 'netid1'
-# print("Total saves for room B310:", get_total_saves("B310", "Wendell"))
+    # User actions
+    save_room("netid1", "B320", "Wendell")  # netid1 saves room B320
+    save_room("netid2", "B320", "Wendell")  # netid2 saves room B320
+    save_room("netid3", "B320", "Wendell")  # netid3 saves room B320
+    print("Total saves for room B320 after three saves:", get_total_saves("B320", "Wendell"))
+    # Expected output: Total saves for room B320 after three saves: 3
 
-# print("Saved rooms for netid1:", get_saved_rooms("netid1"))
-# print("Saved rooms for netid2:", get_saved_rooms("netid2"))
+    # Additional rooms saved by different users
+    save_room("netid1", "B310", "Wendell")  # netid1 saves room B310
+    save_room("netid2", "B310", "Wendell")  # netid2 saves room B310
+    save_room("netid3", "B308", "Wendell")  # netid3 saves room B308
+    print("Total saves for room B310 after two saves:", get_total_saves("B310", "Wendell"))
+    # Expected output: Total saves for room B310 after two saves: 2
+    print("Total saves for room B308 after one save:", get_total_saves("B308", "Wendell"))
+    # Expected output: Total saves for room B308 after one save: 1
+
+    # Check saved rooms for each user
+    print("\nSaved rooms for netid1:", get_saved_rooms("netid1"))
+    # Expected output: Saved rooms for netid1: [('B320', 'Wendell', 3), ('B310', 'Wendell', 3)]
+    print("Saved rooms for netid2:", get_saved_rooms("netid2"))
+    # Expected output: Saved rooms for netid2: [('B320', 'Wendell', 3), ('B310', 'Wendell', 3)]
+    print("Saved rooms for netid3:", get_saved_rooms("netid3"))
+    # Expected output: Saved rooms for netid3: [('B320', 'Wendell', 3), ('B308', 'Wendell', 3)]
+
+    # Unsave operations
+    unsave_room("netid1", "B320", "Wendell")  # netid1 unsaves room B320
+    print("\nTotal saves for room B320 after netid1 unsaves:", get_total_saves("B320", "Wendell"))
+    # Expected output: Total saves for room B320 after netid1 unsaves: 2
+
+    unsave_room("netid2", "B310", "Wendell")  # netid2 unsaves room B310
+    print("Total saves for room B310 after netid2 unsaves:", get_total_saves("B310", "Wendell"))
+    # Expected output: Total saves for room B310 after netid2 unsaves: 1
+
+    # More unsaves to observe changes
+    unsave_room("netid3", "B308", "Wendell")  # netid3 unsaves room B308
+    print("Total saves for room B308 after netid3 unsaves:", get_total_saves("B308", "Wendell"))
+    # Expected output: Total saves for room B308 after netid3 unsaves: 0
+
+    # Final saved rooms for each user after unsave operations
+    print("\nFinal saved rooms for netid1:", get_saved_rooms("netid1"))
+    # Expected output: Final saved rooms for netid1: [('B310', 'Wendell', 3)]
+    print("Final saved rooms for netid2:", get_saved_rooms("netid2"))
+    # Expected output: Final saved rooms for netid2: [('B320', 'Wendell', 3)]
+    print("Final saved rooms for netid3:", get_saved_rooms("netid3"))
+    # Expected output: Final saved rooms for netid3: [('B320', 'Wendell', 3)]
+
+    # Check total saves to ensure integrity
+    print("\nFinal total saves:")
+    print("Room B320:", get_total_saves("B320", "Wendell"))
+    # Expected output: Room B320: 2
+    print("Room B310:", get_total_saves("B310", "Wendell"))
+    # Expected output: Room B310: 1
+    print("Room B308:", get_total_saves("B308", "Wendell"))
+    # Expected output: Room B308: 0
+
+# test()

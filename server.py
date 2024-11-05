@@ -12,7 +12,7 @@ import psycopg2
 import os
 import subprocess
 from db_config import DATABASE_URL
-from database_saves import get_room_id, save_room, get_total_saves, get_saved_rooms
+from database_saves import get_room_id, save_room, unsave_room, get_total_saves, get_saved_rooms, is_room_saved
 
 #-----------------------------------------------------------------------
 
@@ -87,6 +87,7 @@ def get_unique_halls_and_floors():
 
 @app.route('/api/floorplans/wendell-b-3rd-floor', methods=['GET'])
 def get_wendell_b_3rd_floor():
+    netid = request.args.get('netid')  # Get netid from query parameters
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -101,18 +102,20 @@ def get_wendell_b_3rd_floor():
     rooms = cursor.fetchall()
     conn.close()
     
-    # Construct the response with room info and total saves
+    # Construct the response with room info, total saves, and saved status for the user
     room_info = []
     for room in rooms:
         room_number, is_available, occupancy, square_footage = room
         total_saves = get_total_saves(room_number, 'Wendell')
+        is_saved = is_room_saved(netid, room_number, 'Wendell') if netid else False
         
         room_info.append({
             "name": f"Wendell {room_number}",
             "size": f"Size: {square_footage} sqft",
             "occupancy": f"Occupancy: {'Single' if occupancy == 1 else 'Double' if occupancy == 2 else 'Triple' if occupancy == 3 else 'Quad'}",
             "isAvailable": 'T' if is_available else 'F',
-            "total_saves": total_saves
+            "total_saves": total_saves,
+            "isSaved": is_saved
         })
     
     return jsonify(room_info)
@@ -132,6 +135,22 @@ def api_save_room():
 
     save_room(netid, room_number, hall)
     return jsonify({"message": f"Room {room_number} in {hall} saved successfully for {netid}"}), 200
+
+#-----------------------------------------------------------------------
+
+# Unsave a room
+@app.route('/api/unsave_room', methods=['POST'])
+def api_unsave_room():
+    data = request.json
+    netid = data.get('netid')
+    room_number = data.get('room_number')
+    hall = data.get('hall')
+
+    if not all([netid, room_number, hall]):
+        return jsonify({"error": "Missing netid, room_number, or hall"}), 400
+
+    unsave_room(netid, room_number, hall)
+    return jsonify({"message": f"Room {room_number} in {hall} unsaved successfully for {netid}"}), 200
 
 #-----------------------------------------------------------------------
 
