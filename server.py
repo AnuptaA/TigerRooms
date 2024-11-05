@@ -12,6 +12,7 @@ import psycopg2
 import os
 import subprocess
 from db_config import DATABASE_URL
+from database_saves import get_room_id, save_room, get_total_saves, get_saved_rooms
 
 #-----------------------------------------------------------------------
 
@@ -82,7 +83,6 @@ def get_unique_halls_and_floors():
     
     return jsonify(hall_floor_data)
 
-
 #-----------------------------------------------------------------------
 
 @app.route('/api/floorplans/wendell-b-3rd-floor', methods=['GET'])
@@ -114,35 +114,46 @@ def get_wendell_b_3rd_floor():
 
 #-----------------------------------------------------------------------
 
-@app.route('/allfloorplans', methods=['GET'])
-def allfloorplans():
-    room_details = example_function()
-    return jsonify(room_details)
+# Save a room
+@app.route('/api/save_room', methods=['POST'])
+def api_save_room():
+    data = request.json
+    netid = data.get('netid')
+    room_number = data.get('room_number')
+    hall = data.get('hall')
 
-@app.route('/floorplan', methods=['GET', 'POST'])
-def floorplan():
+    if not all([netid, room_number, hall]):
+        return jsonify({"error": "Missing netid, room_number, or hall"}), 400
 
-    print('hello')
-
-#-----------------------------------------------------------------------
-    
-@app.route('/searchresults', methods=['GET'])
-def searchresults():
-
-    print('hello')
+    save_room(netid, room_number, hall)
+    return jsonify({"message": f"Room {room_number} in {hall} saved successfully for {netid}"}), 200
 
 #-----------------------------------------------------------------------
-    
-@app.route('/cart', methods=['GET', 'POST'])
-def cart():
 
-    print('hello')
+# Get total saves for a specific room
+@app.route('/api/total_saves', methods=['GET'])
+def api_get_total_saves():
+    room_number = request.args.get('room_number')
+    hall = request.args.get('hall')
+
+    if not all([room_number, hall]):
+        return jsonify({"error": "Missing room_number or hall"}), 400
+
+    total_saves = get_total_saves(room_number, hall)
+    return jsonify({"room_number": room_number, "hall": hall, "total_saves": total_saves}), 200
+
+#-----------------------------------------------------------------------
+
+# Get all saved rooms for a specific user
+@app.route('/api/saved_rooms/<netid>', methods=['GET'])
+def api_get_saved_rooms(netid):
+    saved_rooms = get_saved_rooms(netid)
+    return jsonify({"netid": netid, "saved_rooms": saved_rooms}), 200
 
 #-----------------------------------------------------------------------
 
 @app.route('/api/uploadpdf', methods=['POST'])
 def upload_pdf():
-    print('we are in the server')
     if 'rooms-pdf' not in request.files:
         return jsonify({"error": "No file part in the request"}), 400
 
@@ -152,7 +163,6 @@ def upload_pdf():
 
     if file and file.filename.endswith('.pdf'):
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        print(file_path)
         file.save(file_path)
         
         result = subprocess.run(['python', 'update_database.py', file_path], capture_output=True, text=True)
