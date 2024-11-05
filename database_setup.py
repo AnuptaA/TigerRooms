@@ -5,10 +5,10 @@ from db_config import DATABASE_URL
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
-# Drop existing tables if they exist
-cursor.execute('DROP TABLE IF EXISTS RoomOverview')
-cursor.execute('DROP TABLE IF EXISTS RoomDetails')
-cursor.execute('DROP TABLE IF EXISTS RoomSaves')
+# Drop existing tables in reverse order with CASCADE to handle dependencies
+cursor.execute('DROP TABLE IF EXISTS RoomSaves CASCADE')
+cursor.execute('DROP TABLE IF EXISTS RoomDetails CASCADE')
+cursor.execute('DROP TABLE IF EXISTS RoomOverview CASCADE')
 
 # Create tables
 cursor.execute('''
@@ -32,9 +32,9 @@ cursor.execute('''
 
 cursor.execute('''
     CREATE TABLE RoomSaves (
-        user_id INTEGER,
+        netid TEXT,
         room_id INTEGER REFERENCES RoomOverview(room_id),
-        PRIMARY KEY (user_id, room_id)
+        PRIMARY KEY (netid, room_id)
     )
 ''')
 
