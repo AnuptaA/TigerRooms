@@ -100,7 +100,8 @@ const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
                 <td className="availability-table-td" colSpan="3">
                   <div style={{ padding: "10px", backgroundColor: "#f9f9f9" }}>
                     <strong>{oneRoomInfo.size}</strong> <br />{" "}
-                    <strong>{oneRoomInfo.occupancy}</strong>
+                    <strong>{oneRoomInfo.occupancy}</strong> <br />
+                    <strong>Total Saves: {oneRoomInfo.total_saves}</strong>
                   </div>
                 </td>
               </tr>
@@ -112,7 +113,6 @@ const RoomInfoTable = ({ roomInfo, expandedRows, toggleExpandRow }) => {
         <tr>
           <td id="availability-key-td">
             <strong>Draw Availability Key</strong>
-            {/* <br /> */}
             <div style={{ display: "block", marginTop: "10px" }}>
               <div
                 style={{

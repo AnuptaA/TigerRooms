@@ -90,6 +90,7 @@ def get_wendell_b_3rd_floor():
     conn = get_db_connection()
     cursor = conn.cursor()
     
+    # Fetch rooms and details including room_number and hall
     cursor.execute('''
         SELECT RoomOverview.room_number, RoomOverview.isAvailable, RoomDetails.occupancy, RoomDetails.square_footage
         FROM RoomOverview
@@ -100,15 +101,19 @@ def get_wendell_b_3rd_floor():
     rooms = cursor.fetchall()
     conn.close()
     
-    room_info = [
-        {
-            "name": f"Wendell {room[0]}",
-            "size": f"Size: {room[3]} sqft",
-            "occupancy": f"Occupancy: {'Single' if room[2] == 1 else 'Double' if room[2] == 2 else 'Triple' if room[2] == 3 else 'Quad'}",
-            "isAvailable": 'T' if room[1] else 'F'
-        }
-        for room in rooms
-    ]
+    # Construct the response with room info and total saves
+    room_info = []
+    for room in rooms:
+        room_number, is_available, occupancy, square_footage = room
+        total_saves = get_total_saves(room_number, 'Wendell')
+        
+        room_info.append({
+            "name": f"Wendell {room_number}",
+            "size": f"Size: {square_footage} sqft",
+            "occupancy": f"Occupancy: {'Single' if occupancy == 1 else 'Double' if occupancy == 2 else 'Triple' if occupancy == 3 else 'Quad'}",
+            "isAvailable": 'T' if is_available else 'F',
+            "total_saves": total_saves
+        })
     
     return jsonify(room_info)
 
