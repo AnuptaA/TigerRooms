@@ -199,7 +199,7 @@ def test():
     print("Room B308:", get_total_saves("B308", "Wendell"))
     # Expected output: Room B308: 0
 
-save_room("user123", "B309", "Wendell")  # user123 saves room B309
-save_room("user123", "B310", "Wendell")  # user123 saves room B310
-print("User user123 has the following room saves", get_saved_rooms_with_saves("user123"))
+# save_room("user123", "B309", "Wendell")  # user123 saves room B309
+# save_room("user123", "B310", "Wendell")  # user123 saves room B310
+# print("User user123 has the following room saves", get_saved_rooms_with_saves("user123"))
 # test()
