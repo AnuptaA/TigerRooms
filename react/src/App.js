@@ -4,6 +4,7 @@ import FloorPlans from "./pages/FloorPlans"; // The page listing all floor plans
 import FilterComponent from "./pages/FilterComponent";
 import WendellB3rdFloor from "./pages/WendellB3rdFloor"; // The detailed view of Wendell B 3rd floor
 import UploadPDFs from "./pages/UploadPDFs";
+import Cart from "./pages/Cart";
 import "./App.css";
 
 const App = () => {
@@ -52,6 +53,7 @@ const App = () => {
           element={<WendellB3rdFloor />}
         />
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </BrowserRouter>
   );
