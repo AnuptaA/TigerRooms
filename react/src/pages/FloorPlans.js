@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 
 const FloorPlans = () => {
+  const PORT = 4000;
   const [availabilityInfo, setAvailabilityInfo] = useState([]);
 
   // Fetch unique halls and floors from the backend
   useEffect(() => {
     console.log("Fetching floor plans data...");
-    fetch("http://127.0.0.1:5000/api/floorplans")
+    fetch(`http://127.0.0.1:${PORT}/api/floorplans`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

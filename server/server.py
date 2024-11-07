@@ -11,10 +11,10 @@ from flask_cors import CORS
 import psycopg2
 import os
 import subprocess
-from server.db_config import DATABASE_URL
+from db_config import DATABASE_URL
 import dotenv
-import server.CASauth as CASauth
-from server.database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
+import CASauth as CASauth
+from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
 #-----------------------------------------------------------------------
 

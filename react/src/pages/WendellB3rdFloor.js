@@ -3,6 +3,7 @@ import "../App.css";
 import image from "../img/floorplans/Wendell_B_Hall_Floor_3.png";
 
 const WendellB3rdFloor = () => {
+  const PORT = 4000;
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
@@ -12,7 +13,7 @@ const WendellB3rdFloor = () => {
   useEffect(() => {
     console.log("Fetching room data...");
     fetch(
-      `http://127.0.0.1:5000/api/floorplans/wendell-b-3rd-floor?netid=${userNetId}`
+      `http://127.0.0.1:${PORT}/api/floorplans/wendell-b-3rd-floor?netid=${userNetId}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -38,7 +39,7 @@ const WendellB3rdFloor = () => {
 
   // Handle Save/Unsave action
   const handleSaveToggle = (roomNumber, hall, isSaved) => {
-    const url = `http://127.0.0.1:5000/api/${
+    const url = `http://127.0.0.1:${PORT}/api/${
       isSaved ? "unsave_room" : "save_room"
     }`;
     fetch(url, {

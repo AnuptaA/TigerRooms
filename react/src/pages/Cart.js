@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 
 const Cart = () => {
+  const PORT = 4000;
   const [savedRooms, setSavedRooms] = useState([]);
   const userNetId = "user123"; // Assume this is fetched or passed as a prop
 
   // Fetch saved rooms for the user
   useEffect(() => {
     console.log("Fetching saved rooms...");
-    fetch(`http://127.0.0.1:5000/api/saved_rooms?user_id=${userNetId}`)
+    fetch(`http://127.0.0.1:${PORT}/api/saved_rooms?user_id=${userNetId}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -29,7 +30,7 @@ const Cart = () => {
     );
     if (!confirmed) return;
 
-    fetch("http://127.0.0.1:5000/api/unsave_room", {
+    fetch(`http://127.0.0.1:${PORT}/api/unsave_room`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
