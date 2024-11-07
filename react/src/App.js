@@ -52,7 +52,7 @@ const App = () => {
           path="/floorplans/wendell-b-3rd-floor"
           element={<WendellB3rdFloor />}
         />
-        <Route path="/logout" element={<Logout />}></Route>
+        {/* <Route path="/logout" element={<Logout />}></Route> */}
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
         <Route path="/cart" element={<Cart />} />
       </Routes>
