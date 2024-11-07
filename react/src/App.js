@@ -56,25 +56,25 @@ const App = () => {
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
         <Route path="/cart" element={<Cart />} />
 
-        {/* For the dynamic routes below WendellB3rdFloor is a placeholder */}
+        {/* For the dynamic routes below FloorPlans is a placeholder */}
         {/* This applies to both resco & other halls */}
-        <Route path="/floorplans/:resco" element={<WendellB3rdFloor />} />
+        <Route path="/floorplans/:resco" element={<FloorPlans />} />
         <Route
           path="/floorplans/:resco/:hallOrOccupancyOrMinSqft"
-          element={<WendellB3rdFloor />}
+          element={<FloorPlans />}
         />
         <Route
           path="/floorplans/:resco/:firstFilter/:secondFilter"
           // named as firstFilter and SecondFilter because there are many possible permutations
-          element={<WendellB3rdFloor />}
+          element={<FloorPlans />}
         />
         <Route
           path="/floorplans/:resco/:hall/:floorOrOccupancy/:occupancyOrMinSqft"
-          element={<WendellB3rdFloor />}
+          element={<FloorPlans />}
         />
         <Route
           path="/floorplans/:resco/:hall/:floor/:occupancy/:minsqft"
-          element={<WendellB3rdFloor />}
+          element={<FloorPlans />}
         />
       </Routes>
     </BrowserRouter>

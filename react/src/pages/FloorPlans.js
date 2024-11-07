@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 
 const FloorPlans = () => {
+  // Retrieval of params from dynamic routes
+  // const { resco, hall, floor, occupancy, minsqft } = useParams();
+
   const PORT = 4000;
   const [availabilityInfo, setAvailabilityInfo] = useState([]);
 
