@@ -568,6 +568,24 @@ tbody tr td[colspan="3"] {
   font-size: 0.9em;
 }
 
+.filter-label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Removing up and down arrows for numerical input fields */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none; /* Removes the spin button */
+  margin: 0; /* Removes any margin applied by the browser */
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield; /* Removes the spin button in Firefox */
+}
+
 /*--------------------------------------------------------------------*/
 /* This is the styling for  Floorplan Results page.                   */
 /*--------------------------------------------------------------------*/

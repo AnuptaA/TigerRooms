@@ -8,7 +8,9 @@ const FilterComponent = () => {
   const [hall, setHall] = useState("");
   const [floor, setFloor] = useState("");
   const [occupancy, setOccupancy] = useState("");
+  const [minSquareFootage, setMinSquareFootage] = useState(0); // New state for square footage filter
   const [error, setError] = useState(false);
+  const [squareFootageError, setSquareFootageError] = useState("");
 
   const navigate = useNavigate();
 
@@ -52,7 +54,15 @@ const FilterComponent = () => {
       return;
     }
 
+    if (minSquareFootage < 0 || isNaN(minSquareFootage)) {
+      setSquareFootageError(
+        "Please enter a valid positive integer for square footage."
+      );
+      return;
+    }
+
     setError(false); // Reset error if residentialCollege is selected
+    setSquareFootageError(""); // Reset square footage error if valid
 
     // Transform hall and floor names for the URL
     // const formattedHall = hall
@@ -64,6 +74,9 @@ const FilterComponent = () => {
     // Navigate to the new URL
     // navigate(`/floorplans/${formattedHall}-${formattedFloor}`);
     navigate(`/floorplans`);
+
+    // You could pass the square footage filter as part of the navigation if needed:
+    // navigate(`/floorplans?minSquareFootage=${minSquareFootage}`);
   };
 
   // Reset function to clear all selections
@@ -72,7 +85,9 @@ const FilterComponent = () => {
     setHall("");
     setFloor("");
     setOccupancy("");
+    setMinSquareFootage(0); // Reset square footage filter
     setError(false);
+    setSquareFootageError(""); // Reset square footage error
   };
 
   return (
@@ -171,6 +186,37 @@ const FilterComponent = () => {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="dropdown-group">
+          <label className="filter-label" htmlFor="squareFootage">
+            Minimum Square Footage
+          </label>
+          <input
+            type="number"
+            id="squareFootage"
+            min="0"
+            // step="1" // Enforce integer input
+            value={minSquareFootage}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Ensure the input value is a positive integer
+              if (
+                value === "" ||
+                (Number.isInteger(Number(value)) && Number(value) >= 0)
+              ) {
+                setMinSquareFootage(value);
+                setSquareFootageError(""); // Clear error if input is valid
+              } else {
+                setSquareFootageError("Please enter a valid positive integer.");
+              }
+            }}
+            className="filter-select"
+            placeholder="Enter min sqft"
+          />
+          {squareFootageError && (
+            <p className="error-message">{squareFootageError}</p>
+          )}
         </div>
       </div>
 
