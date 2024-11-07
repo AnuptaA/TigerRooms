@@ -1,8 +1,8 @@
 import psycopg2
 import pandas as pd
 import sys
-from pdfparser import parse_pdf
-from db_config import DATABASE_URL
+from server.pdfparser import parse_pdf
+from server.db_config import DATABASE_URL
 
 # Connect to the PostgreSQL database
 conn = psycopg2.connect(DATABASE_URL)

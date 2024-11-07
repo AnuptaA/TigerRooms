@@ -11,10 +11,10 @@ from flask_cors import CORS
 import psycopg2
 import os
 import subprocess
-from db_config import DATABASE_URL
+from server.db_config import DATABASE_URL
 import dotenv
-import CASauth
-from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
+import server.CASauth as CASauth
+from server.database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
 #-----------------------------------------------------------------------
 
@@ -38,11 +38,6 @@ def get_db_connection():
     return conn
 
 #-----------------------------------------------------------------------
-
-# Homepage route
-# @app.route('/', methods=['GET'])
-# def index():
-#     return "Welcome to TigerRooms API"
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])

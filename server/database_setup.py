@@ -1,5 +1,5 @@
 import psycopg2
-from db_config import DATABASE_URL
+from server.db_config import DATABASE_URL
 
 # Connect to PostgreSQL database
 conn = psycopg2.connect(DATABASE_URL)

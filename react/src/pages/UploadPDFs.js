@@ -46,7 +46,7 @@ const UploadPDFs = () => {
         });
         MySwal.showLoading();
 
-        // Perform your reset action (e.g., sending a reset request to the server)
+        // Perform reset action
         const formData = new FormData();
         formData.append("request-type", 0); // request type for reset action
 
