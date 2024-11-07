@@ -14,7 +14,7 @@ import subprocess
 from server.db_config import DATABASE_URL
 import dotenv
 import server.CASauth as CASauth
-from server.database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
+from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
 #-----------------------------------------------------------------------
 
@@ -55,6 +55,8 @@ def index():
     # Authentication failed
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
+#-----------------------------------------------------------------------
+
 # Endpoint for React to check if user is authenticated
 @app.route('/api/user', methods=['GET'])
 def get_user_data():
@@ -62,6 +64,10 @@ def get_user_data():
         return jsonify({'status': 'success', 'username': session['username']})  # Send JSON data to React
     else:
         return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
+
+#-----------------------------------------------------------------------
+
+
 
 #-----------------------------------------------------------------------
 
