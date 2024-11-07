@@ -170,10 +170,11 @@ def api_get_total_saves():
 #-----------------------------------------------------------------------
 
 # Get all saved rooms for a specific user
-@app.route('/api/saved_rooms/<netid>', methods=['GET'])
-def api_get_saved_rooms(netid):
-    saved_rooms = get_saved_rooms_with_saves(netid)
-    return jsonify({"netid": netid, "saved_rooms": saved_rooms}), 200
+@app.route('/api/saved_rooms', methods=['GET'])
+def api_get_saved_rooms():
+    user_id = request.args.get('user_id')
+    saved_rooms = get_saved_rooms_with_saves(user_id)
+    return jsonify({"netid": user_id, "saved_rooms": saved_rooms}), 200
 
 #-----------------------------------------------------------------------
 
