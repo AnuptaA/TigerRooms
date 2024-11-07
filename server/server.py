@@ -55,6 +55,8 @@ def index():
     # Authentication failed
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
+#-----------------------------------------------------------------------
+
 # Endpoint for React to check if user is authenticated
 @app.route('/api/user', methods=['GET'])
 def get_user_data():
@@ -62,6 +64,10 @@ def get_user_data():
         return jsonify({'status': 'success', 'username': session['username']})  # Send JSON data to React
     else:
         return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
+
+#-----------------------------------------------------------------------
+
+
 
 #-----------------------------------------------------------------------
 
