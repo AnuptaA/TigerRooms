@@ -19,21 +19,53 @@ const FilterComponent = () => {
     "Butler College",
     "Forbes College",
     "Mathey College",
-    "New College West",
+    "NCW",
     "Rockefeller College",
     "Whitman College",
     "Yeh College",
   ];
 
-  // Hardcoded halls for Whitman College
-  const whitmanHalls = [
-    "1981 Hall",
-    "Fisher Hall",
-    "Lauritzen Hall",
-    "Murley-Pivirotto Family Tower",
-    "Wendell B Hall",
-    "Wendell C Hall",
-  ];
+  const collegeHalls = {
+    "Butler College": [
+      "Yoseloff Hall",
+      "Bogle Hall",
+      "1976 Hall",
+      "1967 Hall",
+      "Bloomberg Hall",
+      "Wilf Hall",
+      "Scully Hall",
+    ],
+    "Forbes College": ["Main", "Annex"],
+    "Mathey College": [
+      "Blair Hall",
+      "Campbell Hall",
+      "Edwards Hall",
+      "Hamilton Hall",
+      "Joline Hall",
+      "Little Hall",
+    ],
+    NCW: [
+      "Addy Hall",
+      "Kanji Hall",
+      "Kwanza Jones Hall",
+      "Jose Feliciano Hall",
+    ],
+    "Rockefeller College": [
+      "Buyers Hall",
+      "Campbell Hall",
+      "Holder Hall",
+      "Witherspoon Hall",
+    ],
+    "Whitman College": [
+      "1981 Hall",
+      "Fisher Hall",
+      "Lauritzen Hall",
+      "Murley-Pivirotto Family Tower",
+      "Wendell B Hall",
+      "Wendell C Hall",
+    ],
+    "Yeh College": ["Fu Hall", "Grousbeck Hall", "Hariri Hall", "Mannion Hall"],
+  };
 
   // Hardcoded floors for Wendell B Hall
   const wendellBFloors = [
@@ -64,19 +96,20 @@ const FilterComponent = () => {
     setError(false); // Reset error if residentialCollege is selected
     setSquareFootageError(""); // Reset square footage error if valid
 
-    // Transform hall and floor names for the URL
-    // const formattedHall = hall
-    //   .replace(" Hall", "")
-    //   .toLowerCase()
-    //   .replace(/\s+/g, "-"); // Remove "Hall" and replace spaces with hyphens
-    // const formattedFloor = floor.toLowerCase().replace(/\s+/g, "-"); // Replace spaces with hyphens
+    // Build URL path based on filled fields
+    let url = `/floorplans/${residentialCollege
+      .toLowerCase()
+      .replace(" college", "")}`;
+    if (hall)
+      url += `/${hall.toLowerCase().replace(" hall", "").replace(/\s+/g, "-")}`;
+    if (floor) url += `/${floor.toLowerCase().replace(/\s+/g, "-")}`;
+    if (occupancy) url += `/${occupancy.toLowerCase()}`;
+    if (minSquareFootage) url += `/${minSquareFootage}`;
 
-    // Navigate to the new URL
-    // navigate(`/floorplans/${formattedHall}-${formattedFloor}`);
-    navigate(`/floorplans`);
+    // Navigate to the constructed URL
+    navigate(url);
 
-    // You could pass the square footage filter as part of the navigation if needed:
-    // navigate(`/floorplans?minSquareFootage=${minSquareFootage}`);
+    // navigate(`/floorplans`);
   };
 
   // Reset function to clear all selections
@@ -134,15 +167,17 @@ const FilterComponent = () => {
             id="hall"
             value={hall}
             onChange={(e) => setHall(e.target.value)}
+            disabled={!residentialCollege} // Disable until Residential College is selected
           >
             <option value="" className="placeholder-option">
               Select Hall
             </option>
-            {whitmanHalls.map((hallOption, idx) => (
-              <option key={idx} value={hallOption}>
-                {hallOption}
-              </option>
-            ))}
+            {residentialCollege &&
+              collegeHalls[residentialCollege].map((hallOption, idx) => (
+                <option key={idx} value={hallOption}>
+                  {hallOption}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -155,6 +190,7 @@ const FilterComponent = () => {
             id="floor"
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
+            disabled={!hall} // Disable until Hall is selected
           >
             <option value="" className="placeholder-option">
               Select Floor
