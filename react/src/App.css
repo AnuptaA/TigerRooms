@@ -1,13 +1,39 @@
-/*--------------------------------------------------------------------*/
-/* This is the styling for the HTML template (nav bar + footer).      */
-/*--------------------------------------------------------------------*/
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+/*--------------------------------------------------------------------*/
+/* Reset all pre-specified attributes and set font for all pages.     */
+/*--------------------------------------------------------------------*/
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "DM sans", sans-serif, Helvetica;
 }
+
+/* Main content should avoid the header and footer */
+
+main {
+  margin-top: 7.5vh;
+  margin-bottom: 9.5vh;
+  height: calc(100vh - 7.5vh - 9.5vh);
+  overflow-y: auto;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+/*--------------------------------------------------------------------*/
+/* This is the styling for the navigation bar.                        */
+/*--------------------------------------------------------------------*/
 
 nav {
   background-color: #2a668f;
@@ -16,9 +42,10 @@ nav {
   justify-content: space-between;
   position: fixed;
   width: 100%;
-  padding: 10px 1%;
+  padding: 1vh 1%;
   top: 0;
   z-index: 999;
+  height: 7.5%;
 }
 
 .logo-cont {
@@ -33,7 +60,7 @@ nav ul li {
 nav ul li a {
   color: white;
   text-decoration: none;
-  font-size: 1.75em;
+  font-size: 1.75rem;
   font-weight: 700;
 }
 
@@ -79,6 +106,7 @@ nav ul li a:hover {
   touch-action: manipulation;
   vertical-align: baseline;
   width: auto;
+  margin-bottom: 0.5vh;
 }
 
 #cart-btn:hover,
@@ -110,6 +138,10 @@ nav::after {
   background-color: #e77500;
 }
 
+/*--------------------------------------------------------------------*/
+/* This is the styling for the footer.                                */
+/*--------------------------------------------------------------------*/
+
 #lockup {
   height: 5.5vh;
   width: auto;
@@ -139,14 +171,17 @@ footer {
   color: white;
   display: flex;
   width: 100%;
-  left: 0;
   bottom: 0;
+  left: 0;
+  right: 0;
   align-content: center;
   justify-content: space-between;
-  font-size: 0.85em;
+  font-size: 0.85rem;
   text-align: right;
   padding: 0.85% 3.5%;
   position: fixed;
+  height: 9.5%;
+  margin-top: 9.5vh;
 }
 
 /*--------------------------------------------------------------------*/
@@ -294,6 +329,7 @@ tbody tr td[colspan="3"] {
   justify-content: center;
   align-items: center;
   user-select: none;
+  min-height: 100%;
 }
 
 #upload-pdfs-cont {
@@ -305,10 +341,11 @@ tbody tr td[colspan="3"] {
   height: 100%;
 }
 
-#pdf-upload-text {
-  margin-top: 12.5vh; /* when adjusting this, adjust margin-top in pdf-form accordingly */
+/* when adjusting this, adjust margin-top in pdf-form accordingly */
+/* #pdf-upload-text {
+  margin-top: 12.5vh;
   margin-bottom: 0;
-}
+} */
 
 #pdf-form {
   display: flex;
@@ -399,6 +436,33 @@ tbody tr td[colspan="3"] {
   overflow: hidden;
   text-overflow: ellipsis;
   user-select: none;
+}
+
+#reset-pdf-btn {
+  margin-top: 4vh;
+  background: #ff4742;
+  border: 1vh solid #ff4742;
+  border-radius: 1vh;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1em;
+  font-weight: 800;
+  line-height: 1vh;
+  min-height: 40px;
+  padding: 0.8vh;
+  text-align: center;
+  user-select: none;
+  vertical-align: middle;
+}
+
+#reset-pdf-btn:hover {
+  background: white;
+  background-position: 0 0;
+  border: 1vh solid #ff4742;
+  color: #ff4742;
 }
 
 /*--------------------------------------------------------------------*/

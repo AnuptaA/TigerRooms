@@ -22,6 +22,7 @@ CORS(app)
 
 # Directory for storing uploaded PDFs
 UPLOAD_FOLDER = 'uploads'
+RESET_FILE = 'Wendell_All_Available.pdf'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -178,25 +179,61 @@ def api_get_saved_rooms(netid):
 
 @app.route('/api/uploadpdf', methods=['POST'])
 def upload_pdf():
-    if 'rooms-pdf' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
+    request_type = request.form.get('request-type')
 
-    file = request.files['rooms-pdf']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+    if not request_type:
+        return jsonify({"error": "Request type is missing."}), 400
 
-    if file and file.filename.endswith('.pdf'):
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(file_path)
+    try:
+        # Convert to an integer, as it's sent as a string
+        request_type = int(request_type)
+    except ValueError:
+        return jsonify({"error": "Invalid request type format."}), 400
+
+    # Handle different request types
+    if request_type == 1:
+        # Retrieve the file from the request
+        if 'rooms-pdf' not in request.files:
+            return jsonify({"error": "No file part in the request."}), 400
+
+        file = request.files['rooms-pdf']
+        if file.filename == '':
+            return jsonify({"error": "No selected file."}), 400
+
+        # Ensure the file is a PDF
+        if file and file.filename.endswith('.pdf'):
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'],
+                                     file.filename)
+            file.save(file_path)
+
+            # update database
+            result = subprocess.run(['python', 'update_database.py', 
+                                     file_path], 
+                                     capture_output=True, text=True)
+
+            if result.returncode != 0:
+                return jsonify({"error": "Database update failed.",
+                                 "details": result.stderr}), 500
+
+            return jsonify({"message":
+                             "PDF uploaded and database updated successfully!"}), 200
+
+        else:
+            return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
         
-        result = subprocess.run(['python', 'update_database.py', file_path], capture_output=True, text=True)
+    elif request_type == 0:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'],
+                                  RESET_FILE)
+        result = subprocess.run(['python', 'update_database.py',
+                                  file_path],
+                                  capture_output=True, text=True)
         
         if result.returncode != 0:
-            return jsonify({"error": "Database update failed", "details": result.stderr}), 500
-        
-        return jsonify({"message": "PDF uploaded and database updated successfully"}), 200
-    else:
-        return jsonify({"error": "Invalid file type. Only PDF is allowed."}), 400
+            return jsonify({"error": "Database update failed.",
+                                 "details": result.stderr}), 500
+
+        return jsonify({"message":
+                "Room availability reset successfully!"}), 200
 
 #-----------------------------------------------------------------------
 

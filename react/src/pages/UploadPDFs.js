@@ -23,6 +23,68 @@ const UploadPDFs = () => {
     document.getElementById("upload-pdf").click();
   };
 
+  const handleReset = async (event) => {
+    event.preventDefault();
+
+    // Show confirmation dialog
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, reset it!",
+    }).then(async (result) => {
+      // If confirmed, proceed with reset
+      if (result.isConfirmed) {
+        // Show loading message
+        MySwal.fire({
+          title: "Loading...",
+          html: "Please wait a moment.",
+          allowOutsideClick: false,
+        });
+        MySwal.showLoading();
+
+        // Perform your reset action (e.g., sending a reset request to the server)
+        const formData = new FormData();
+        formData.append("request-type", 0); // request type for reset action
+
+        try {
+          const response = await fetch("http://127.0.0.1:5000/api/uploadpdf", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          // Hide loading message
+          MySwal.hideLoading();
+
+          if (response.ok) {
+            MySwal.fire({
+              title: "Reset Complete!",
+              text: result.message,
+              icon: "success",
+            });
+          } else {
+            MySwal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: result.error,
+            });
+          }
+        } catch (error) {
+          MySwal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "An error occurred while resetting the file.",
+          });
+        }
+      }
+    });
+  };
+
   // wait for user to submit
   const handleSubmit = async (event) => {
     // prevent default and multiple submission
@@ -32,7 +94,7 @@ const UploadPDFs = () => {
     setCanSubmit(false);
     MySwal.fire({
       title: "Loading...",
-      html: "Please wait a moment",
+      html: "Please wait a moment.",
       allowOutsideClick: false,
     });
     MySwal.showLoading();
@@ -49,9 +111,10 @@ const UploadPDFs = () => {
       return;
     }
 
-    // store PDF file in FormData object
+    // store file into FormData object
     const formData = new FormData();
-    formData.append("rooms-pdf", file);
+    formData.append("request-type", 1); // request type
+    formData.append("rooms-pdf", file); // file
 
     // send POST request with file
     try {
@@ -65,14 +128,12 @@ const UploadPDFs = () => {
       // display server response
       MySwal.hideLoading();
       if (response.ok) {
-        // alert(result.message);
         MySwal.fire({
           title: "Thank you!",
           text: result.message,
           icon: "success",
         });
       } else {
-        // alert(result.error);
         MySwal.fire({
           icon: "error",
           title: "Oops...",
@@ -80,7 +141,6 @@ const UploadPDFs = () => {
         });
       }
     } catch (error) {
-      //   alert("An error occurred while uploading the file.");
       MySwal.fire({
         icon: "error",
         title: "Oops...",
@@ -118,6 +178,11 @@ const UploadPDFs = () => {
           </div>
           <button type="submit">Submit</button>
         </form>
+      </div>
+      <div>
+        <button id="reset-pdf-btn" onClick={handleReset}>
+          Reset Database
+        </button>
       </div>
     </div>
   );
