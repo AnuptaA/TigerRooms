@@ -3,6 +3,9 @@ import "../App.css";
 import image from "../img/floorplans/Wendell_B_Hall_Floor_3.png";
 
 const WendellB3rdFloor = () => {
+  // Retrieval of params from dynamic routes
+  // const { resco, hall, floor, occupancy, minsqft } = useParams();
+
   const PORT = 4000;
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([]);
