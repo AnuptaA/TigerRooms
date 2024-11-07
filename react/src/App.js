@@ -8,40 +8,40 @@ import Cart from "./pages/Cart";
 import "./App.css";
 
 const App = () => {
-  // const [username, setUsername] = React.useState(null);
+  const [username, setUsername] = React.useState(null);
 
-  // React.useEffect(() => {
-  //   async function fetchUserData() {
-  //     try {
-  //       const response = await fetch("http://localhost:2000/api/user", {
-  //         method: "GET",
-  //         credentials: "include",
-  //       });
+  React.useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const response = await fetch("http://localhost:4000/api/user", {
+          method: "GET",
+          credentials: "include",
+        });
 
-  //       if (response.status === 200) {
-  //         const data = await response.json();
-  //         if (data.status === "success") {
-  //           setUsername(data.username);
-  //         } else {
-  //           console.error("User not authenticated");
-  //           window.location.href = "http://localhost:2000";
-  //         }
-  //       } else if (response.status === 401) {
-  //         console.error("User not authenticated (401 status)");
-  //         window.location.href = "http://localhost:2000"; // Redirect to start CAS login
-  //       } else {
-  //         console.error("Unexpected response", response);
-  //         window.location.href = "http://localhost:2000";
-  //       }
-  //     } catch (error) {
-  //       console.error("Fetch error:", error);
-  //       window.location.href = "http://localhost:2000";
-  //     }
-  //   }
+        if (response.status === 200) {
+          const data = await response.json();
+          if (data.status === "success") {
+            setUsername(data.username);
+          } else {
+            console.error("User not authenticated");
+            window.location.href = "http://localhost:4000";
+          }
+        } else if (response.status === 401) {
+          console.error("User not authenticated (401 status)");
+          window.location.href = "http://localhost:4000"; // Redirect to start CAS login
+        } else {
+          console.error("Unexpected response", response);
+          window.location.href = "http://localhost:4000";
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        window.location.href = "http://localhost:4000";
+      }
+    }
 
-  //   // Fetch user data on initial load
-  //   fetchUserData();
-  // }, []);
+    // Fetch user data on initial load
+    fetchUserData();
+  }, []);
 
   return (
     <BrowserRouter>

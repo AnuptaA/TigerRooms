@@ -6,19 +6,24 @@
 #-----------------------------------------------------------------------
 
 import flask
-from flask import request, jsonify
+from flask import request, jsonify, session, redirect
 from flask_cors import CORS
 import psycopg2
 import os
 import subprocess
 from db_config import DATABASE_URL
+import dotenv
+import CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
 #-----------------------------------------------------------------------
 
 # app instance
 app = flask.Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
+dotenv.load_dotenv()
+app.secret_key = os.environ['APP_SECRET_KEY']
+PORT = 4000
 
 # Directory for storing uploaded PDFs
 UPLOAD_FOLDER = 'uploads'
@@ -35,9 +40,33 @@ def get_db_connection():
 #-----------------------------------------------------------------------
 
 # Homepage route
+# @app.route('/', methods=['GET'])
+# def index():
+#     return "Welcome to TigerRooms API"
+
 @app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
 def index():
-    return "Welcome to TigerRooms API"
+    # If the user is already athenticated, redirect to React app
+    if 'username' in session:
+        return redirect("http://localhost:3000")
+    
+    username = CASauth.authenticate()
+    if isinstance(username, str):  # Check if authenticate returned a username
+        session['username'] = username
+        print(f'this is my username!!!!: {username}')
+        return redirect("http://localhost:3000")  # Redirect to React app after successful login
+
+    # Authentication failed
+    return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
+
+# Endpoint for React to check if user is authenticated
+@app.route('/api/user', methods=['GET'])
+def get_user_data():
+    if 'username' in session:
+        return jsonify({'status': 'success', 'username': session['username']})  # Send JSON data to React
+    else:
+        return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
 
 #-----------------------------------------------------------------------
 
@@ -239,4 +268,4 @@ def upload_pdf():
 #-----------------------------------------------------------------------
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=PORT, debug=True)
