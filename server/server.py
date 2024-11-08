@@ -27,7 +27,7 @@ PORT = 4000
 
 # Directory for storing uploaded PDFs
 UPLOAD_FOLDER = 'uploads'
-RESET_FILE = 'Wendell_All_Available.pdf'
+RESET_FILE = 'sample_pdfs/Wendell_All_Available.pdf'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -253,10 +253,8 @@ def upload_pdf():
             return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
         
     elif request_type == 0:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'],
-                                  RESET_FILE)
         result = subprocess.run(['python', 'update_database.py',
-                                  file_path],
+                                  RESET_FILE],
                                   capture_output=True, text=True)
         
         if result.returncode != 0:

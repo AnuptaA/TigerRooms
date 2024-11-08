@@ -42,3 +42,5 @@ npm i sweetalert2-react-content
 
 Run the following to install certificates for CAS
 /Applications/Python\ 3.12/Install\ Certificates.command
+
+export APP_SECRET_KEY=kevin
