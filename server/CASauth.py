@@ -74,32 +74,10 @@ def authenticate():
     if username is None:
         login_url = (_CAS_URL + 'login?service='
             + urllib.parse.quote(strip_ticket(flask.request.url)))
-        return flask.redirect(login_url)
+        return flask.abort(flask.redirect(login_url))
 
     # The user is authenticated, so store the username in
     # the session.
     username = username.strip()
     flask.session['username'] = username
     return username
-
-#-----------------------------------------------------------------------
-
-@app.route('/logoutapp', methods=['GET'])
-def logoutapp():
-
-    # Log out of the application.
-    flask.session.clear()
-    html_code = flask.render_template('loggedout.html')
-    response = flask.make_response(html_code)
-    return response
-
-#-----------------------------------------------------------------------
-
-@app.route('/logoutcas', methods=['GET'])
-def logoutcas():
-
-    # Log out of the CAS session, and then the application.
-    logout_url = (_CAS_URL + 'logout?service='
-        + urllib.parse.quote(
-            re.sub('logoutcas', 'logoutapp', flask.request.url)))
-    flask.abort(flask.redirect(logout_url))

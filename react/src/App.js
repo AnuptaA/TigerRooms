@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import FloorPlans from "./pages/FloorPlans"; // The page listing all floor plans
 import FilterComponent from "./pages/FilterComponent";
 import WendellB3rdFloor from "./pages/WendellB3rdFloor"; // The detailed view of Wendell B 3rd floor
+import Logout from "./pages/Logout";
 import UploadPDFs from "./pages/UploadPDFs";
 import Cart from "./pages/Cart";
 import "./App.css";
@@ -52,7 +53,7 @@ const App = () => {
           path="/floorplans/wendell-b-3rd-floor"
           element={<WendellB3rdFloor />}
         />
-        {/* <Route path="/logout" element={<Logout />}></Route> */}
+        {<Route path="/logout" element={<Logout />}></Route>}
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
         <Route path="/cart" element={<Cart />} />
 

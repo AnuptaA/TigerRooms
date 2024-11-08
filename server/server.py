@@ -13,6 +13,8 @@ import os
 import subprocess
 from db_config import DATABASE_URL
 import dotenv
+import urllib
+import re
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
@@ -55,6 +57,18 @@ def index():
     # Authentication failed
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
+@app.route('/logoutcas', methods=['GET'])
+def logoutcas():
+    print('Logging out of CAS...')
+    session.clear()
+    try:
+        # Construct CAS logout URL
+        logout_url = (CASauth._CAS_URL + 'logout')
+        # Redirect to CAS logout URL
+        return jsonify({'status': "success", 'logout_url': logout_url})
+    except Exception as e:
+        return jsonify({'status': 'failure', 'message': str(e)}), 500
+
 #-----------------------------------------------------------------------
 
 # Endpoint for React to check if user is authenticated
@@ -64,10 +78,6 @@ def get_user_data():
         return jsonify({'status': 'success', 'username': session['username']})  # Send JSON data to React
     else:
         return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
-
-#-----------------------------------------------------------------------
-
-
 
 #-----------------------------------------------------------------------
 
