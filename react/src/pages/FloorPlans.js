@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import "../App.css";
 
 const FloorPlans = () => {
-  // Retrieval of params from dynamic routes
-  // const { resco, hall, floor, occupancy, minsqft } = useParams();
+  // Retrieve query params from URL using useLocation
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  // Get query parameters, defaulting to empty string if not found
+  const resCollege = searchParams.get("resco");
+  const hall = searchParams.get("hall");
+  const floor = searchParams.get("floor");
+  const occupancy = searchParams.get("occupancy");
+  const minSquareFootage = searchParams.get("minSquareFootage");
 
   const PORT = 4000;
   const [availabilityInfo, setAvailabilityInfo] = useState([]);
@@ -11,7 +20,27 @@ const FloorPlans = () => {
   // Fetch unique halls and floors from the backend
   useEffect(() => {
     console.log("Fetching floor plans data...");
-    fetch(`http://127.0.0.1:${PORT}/api/floorplans`)
+
+    // Build the query string dynamically based on available params
+    let queryString = "";
+
+    if (resCollege) queryString += `resco=${encodeURIComponent(resCollege)}&`;
+    if (hall) queryString += `hall=${encodeURIComponent(hall)}&`;
+    if (floor) queryString += `floor=${encodeURIComponent(floor)}&`;
+    if (occupancy) queryString += `occupancy=${encodeURIComponent(occupancy)}&`;
+    if (minSquareFootage)
+      queryString += `minSquareFootage=${encodeURIComponent(
+        minSquareFootage
+      )}&`;
+
+    // Remove the trailing "&" if there's one
+    if (queryString.endsWith("&")) queryString = queryString.slice(0, -1);
+
+    fetch(
+      `http://127.0.0.1:${PORT}/api/floorplans${
+        queryString ? `?${queryString}` : ""
+      }`
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -23,14 +52,23 @@ const FloorPlans = () => {
         setAvailabilityInfo(data);
       })
       .catch((error) => console.error("Error fetching floor plans:", error));
-  }, []);
+  }, [resCollege, hall, floor, occupancy, minSquareFootage]);
 
   return (
     <div>
       <h1 className="results-page-title">
         Showing results for all floor plans
       </h1>
-      <h1 className="res-college-title">Whitman College</h1>
+      <h1 className="res-college-title">
+        {/* sentence-casing the resCollege title */}
+        {/* Adding ternary comparator to handle case where resco isn't provided */}
+        {/* Only NCW is displayed in all-caps, the rest are in sentence case */}
+        {resCollege === null
+          ? "All Residential Colleges"
+          : resCollege.toLowerCase() === "ncw"
+          ? resCollege.toUpperCase()
+          : resCollege.charAt(0).toUpperCase() + resCollege.slice(1)}
+      </h1>
       <AvailabilityTable availabilityInfo={availabilityInfo} />
     </div>
   );

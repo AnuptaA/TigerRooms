@@ -97,14 +97,42 @@ const FilterComponent = () => {
     setSquareFootageError(""); // Reset square footage error if valid
 
     // Build URL path based on filled fields
-    let url = `/floorplans/${residentialCollege
-      .toLowerCase()
-      .replace(" college", "")}`;
-    if (hall)
-      url += `/${hall.toLowerCase().replace(" hall", "").replace(/\s+/g, "-")}`;
-    if (floor) url += `/${floor.toLowerCase().replace(/\s+/g, "-")}`;
-    if (occupancy) url += `/${occupancy.toLowerCase()}`;
-    if (minSquareFootage) url += `/${minSquareFootage}`;
+    let url = "/floorplans?";
+    url += `resco=${encodeURIComponent(
+      residentialCollege.toLowerCase().replace(" college", "")
+    )}`;
+
+    // Create an array to hold query parameters
+    let queryParams = [];
+
+    // Add query parameters conditionally based on their presence
+    if (hall) {
+      queryParams.push(
+        `hall=${encodeURIComponent(
+          hall.toLowerCase().replace(" hall", "").replace(/\s+/g, "-")
+        )}`
+      );
+    }
+    if (floor) {
+      queryParams.push(
+        `floor=${encodeURIComponent(floor.toLowerCase().replace(/\s+/g, "-"))}`
+      );
+    }
+    if (occupancy) {
+      queryParams.push(
+        `occupancy=${encodeURIComponent(occupancy.toLowerCase())}`
+      );
+    }
+    if (minSquareFootage) {
+      queryParams.push(
+        `minSquareFootage=${encodeURIComponent(minSquareFootage)}`
+      );
+    }
+
+    // Append the query parameters to the base URL
+    if (queryParams.length > 0) {
+      url += "&" + queryParams.join("&");
+    }
 
     // Navigate to the constructed URL
     navigate(url);

@@ -86,6 +86,30 @@ def get_unique_halls_and_floors():
     conn = get_db_connection()
     cursor = conn.cursor()
     
+    resco = flask.request.args.get('resco')
+    hall = flask.request.args.get('hall')
+    floor = flask.request.args.get('floor')
+    occupancy = flask.request.args.get('occupancy')
+    minSquareFootage = flask.request.args.get('minSquareFootage')
+
+    params = []
+    if resco is not None:
+        params.append(resco)
+    if hall is not None:
+        params.append(hall)
+    if floor is not None:
+        params.append(floor)
+    if occupancy is not None:
+        params.append(occupancy)
+    if minSquareFootage is not None:
+        params.append(minSquareFootage)
+    
+    # This print statement is here to verify that the query
+    # params that were sent from Floorplans.js were correctly
+    # received in the server
+    print("Floorplan filter params received in the server: " + str(params))
+
+    
     cursor.execute('''
         SELECT 
             CASE 

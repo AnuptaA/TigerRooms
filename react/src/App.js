@@ -56,27 +56,6 @@ const App = () => {
         {<Route path="/logout" element={<Logout />}></Route>}
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
         <Route path="/cart" element={<Cart />} />
-
-        {/* For the dynamic routes below FloorPlans is a placeholder */}
-        {/* This applies to both resco & other halls */}
-        <Route path="/floorplans/:resco" element={<FloorPlans />} />
-        <Route
-          path="/floorplans/:resco/:hallOrOccupancyOrMinSqft"
-          element={<FloorPlans />}
-        />
-        <Route
-          path="/floorplans/:resco/:firstFilter/:secondFilter"
-          // named as firstFilter and SecondFilter because there are many possible permutations
-          element={<FloorPlans />}
-        />
-        <Route
-          path="/floorplans/:resco/:hall/:floorOrOccupancy/:occupancyOrMinSqft"
-          element={<FloorPlans />}
-        />
-        <Route
-          path="/floorplans/:resco/:hall/:floor/:occupancy/:minsqft"
-          element={<FloorPlans />}
-        />
       </Routes>
     </BrowserRouter>
   );
