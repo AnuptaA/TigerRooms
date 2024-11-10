@@ -19,8 +19,6 @@ const FloorPlans = () => {
 
   // Fetch unique halls and floors from the backend
   useEffect(() => {
-    console.log("Fetching floor plans data...");
-
     // Build the query string dynamically based on available params
     let queryString = "";
 
@@ -48,7 +46,6 @@ const FloorPlans = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Fetched floor plans:", data); // Debugging line
         setAvailabilityInfo(data);
       })
       .catch((error) => console.error("Error fetching floor plans:", error));
@@ -75,8 +72,6 @@ const FloorPlans = () => {
 };
 
 const AvailabilityTable = ({ availabilityInfo }) => {
-  console.log("Availability info in table:", availabilityInfo); // Debugging line
-
   // Determine the maximum number of floors to set the number of rows
   const maxFloors =
     availabilityInfo.length > 0

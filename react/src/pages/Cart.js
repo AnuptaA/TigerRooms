@@ -17,7 +17,6 @@ const Cart = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Fetched saved rooms:", data);
         setSavedRooms(data.saved_rooms);
       })
       .catch((error) => console.error("Error fetching saved rooms:", error));
@@ -43,7 +42,6 @@ const Cart = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Room unsaved:", data);
         setSavedRooms((prevRooms) =>
           prevRooms.filter(
             (room) => !(room.room_number === roomNumber && room.hall === hall)

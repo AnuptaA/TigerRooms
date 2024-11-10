@@ -11,7 +11,6 @@ const WendellB3rdFloor = () => {
 
   // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
-    console.log("Fetching room data...");
     fetch(
       `http://127.0.0.1:${PORT}/api/floorplans/wendell-b-3rd-floor?netid=${userNetId}`
     )
@@ -22,7 +21,6 @@ const WendellB3rdFloor = () => {
         return response.json();
       })
       .then((data) => {
-        console.log("Fetched data:", data);
         setRoomInfo(data);
       })
       .catch((error) => console.error("Error fetching room data:", error));

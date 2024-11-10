@@ -17,9 +17,6 @@ const Logout = () => {
         return res.json();
       })
       .then((data) => {
-        console.log("Logout response data:", data);
-        console.log("Logout successful, redirecting...");
-        console.log("Logout URL:", data.logout_url);
         window.location.href = data.logout_url; // Redirect to logout URL
         setMessage(data.message);
       })
