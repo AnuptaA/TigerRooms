@@ -7,4 +7,5 @@ pandas
 tabula-py
 flask-cors
 jpype1
+pdfplumber
 psycopg2-binary
