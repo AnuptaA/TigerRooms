@@ -14,6 +14,8 @@ from db_config import DATABASE_URL
 # Connect to the PostgreSQL database
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
+
+global update_time
 update_time = "N/A"
 
 #-----------------------------------------------------------------------
@@ -46,6 +48,12 @@ def update_room_availability(processed_table):
     conn.commit()
 
 #-----------------------------------------------------------------------
+    
+# Function to update the stored timestamp with the new given timestamp
+def update_timestamp(last_updated):
+    cursor.execute("SELECT ")
+
+#-----------------------------------------------------------------------
 
 def main():
     if len(sys.argv) != 2:
@@ -54,7 +62,10 @@ def main():
 
     filepath = sys.argv[1]
     last_updated, processed_table = parse_pdf(filepath)
-    global update_time = last_updated
+
+    global update_time
+    update_time = last_updated
+    print("updated time in update_database:", update_time)
     update_room_availability(processed_table)
     print_room_availability()
     conn.close()

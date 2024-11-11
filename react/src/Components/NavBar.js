@@ -1,11 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../App.css";
 
 const NavBar = () => {
+  const navigator = useNavigate();
   return (
     <nav>
       <div class="logo-cont">
-        <img id="logo" src="/misc/princeton-logo.png" />
+        <img id="logo" src="/misc/princeton-logo.png" alt="Princeton" />
       </div>
       <ul id="nav-options">
         <li>
@@ -27,7 +29,12 @@ const NavBar = () => {
               <a href="/logout">Log Out</a>
             </li>
             <li>
-              <button id="cart-btn" onclick="location.href='/cart'">
+              <button
+                id="cart-btn"
+                onClick={() => {
+                  navigator("/cart");
+                }}
+              >
                 <img id="cart-svg" src="/misc/cart.svg" alt="View Cart" />
               </button>
             </li>

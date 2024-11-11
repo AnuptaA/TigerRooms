@@ -4,7 +4,7 @@
 #-----------------------------------------------------------------------
 
 import psycopg2
-from server.db_config import DATABASE_URL
+from db_config import DATABASE_URL
 
 #-----------------------------------------------------------------------
 
@@ -12,10 +12,15 @@ from server.db_config import DATABASE_URL
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
+#-----------------------------------------------------------------------
+
 # Drop existing tables in reverse order with CASCADE to handle dependencies
 cursor.execute('DROP TABLE IF EXISTS RoomSaves CASCADE')
 cursor.execute('DROP TABLE IF EXISTS RoomDetails CASCADE')
 cursor.execute('DROP TABLE IF EXISTS RoomOverview CASCADE')
+cursor.execute('DROP TABLE IF EXISTS LastTimestamp CASCADE') 
+
+#-----------------------------------------------------------------------
 
 # Create tables
 cursor.execute('''
@@ -45,6 +50,23 @@ cursor.execute('''
     )
 ''')
 
+cursor.execute('''
+    CREATE TABLE LastTimestamp (
+        last_timestamp TEXT PRIMARY KEY
+    )
+''')
+
+#-----------------------------------------------------------------------
+
+# Insert 'N/A' as the initial value for last_timestamp
+cursor.execute('''
+    INSERT INTO LastTimestamp (last_timestamp) 
+    VALUES ('N/A')
+    ON CONFLICT (last_timestamp) DO NOTHING
+''')
+
+#-----------------------------------------------------------------------
+
 # Populate RoomOverview table with mock data
 hall = 'Wendell'  # Wendell B specifically
 floor = 3
@@ -73,6 +95,8 @@ for i in range(len(room_numbers)):
         (i + 1, occupancies[i], square_footages[i], 0)
     )
 
+#-----------------------------------------------------------------------
+    
 # Commit and close the connection
 conn.commit()
 conn.close()

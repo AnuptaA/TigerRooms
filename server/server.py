@@ -249,60 +249,6 @@ def api_get_saved_rooms():
 
 @app.route('/api/uploadpdf', methods=['POST'])
 def upload_pdf():
-    # request_type = request.form.get('request-type')
-
-    # if not request_type:
-    #     return jsonify({"error": "Request type is missing."}), 400
-
-    # try:
-    #     # Convert to an integer, as it's sent as a string
-    #     request_type = int(request_type)
-    # except ValueError:
-    #     return jsonify({"error": "Invalid request type format."}), 400
-
-    # # Handle different request types
-    # if request_type == 1:
-    #     # Retrieve the file from the request
-    #     if 'rooms-pdf' not in request.files:
-    #         return jsonify({"error": "No file part in the request."}), 400
-
-    #     file = request.files['rooms-pdf']
-    #     if file.filename == '':
-    #         return jsonify({"error": "No selected file."}), 400
-
-    #     # Ensure the file is a PDF
-    #     if file and file.filename.endswith('.pdf'):
-    #         file_path = os.path.join(app.config['UPLOAD_FOLDER'],
-    #                                  file.filename)
-    #         file.save(file_path)
-
-    #         # update database
-    #         result = subprocess.run(['python', 'update_database.py',
-    #                                  file_path],
-    #                                  capture_output=True, text=True)
-
-    #         if result.returncode != 0:
-    #             return jsonify({"error": "Database update failed.",
-    #                              "details": result.stderr}), 500
-
-    #         return jsonify({"message":
-    #                          "PDF uploaded and database updated successfully!"}), 200
-
-    #     else:
-    #         return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
-
-    # elif request_type == 0:
-    #     result = subprocess.run(['python', 'update_database.py',
-    #                               RESET_FILE],
-    #                               capture_output=True, text=True)
-
-    #     if result.returncode != 0:
-    #         return jsonify({"error": "Database update failed.",
-    #                              "details": result.stderr}), 500
-
-    #     return jsonify({"message":
-    #             "Room availability reset successfully!"}), 200
-
     # Debugging
     try:
         request_type = request.form.get('request-type')
@@ -380,7 +326,8 @@ def upload_pdf():
 
 @app.route('/api/getupdatedtime', methods=['GET'])
 def get_updated_time():
-    return jsonify({"timestamp":update_database.update_time})
+    print("updated time in server:", update_database.get_updated_time())
+    return jsonify({"timestamp": update_database.get_updated_time()})
 
 #-----------------------------------------------------------------------
 

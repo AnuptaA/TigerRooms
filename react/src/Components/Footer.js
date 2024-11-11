@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 
 const Footer = () => {
-  const [date, setDate] = useState(null); // State to store the updated time
+  const [date, setDate] = useState(""); // State to store the updated time
   const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
@@ -42,8 +42,14 @@ const Footer = () => {
         <p>TigerRooms</p>
         <p>© 2024 The Trustees of Princeton University</p>
         <p>
-          <a href="#">Copyright Infringement </a> |
-          <a href="#"> Privacy Notice </a>
+          <a href="https://www.princeton.edu/content/copyright-infringement">
+            Copyright Infringement{" "}
+          </a>{" "}
+          |
+          <a href="https://www.princeton.edu/privacy-notice">
+            {" "}
+            Privacy Notice{" "}
+          </a>
         </p>
       </div>
     </footer>
