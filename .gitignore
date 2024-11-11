@@ -1,31 +1,23 @@
 __pycache__/
 
 # Node modules
-react/node_modules/
-node_modules/
-react/package-lock.json
-react/package.json
+**/node_modules/
+**/package-lock.json
+**/package.json
 
 # Build output
-build/
-dist/
+**/build/
+**/dist/
 
 # Log files
 *.log
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # IDE files
 .vscode/
 .idea/
 
 # OS files
-.DS_Store
+**/.DS_Store
 Thumbs.db
 
 # Others

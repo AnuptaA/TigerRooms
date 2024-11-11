@@ -12,9 +12,7 @@ import psycopg2
 import os
 import subprocess
 from db_config import DATABASE_URL
-import dotenv
-import urllib
-import re
+from dotenv import load_dotenv
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
@@ -23,9 +21,14 @@ from database_saves import get_room_id, save_room, unsave_room, get_total_saves,
 # app instance
 app = flask.Flask(__name__)
 CORS(app, supports_credentials=True)
-dotenv.load_dotenv()
-app.secret_key = os.environ['APP_SECRET_KEY']
-PORT = 4000
+
+# Load .env
+load_dotenv()
+app.secret_key = os.getenv('APP_SECRET_KEY')
+PORT = os.getenv('SERVER_PORT')
+
+# Default to localhost in development
+REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:3000")
 
 # Directory for storing uploaded PDFs
 UPLOAD_FOLDER = 'uploads'
@@ -46,20 +49,19 @@ def get_db_connection():
 def index():
     # If the user is already athenticated, redirect to React app
     if 'username' in session:
-        return redirect("http://localhost:3000")
+        return redirect(REACT_APP_URL)
     
     username = CASauth.authenticate()
-    if isinstance(username, str):  # Check if authenticate returned a username
+    # Check if authenticate returned username, if successful, redirect
+    if isinstance(username, str):
         session['username'] = username
-        print(f'this is my username!!!!: {username}')
-        return redirect("http://localhost:3000")  # Redirect to React app after successful login
+        return redirect(REACT_APP_URL)
 
     # Authentication failed
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
 @app.route('/logoutcas', methods=['GET'])
 def logoutcas():
-    print('Logging out of CAS...')
     session.clear()
     try:
         # Construct CAS logout URL
@@ -75,7 +77,7 @@ def logoutcas():
 @app.route('/api/user', methods=['GET'])
 def get_user_data():
     if 'username' in session:
-        return jsonify({'status': 'success', 'username': session['username']})  # Send JSON data to React
+        return jsonify({'status': 'success', 'username': session['username']})
     else:
         return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
 
@@ -103,12 +105,6 @@ def get_unique_halls_and_floors():
         params.append(occupancy)
     if minSquareFootage is not None:
         params.append(minSquareFootage)
-    
-    # This print statement is here to verify that the query
-    # params that were sent from Floorplans.js were correctly
-    # received in the server
-    print("Floorplan filter params received in the server: " + str(params))
-
     
     cursor.execute('''
         SELECT 

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import "../App.css";
 
 const FloorPlans = () => {
+  const apiUrl = process.env.REACT_APP_API_URL;
   // Retrieve query params from URL using useLocation
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -13,8 +14,6 @@ const FloorPlans = () => {
   const floor = searchParams.get("floor");
   const occupancy = searchParams.get("occupancy");
   const minSquareFootage = searchParams.get("minSquareFootage");
-
-  const PORT = 4000;
   const [availabilityInfo, setAvailabilityInfo] = useState([]);
 
   // Fetch unique halls and floors from the backend
@@ -34,11 +33,7 @@ const FloorPlans = () => {
     // Remove the trailing "&" if there's one
     if (queryString.endsWith("&")) queryString = queryString.slice(0, -1);
 
-    fetch(
-      `http://127.0.0.1:${PORT}/api/floorplans${
-        queryString ? `?${queryString}` : ""
-      }`
-    )
+    fetch(`${apiUrl}/api/floorplans${queryString ? `?${queryString}` : ""}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -49,7 +44,7 @@ const FloorPlans = () => {
         setAvailabilityInfo(data);
       })
       .catch((error) => console.error("Error fetching floor plans:", error));
-  }, [resCollege, hall, floor, occupancy, minSquareFootage]);
+  }, [apiUrl, resCollege, hall, floor, occupancy, minSquareFootage]);
 
   return (
     <div>

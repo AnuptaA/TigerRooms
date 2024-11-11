@@ -5,7 +5,8 @@ import image from "../img/misc/upload-file-svgrepo-com.svg";
 import "../App.css";
 
 const UploadPDFs = () => {
-  const PORT = 4000;
+  const apiUrl = process.env.REACT_APP_API_URL;
+
   // displayed pdf filename and file itself
   const [fileName, setFileName] = useState("No file selected");
   const [file, setFile] = useState(null);
@@ -52,13 +53,10 @@ const UploadPDFs = () => {
         formData.append("request-type", 0); // request type for reset action
 
         try {
-          const response = await fetch(
-            `http://127.0.0.1:${PORT}/api/uploadpdf`,
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
+          const response = await fetch(`${apiUrl}/api/uploadpdf`, {
+            method: "POST",
+            body: formData,
+          });
 
           const result = await response.json();
 
@@ -122,7 +120,7 @@ const UploadPDFs = () => {
 
     // send POST request with file
     try {
-      const response = await fetch(`http://127.0.0.1:${4000}/api/uploadpdf`, {
+      const response = await fetch(`${apiUrl}/api/uploadpdf`, {
         method: "POST",
         body: formData,
       });

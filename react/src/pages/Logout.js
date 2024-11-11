@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 
 const Logout = () => {
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [message, setMessage] = useState("Error, please try again");
 
   useEffect(() => {
-    fetch("http://localhost:4000/logoutcas", {
+    fetch(`${apiUrl}/logoutcas`, {
       method: "GET",
       credentials: "include",
     })
@@ -24,28 +25,7 @@ const Logout = () => {
         console.error("Error during logout:", err);
         alert("Something went wrong. Please try again.");
       });
-  }, []);
-
-  //   useEffect(() => {
-  //     try {
-  //       const response = fetch("http://localhost:4000/logoutcas", {
-  //         method: "GET",
-  //         credentials: "include", // Include cookies for session management
-  //       });
-
-  //       const data = response.json();
-
-  //       if (response.ok && data.status === "success") {
-  //         console.log("reaches logout successfully");
-  //         // Redirect to the CAS logout URL
-  //         window.location.href = data.logout_url;
-  //       } else {
-  //         setMessage("Logout failed: " + data.message);
-  //       }
-  //     } catch (error) {
-  //       setMessage("Error during logout: " + error.message);
-  //     }
-  //   }, []);
+  }, [apiUrl]);
 
   return (
     <div>

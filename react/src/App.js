@@ -9,12 +9,13 @@ import Cart from "./pages/Cart";
 import "./App.css";
 
 const App = () => {
-  const [username, setUsername] = React.useState(null);
+  const apiUrl = process.env.REACT_APP_API_URL;
+  //   const [username, setUsername] = React.useState(null);
 
   React.useEffect(() => {
     async function fetchUserData() {
       try {
-        const response = await fetch("http://localhost:4000/api/user", {
+        const response = await fetch(`${apiUrl}/api/user`, {
           method: "GET",
           credentials: "include",
         });
@@ -22,27 +23,27 @@ const App = () => {
         if (response.status === 200) {
           const data = await response.json();
           if (data.status === "success") {
-            setUsername(data.username);
+            // setUsername(data.username);
           } else {
             console.error("User not authenticated");
-            window.location.href = "http://localhost:4000";
+            window.location.href = `${apiUrl}`;
           }
         } else if (response.status === 401) {
           console.error("User not authenticated (401 status)");
-          window.location.href = "http://localhost:4000"; // Redirect to start CAS login
+          window.location.href = `${apiUrl}`; // Redirect to start CAS login
         } else {
           console.error("Unexpected response", response);
-          window.location.href = "http://localhost:4000";
+          window.location.href = `${apiUrl}`;
         }
       } catch (error) {
         console.error("Fetch error:", error);
-        window.location.href = "http://localhost:4000";
+        window.location.href = `${apiUrl}`;
       }
     }
 
     // Fetch user data on initial load
     fetchUserData();
-  }, []);
+  }, [apiUrl]);
 
   return (
     <BrowserRouter>

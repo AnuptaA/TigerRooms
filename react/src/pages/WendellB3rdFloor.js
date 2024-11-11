@@ -3,7 +3,7 @@ import "../App.css";
 import image from "../img/floorplans/Wendell_B_Hall_Floor_3.png";
 
 const WendellB3rdFloor = () => {
-  const PORT = 4000;
+  const apiUrl = process.env.REACT_APP_API_URL;
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
@@ -11,9 +11,7 @@ const WendellB3rdFloor = () => {
 
   // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
-    fetch(
-      `http://127.0.0.1:${PORT}/api/floorplans/wendell-b-3rd-floor?netid=${userNetId}`
-    )
+    fetch(`${apiUrl}/api/floorplans/wendell-b-3rd-floor?netid=${userNetId}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -24,7 +22,7 @@ const WendellB3rdFloor = () => {
         setRoomInfo(data);
       })
       .catch((error) => console.error("Error fetching room data:", error));
-  }, [userNetId]);
+  }, [apiUrl, userNetId]);
 
   // Toggle row expansion
   const toggleExpandRow = (index) => {
@@ -37,9 +35,7 @@ const WendellB3rdFloor = () => {
 
   // Handle Save/Unsave action
   const handleSaveToggle = (roomNumber, hall, isSaved) => {
-    const url = `http://127.0.0.1:${PORT}/api/${
-      isSaved ? "unsave_room" : "save_room"
-    }`;
+    const url = `${apiUrl}/api/${isSaved ? "unsave_room" : "save_room"}`;
     fetch(url, {
       method: "POST",
       headers: {
