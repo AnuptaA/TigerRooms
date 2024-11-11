@@ -14,6 +14,7 @@ from db_config import DATABASE_URL
 # Connect to the PostgreSQL database
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
+update_time = "N/A"
 
 #-----------------------------------------------------------------------
 
@@ -53,6 +54,7 @@ def main():
 
     filepath = sys.argv[1]
     last_updated, processed_table = parse_pdf(filepath)
+    global update_time = last_updated
     update_room_availability(processed_table)
     print_room_availability()
     conn.close()

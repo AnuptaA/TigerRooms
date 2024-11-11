@@ -13,6 +13,7 @@ import os
 import subprocess
 from db_config import DATABASE_URL
 from dotenv import load_dotenv
+import update_database
 # import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
@@ -55,7 +56,7 @@ def index():
 #     # If the user is already athenticated, redirect to React app
 #     if 'username' in session:
 #         return redirect(REACT_APP_URL)
-    
+
 #     username = CASauth.authenticate()
 #     # Check if authenticate returned username, if successful, redirect
 #     if isinstance(username, str):
@@ -95,7 +96,7 @@ def get_user_data():
 def get_unique_halls_and_floors():
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     resco = flask.request.args.get('resco')
     hall = flask.request.args.get('hall')
     floor = flask.request.args.get('floor')
@@ -113,30 +114,30 @@ def get_unique_halls_and_floors():
         params.append(occupancy)
     if minSquareFootage is not None:
         params.append(minSquareFootage)
-    
+
     cursor.execute('''
-        SELECT 
-            CASE 
+        SELECT
+            CASE
                 WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'B' THEN 'Wendell B Hall'
                 WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'C' THEN 'Wendell C Hall'
                 WHEN hall = 'Baker' AND LEFT(room_number, 1) = 'E' THEN 'Baker E Hall'
                 WHEN hall = 'Baker' AND LEFT(room_number, 1) = 'S' THEN 'Baker S Hall'
-                ELSE hall 
+                ELSE hall
             END AS hall_display,
             floor
         FROM RoomOverview
         GROUP BY hall_display, floor
         ORDER BY hall_display, floor
     ''')
-    
+
     results = cursor.fetchall()
     conn.close()
-    
+
     halls = {}
     for hall_display, floor in results:
         if hall_display not in halls:
             halls[hall_display] = []
-        
+
         floor_label = f"{floor}rd Floor" if floor == 3 else f"{floor}th Floor"
         if floor == 1:
             floor_label = "1st Floor"
@@ -144,12 +145,12 @@ def get_unique_halls_and_floors():
             floor_label = "2nd Floor"
         elif floor == 4:
             floor_label = "4th Floor"
-        
+
         if floor_label not in halls[hall_display]:
             halls[hall_display].append(floor_label)
-    
+
     hall_floor_data = [{"hall": hall, "floors": floors} for hall, floors in halls.items()]
-    
+
     return jsonify(hall_floor_data)
 
 #-----------------------------------------------------------------------
@@ -159,7 +160,7 @@ def get_wendell_b_3rd_floor():
     netid = request.args.get('netid')  # Get netid from query parameters
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     # Fetch rooms and details including room_number and hall
     cursor.execute('''
         SELECT RoomOverview.room_number, RoomOverview.isAvailable, RoomDetails.occupancy, RoomDetails.square_footage
@@ -167,17 +168,17 @@ def get_wendell_b_3rd_floor():
         JOIN RoomDetails ON RoomOverview.room_id = RoomDetails.room_id
         WHERE RoomOverview.hall = 'Wendell' AND RoomOverview.floor = 3 AND RoomOverview.room_number LIKE 'B%'
     ''')
-    
+
     rooms = cursor.fetchall()
     conn.close()
-    
+
     # Construct the response with room info, total saves, and saved status for the user
     room_info = []
     for room in rooms:
         room_number, is_available, occupancy, square_footage = room
         total_saves = get_total_saves(room_number, 'Wendell')
         is_saved = is_room_saved(netid, room_number, 'Wendell') if netid else False
-        
+
         room_info.append({
             "name": f"Wendell {room_number}",
             "size": f"Size: {square_footage} sqft",
@@ -186,7 +187,7 @@ def get_wendell_b_3rd_floor():
             "total_saves": total_saves,
             "isSaved": is_saved
         })
-    
+
     return jsonify(room_info)
 
 #-----------------------------------------------------------------------
@@ -276,8 +277,8 @@ def upload_pdf():
     #         file.save(file_path)
 
     #         # update database
-    #         result = subprocess.run(['python', 'update_database.py', 
-    #                                  file_path], 
+    #         result = subprocess.run(['python', 'update_database.py',
+    #                                  file_path],
     #                                  capture_output=True, text=True)
 
     #         if result.returncode != 0:
@@ -289,12 +290,12 @@ def upload_pdf():
 
     #     else:
     #         return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
-        
+
     # elif request_type == 0:
     #     result = subprocess.run(['python', 'update_database.py',
     #                               RESET_FILE],
     #                               capture_output=True, text=True)
-        
+
     #     if result.returncode != 0:
     #         return jsonify({"error": "Database update failed.",
     #                              "details": result.stderr}), 500
@@ -350,7 +351,7 @@ def upload_pdf():
 
             else:
                 return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
-        
+
         elif request_type == 0:
             # Reset the database with a sample PDF
             result = subprocess.run(
@@ -366,7 +367,7 @@ def upload_pdf():
 
             print("Room availability reset successfully.")
             return jsonify({"message": "Room availability reset successfully!"}), 200
-        
+
         else:
             return jsonify({"error": "Invalid request type."}), 400
 
@@ -374,6 +375,12 @@ def upload_pdf():
         # Print the error message to the console for debugging
         print(f"An unexpected error occurred: {str(e)}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
+
+#-----------------------------------------------------------------------
+
+@app.route('/api/getupdatedtime', methods=['GET'])
+def get_updated_time():
+    return jsonify({"timestamp":update_database.update_time})
 
 #-----------------------------------------------------------------------
 
