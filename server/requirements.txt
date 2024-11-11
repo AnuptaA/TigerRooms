@@ -1,0 +1,10 @@
+flask
+gunicorn
+psycopg2
+python-dotenv
+reportlab
+pandas
+tabula-py
+flask-cors
+jpype1
+psycopg2-binary

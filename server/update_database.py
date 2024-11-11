@@ -1,12 +1,21 @@
+#-----------------------------------------------------------------------
+# update_database.py
+# Authors: TigerRooms Team
+#-----------------------------------------------------------------------
+
 import psycopg2
 import pandas as pd
 import sys
 from pdfparser import parse_pdf
 from db_config import DATABASE_URL
 
+#-----------------------------------------------------------------------
+
 # Connect to the PostgreSQL database
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
+
+#-----------------------------------------------------------------------
 
 # Function to print all rooms and their availability for debugging purposes
 def print_room_availability():
@@ -18,6 +27,8 @@ def print_room_availability():
     for room_number, is_available in rooms:
         availability = "Available" if is_available else "Unavailable"
         print(f"{room_number} | {availability}")
+
+#-----------------------------------------------------------------------
 
 # Function to mark rooms as unavailable if they are not in the new PDF data
 def update_room_availability(processed_table):
@@ -33,6 +44,8 @@ def update_room_availability(processed_table):
         )
     conn.commit()
 
+#-----------------------------------------------------------------------
+
 def main():
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <pdf_filepath>")
@@ -43,6 +56,8 @@ def main():
     update_room_availability(processed_table)
     print_room_availability()
     conn.close()
+
+#-----------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()

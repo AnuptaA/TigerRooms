@@ -1,5 +1,12 @@
+#-----------------------------------------------------------------------
+# database_setup.py
+# Authors: TigerRooms Team
+#-----------------------------------------------------------------------
+
 import psycopg2
 from server.db_config import DATABASE_URL
+
+#-----------------------------------------------------------------------
 
 # Connect to PostgreSQL database
 conn = psycopg2.connect(DATABASE_URL)

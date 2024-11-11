@@ -10,8 +10,6 @@ import urllib.parse
 import re
 import flask
 
-from server import app
-
 #-----------------------------------------------------------------------
 
 _CAS_URL = 'https://fed.princeton.edu/cas/'

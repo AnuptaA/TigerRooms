@@ -1,9 +1,18 @@
+#-----------------------------------------------------------------------
+# database_saves.py
+# Authors: TigerRooms Team
+#-----------------------------------------------------------------------
+
 import psycopg2
 from db_config import DATABASE_URL
+
+#-----------------------------------------------------------------------
 
 # Connect to PostgreSQL database
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
+
+#-----------------------------------------------------------------------
 
 def get_room_id(room_number, hall):
     """Retrieve the room_id for a specific room based on room_number and hall."""
@@ -17,6 +26,8 @@ def get_room_id(room_number, hall):
     )
     result = cursor.fetchone()
     return result[0] if result else None
+
+#-----------------------------------------------------------------------
 
 def save_room(netid, room_number, hall):
     """Save a room for a user identified by netid, using room_number and hall."""
@@ -52,6 +63,8 @@ def save_room(netid, room_number, hall):
         conn.rollback()
         print("Error saving room:", e)
 
+#-----------------------------------------------------------------------
+
 def unsave_room(netid, room_number, hall):
     """Unsave a room for a user identified by netid, using room_number and hall."""
     room_id = get_room_id(room_number, hall)
@@ -86,6 +99,8 @@ def unsave_room(netid, room_number, hall):
         conn.rollback()
         print("Error unsaving room:", e)
 
+#-----------------------------------------------------------------------
+
 def get_total_saves(room_number, hall):
     """Retrieve the total number of saves for a specific room based on room_number and hall."""
     room_id = get_room_id(room_number, hall)
@@ -103,6 +118,8 @@ def get_total_saves(room_number, hall):
     )
     result = cursor.fetchone()
     return result[0] if result else 0
+
+#-----------------------------------------------------------------------
 
 def get_saved_rooms_with_saves(netid):
     """Retrieve all rooms saved by a specific user identified by netid, including total saves for each room."""
@@ -122,6 +139,8 @@ def get_saved_rooms_with_saves(netid):
         for room in rooms
     ]
 
+#-----------------------------------------------------------------------
+
 def is_room_saved(netid, room_number, hall):
     """Check if a specific room is saved by the user with the given netid."""
     room_id = get_room_id(room_number, hall)
@@ -139,6 +158,8 @@ def is_room_saved(netid, room_number, hall):
     )
     result = cursor.fetchone()
     return result is not None
+
+#-----------------------------------------------------------------------
 
 # Example usage (comment out if not testing directly)
 def test():
