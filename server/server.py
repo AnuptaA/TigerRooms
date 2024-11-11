@@ -6,7 +6,7 @@
 #-----------------------------------------------------------------------
 
 import flask
-from flask import request, jsonify, session, redirect
+from flask import request, jsonify, session, redirect, send_from_directory
 from flask_cors import CORS
 import psycopg2
 import os
@@ -19,7 +19,8 @@ from database_saves import get_room_id, save_room, unsave_room, get_total_saves,
 #-----------------------------------------------------------------------
 
 # app instance
-app = flask.Flask(__name__)
+# app = flask.Flask(__name__)
+app = flask.Flask(__name__, static_folder='build', static_url_path='')
 CORS(app, supports_credentials=True)
 
 #-----------------------------------------------------------------------
@@ -46,11 +47,21 @@ def get_db_connection():
 
 #-----------------------------------------------------------------------
 
-@app.route('/', methods=['GET'])
-@app.route('/index', methods=['GET'])
-def index():
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    # If the path is not an API route, return the React app's index.html
+    if path != "" and path.startswith("api"):
+        return send_from_directory(app.static_folder, path)  # For API routes or static files
+    return send_from_directory(app.static_folder, 'index.html')  # React's index.html for all other routes
+
+#-----------------------------------------------------------------------
+
+# @app.route('/', methods=['GET'])
+# @app.route('/index', methods=['GET'])
+# def index():
     # USE THIS ONLY WHILE CAS IS NOT AUTHORIZED FOR BACKEND
-    return redirect(REACT_APP_URL)
+    # return redirect(REACT_APP_URL)
 
 #     # If the user is already athenticated, redirect to React app
 #     if 'username' in session:
