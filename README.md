@@ -21,20 +21,21 @@
 
 # Database
 
-pip install psycopg2-binary
-brew install postgresql
-export PATH="/usr/local/opt/postgresql/bin:$PATH"
-pip install psycopg2
+`pip install psycopg2-binary`
+`brew install postgresql`
+`export PATH="/usr/local/opt/postgresql/bin:$PATH"`
+`pip install psycopg2`
 
 # PDF Upload page
 
-npm i sweetalert2
-npm i sweetalert2-react-content
+`npm i sweetalert2`
+`npm i sweetalert2-react-content`
+`npm install -D tailwindcss postcss autoprefixer`
+
 
 Run the following to install certificates for CAS
-/Applications/Python\ 3.12/Install\ Certificates.command
-
-export APP_SECRET_KEY=example
+`/Applications/Python\ 3.12/Install\ Certificates.command`
+`export APP_SECRET_KEY=example`
 
 # Updated server build instructions
 
