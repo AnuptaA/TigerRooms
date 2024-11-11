@@ -9,6 +9,7 @@ import sys
 import pandas as pd
 import argparse
 import pdfplumber
+import tabula
 import re
 
 #-----------------------------------------------------------------------
@@ -63,11 +64,16 @@ def parse_pdf(filepath):
     if header_row_idx is None:
         raise ValueError("Header row not found.")
 
-    # Drop all rows before the header row, resetting the index
-    first_page = pd.DataFrame(tables_list[0][header_row_idx + 1:], columns=tables_list[0][header_row_idx])
+    # Drop the header row itself (it should not be included in the data)
+    # First, use the row after the header as the column names
+    first_page = pd.DataFrame(tables_list[0][header_row_idx + 1:])  # No columns specified, let pandas auto number the columns
     
-    # Concatenate this modified table with remaining tables
-    rem_pages = [pd.DataFrame(table[header_row_idx + 1:], columns=table[header_row_idx]) for table in tables_list[1:]]
+    # Concatenate this modified table with remaining tables, skipping the header row for each
+    rem_pages = []
+    for table in tables_list[1:]:
+        # Skip the header row for subsequent pages
+        rem_pages.append(pd.DataFrame(table[header_row_idx + 1:]))  # No columns specified, let pandas auto number the columns
+
     concatenated_tables = pd.concat([first_page] + rem_pages, ignore_index=True)
     
     # Drop NaN rows (rows with no data)
@@ -108,13 +114,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-# import sys
-# import pandas as pd
-# import argparse
-# import tabula
-# import re
-
-# #-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
 
 # def parse_pdf(filepath):
 #     # Parse tables found in PDF into a list of dataframes
@@ -181,7 +181,6 @@ if __name__ == '__main__':
 #     processed_table.iloc[:, -1] = pd.to_numeric(processed_table.iloc[:, -1], errors='coerce').fillna(0).astype(int)
 
 #     return last_updated, processed_table
-
 
 # #-----------------------------------------------------------------------
 
