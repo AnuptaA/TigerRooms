@@ -288,7 +288,12 @@ def upload_pdf():
                     capture_output=True, text=True
                 )
 
-                # Print subprocess output for debugging
+                # Check subprocess output for a specific message indicating no update was needed
+                if "NO_UPDATE" in result.stdout:
+                    print("No update performed: New timestamp is not more recent.")
+                    return jsonify({"message": "No update was made because the new timestamp is not more recent than the existing timestamp."}), 200
+
+                # Handle other subprocess errors
                 if result.returncode != 0:
                     print(f"Subprocess failed with stderr: {result.stderr}")
                     print(f"Subprocess stdout: {result.stdout}")

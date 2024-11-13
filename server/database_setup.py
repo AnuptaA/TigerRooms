@@ -62,7 +62,7 @@ cursor.execute('''
 cursor.execute('''
     INSERT INTO LastTimestamp (last_timestamp) 
     VALUES ('N/A')
-    ON CONFLICT (last_timestamp) DO UPDATE SET last_timestamp = EXCLUDED.last_timestamp
+    ON CONFLICT (last_timestamp) DO NOTHING
 ''')
 
 #-----------------------------------------------------------------------
