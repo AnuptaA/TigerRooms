@@ -66,6 +66,8 @@ def index():
     # Authentication failed
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
+#-----------------------------------------------------------------------
+
 @app.route('/logoutcas', methods=['GET'])
 def logoutcas():
     session.clear()

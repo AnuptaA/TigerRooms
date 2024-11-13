@@ -25,7 +25,7 @@ const App = () => {
           if (response.status === 200) {
             const data = await response.json();
             if (data.status === "success") {
-              // setUsername(data.username);
+              setUsername(data.username);
             } else {
               console.error("User not authenticated");
               window.location.href = `${apiUrl}`;
