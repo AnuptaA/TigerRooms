@@ -13,7 +13,7 @@ import os
 import subprocess
 from db_config import DATABASE_URL
 from dotenv import load_dotenv
-import update_database
+from update_database import get_last_update_time
 # import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
@@ -326,8 +326,9 @@ def upload_pdf():
 
 @app.route('/api/getupdatedtime', methods=['GET'])
 def get_updated_time():
-    print("updated time in server:", update_database.get_updated_time())
-    return jsonify({"timestamp": update_database.get_updated_time()})
+    last_update = get_last_update_time()
+    print("updated time in server:", last_update)
+    return jsonify({"timestamp": last_update})
 
 #-----------------------------------------------------------------------
 

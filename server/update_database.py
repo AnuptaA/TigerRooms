@@ -15,9 +15,6 @@ from db_config import DATABASE_URL
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
-global update_time
-update_time = "N/A"
-
 #-----------------------------------------------------------------------
 
 # Function to print all rooms and their availability for debugging purposes
@@ -51,7 +48,24 @@ def update_room_availability(processed_table):
     
 # Function to update the stored timestamp with the new given timestamp
 def update_timestamp(last_updated):
-    cursor.execute("SELECT ")
+    cursor.execute("DELETE FROM LastTimestamp")
+    cursor.execute(
+        """
+        INSERT INTO LastTimestamp (last_timestamp) VALUES (%s)
+        ON CONFLICT (last_timestamp) DO UPDATE SET last_timestamp = EXCLUDED.last_timestamp
+        """,
+        (last_updated,)
+    )
+    conn.commit()
+
+#-----------------------------------------------------------------------
+
+# Function to get the last update time from the database
+def get_last_update_time():
+    cursor.execute("SELECT last_timestamp FROM LastTimestamp")
+    result = cursor.fetchone()
+    
+    return result[0] if result else "N/A"  # Default value if no record is found
 
 #-----------------------------------------------------------------------
 
@@ -62,10 +76,17 @@ def main():
 
     filepath = sys.argv[1]
     last_updated, processed_table = parse_pdf(filepath)
+    
+     # Load the last update time from DB
+    update_time = get_last_update_time()
+    print("Old update_time =", update_time)
 
-    global update_time
     update_time = last_updated
-    print("updated time in update_database:", update_time)
+
+    # Persist the new update time to the DB
+    update_timestamp(update_time)
+    print("New update_time =", get_last_update_time())
+
     update_room_availability(processed_table)
     print_room_availability()
     conn.close()
