@@ -14,7 +14,7 @@ import subprocess
 from db_config import DATABASE_URL
 from dotenv import load_dotenv
 from update_database import get_last_update_time
-# import CASauth as CASauth
+import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
 
 #-----------------------------------------------------------------------
@@ -50,45 +50,45 @@ def get_db_connection():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    # USE THIS ONLY WHILE CAS IS NOT AUTHORIZED FOR BACKEND
-    return redirect(REACT_APP_URL)
+    # # USE THIS ONLY WHILE CAS IS NOT AUTHORIZED FOR BACKEND
+    # return redirect(REACT_APP_URL)
 
-#     # If the user is already athenticated, redirect to React app
-#     if 'username' in session:
-#         return redirect(REACT_APP_URL)
+    # If the user is already athenticated, redirect to React app
+    if 'username' in session:
+        return redirect(REACT_APP_URL)
 
-#     username = CASauth.authenticate()
-#     # Check if authenticate returned username, if successful, redirect
-#     if isinstance(username, str):
-#         session['username'] = username
-#         return redirect(REACT_APP_URL)
+    username = CASauth.authenticate()
+    # Check if authenticate returned username, if successful, redirect
+    if isinstance(username, str):
+        session['username'] = username
+        return redirect(REACT_APP_URL)
 
-#     # Authentication failed
-#     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
+    # Authentication failed
+    return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
-# @app.route('/logoutcas', methods=['GET'])
-# def logoutcas():
-#     session.clear()
-#     try:
-#         # Construct CAS logout URL
-#         logout_url = (CASauth._CAS_URL + 'logout')
-#         # Redirect to CAS logout URL
-#         return jsonify({'status': "success", 'logout_url': logout_url})
-#     except Exception as e:
-#         return jsonify({'status': 'failure', 'message': str(e)}), 500
+@app.route('/logoutcas', methods=['GET'])
+def logoutcas():
+    session.clear()
+    try:
+        # Construct CAS logout URL
+        logout_url = (CASauth._CAS_URL + 'logout')
+        # Redirect to CAS logout URL
+        return jsonify({'status': "success", 'logout_url': logout_url})
+    except Exception as e:
+        return jsonify({'status': 'failure', 'message': str(e)}), 500
 
 #-----------------------------------------------------------------------
 
 # Endpoint for React to check if user is authenticated
 @app.route('/api/user', methods=['GET'])
 def get_user_data():
-    # USE THIS ONLY WHILE CAS IS NOT AUTHORIZED FOR BACKEND
-    return jsonify({'status': 'success', 'username': 'user123'})
+    # # USE THIS ONLY WHILE CAS IS NOT AUTHORIZED FOR BACKEND
+    # return jsonify({'status': 'success', 'username': 'user123'})
 
-    # if 'username' in session:
-    #     return jsonify({'status': 'success', 'username': session['username']})
-    # else:
-    #     return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
+    if 'username' in session:
+        return jsonify({'status': 'success', 'username': session['username']})
+    else:
+        return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
 
 #-----------------------------------------------------------------------
 
