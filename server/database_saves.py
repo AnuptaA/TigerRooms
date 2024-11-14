@@ -18,9 +18,9 @@ def get_room_id(room_number, hall):
     """Retrieve the room_id for a specific room based on room_number and hall."""
     cursor.execute(
         '''
-        SELECT room_id
-        FROM RoomOverview
-        WHERE room_number = %s AND hall = %s
+        SELECT "room_id"
+        FROM "RoomOverview"
+        WHERE "room_number" = %s AND "hall" = %s
         ''',
         (room_number, hall)
     )
@@ -41,18 +41,18 @@ def save_room(netid, room_number, hall):
         # Insert a save into RoomSaves table
         cursor.execute(
             '''
-            INSERT INTO RoomSaves (netid, room_id)
+            INSERT INTO "RoomSaves" ("netid", "room_id")
             VALUES (%s, %s)
-            ON CONFLICT (netid, room_id) DO NOTHING
+            ON CONFLICT ("netid", "room_id") DO NOTHING
             ''',
             (netid, room_id)
         )
         # Increment the num_saves in RoomDetails
         cursor.execute(
             '''
-            UPDATE RoomDetails
-            SET num_saves = num_saves + 1
-            WHERE room_id = %s
+            UPDATE "RoomDetails"
+            SET "num_saves" = "num_saves" + 1
+            WHERE "room_id" = %s
             ''',
             (room_id,)
         )
@@ -76,8 +76,8 @@ def unsave_room(netid, room_number, hall):
         # Delete the save from RoomSaves table
         cursor.execute(
             '''
-            DELETE FROM RoomSaves
-            WHERE netid = %s AND room_id = %s
+            DELETE FROM "RoomSaves"
+            WHERE "netid" = %s AND "room_id" = %s
             ''',
             (netid, room_id)
         )
@@ -86,9 +86,9 @@ def unsave_room(netid, room_number, hall):
         if cursor.rowcount > 0:  # Check if a row was deleted
             cursor.execute(
                 '''
-                UPDATE RoomDetails
-                SET num_saves = num_saves - 1
-                WHERE room_id = %s AND num_saves > 0
+                UPDATE "RoomDetails"
+                SET "num_saves" = "num_saves" - 1
+                WHERE "room_id" = %s AND "num_saves" > 0
                 ''',
                 (room_id,)
             )
@@ -110,9 +110,9 @@ def get_total_saves(room_number, hall):
     
     cursor.execute(
         '''
-        SELECT num_saves
-        FROM RoomDetails
-        WHERE room_id = %s
+        SELECT "num_saves"
+        FROM "RoomDetails"
+        WHERE "room_id" = %s
         ''',
         (room_id,)
     )
@@ -125,11 +125,11 @@ def get_saved_rooms_with_saves(netid):
     """Retrieve all rooms saved by a specific user identified by netid, including total saves for each room."""
     cursor.execute(
         '''
-        SELECT r.room_number, r.hall, r.floor, d.num_saves
-        FROM RoomOverview r
-        JOIN RoomSaves s ON r.room_id = s.room_id
-        JOIN RoomDetails d ON r.room_id = d.room_id
-        WHERE s.netid = %s
+        SELECT r."room_number", r."hall", r."floor", d."num_saves"
+        FROM "RoomOverview" r
+        JOIN "RoomSaves" s ON r."room_id" = s."room_id"
+        JOIN "RoomDetails" d ON r."room_id" = d."room_id"
+        WHERE s."netid" = %s
         ''',
         (netid,)
     )
@@ -151,8 +151,8 @@ def is_room_saved(netid, room_number, hall):
     cursor.execute(
         '''
         SELECT 1
-        FROM RoomSaves
-        WHERE netid = %s AND room_id = %s
+        FROM "RoomSaves"
+        WHERE "netid" = %s AND "room_id" = %s
         ''',
         (netid, room_id)
     )

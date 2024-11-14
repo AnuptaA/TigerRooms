@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 from update_database import get_last_update_time
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
+from database_setup import main as setup_database
 
 #-----------------------------------------------------------------------
 
@@ -120,16 +121,16 @@ def get_unique_halls_and_floors():
     cursor.execute('''
         SELECT
             CASE
-                WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'B' THEN 'Wendell B Hall'
-                WHEN hall = 'Wendell' AND LEFT(room_number, 1) = 'C' THEN 'Wendell C Hall'
-                WHEN hall = 'Baker' AND LEFT(room_number, 1) = 'E' THEN 'Baker E Hall'
-                WHEN hall = 'Baker' AND LEFT(room_number, 1) = 'S' THEN 'Baker S Hall'
-                ELSE hall
-            END AS hall_display,
-            floor
-        FROM RoomOverview
-        GROUP BY hall_display, floor
-        ORDER BY hall_display, floor
+                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'B' THEN 'Wendell B Hall'
+                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'C' THEN 'Wendell C Hall'
+                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'E' THEN 'Baker E Hall'
+                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'S' THEN 'Baker S Hall'
+                ELSE "hall"
+            END AS "hall_display",
+            "floor"
+        FROM "RoomOverview"
+        GROUP BY "hall_display", "floor"
+        ORDER BY "hall_display", "floor"
     ''')
 
     results = cursor.fetchall()
@@ -165,10 +166,13 @@ def get_wendell_b_3rd_floor():
 
     # Fetch rooms and details including room_number and hall
     cursor.execute('''
-        SELECT RoomOverview.room_number, RoomOverview.isAvailable, RoomDetails.occupancy, RoomDetails.square_footage
-        FROM RoomOverview
-        JOIN RoomDetails ON RoomOverview.room_id = RoomDetails.room_id
-        WHERE RoomOverview.hall = 'Wendell' AND RoomOverview.floor = 3 AND RoomOverview.room_number LIKE 'B%'
+        SELECT "RoomOverview"."room_number", "RoomOverview"."isAvailable", 
+               "RoomDetails"."occupancy", "RoomDetails"."square_footage"
+        FROM "RoomOverview"
+        JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
+        WHERE "RoomOverview"."hall" = 'Wendell' 
+          AND "RoomOverview"."floor" = 3 
+          AND "RoomOverview"."room_number" LIKE 'B%'
     ''')
 
     rooms = cursor.fetchall()
@@ -306,20 +310,30 @@ def upload_pdf():
                 return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
 
         elif request_type == 0:
-            # Reset the database with a sample PDF
-            result = subprocess.run(
-                ['python', 'update_database.py', RESET_FILE],
-                capture_output=True, text=True
-            )
-
-            # Print subprocess output for debugging
-            if result.returncode != 0:
-                print(f"Subprocess failed with stderr: {result.stderr}")
-                print(f"Subprocess stdout: {result.stdout}")
-                return jsonify({"error": "Database update failed.", "details": result.stderr}), 500
-
-            print("Room availability reset successfully.")
-            return jsonify({"message": "Room availability reset successfully!"}), 200
+            # Reset the database
+            # result = subprocess.run(
+            #     ['python', './database_setup.py'],
+            #     capture_output=True, text=True
+            # )
+            print('bruh')
+            # result = subprocess.run(
+            #     ['python', './database_setup.py']
+            # )
+            # result = subprocess.run(
+            #     ['python', './database_setup.py'],
+            #     stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=60,
+            #     env=os.environ  # Pass current environment
+            # )
+            
+            # Reset the database directly by calling setup_database()
+            try:
+                print("Resetting the database...")
+                setup_database()  # Call the setup function directly
+                print("Database reset successfully.")
+                return jsonify({"message": "Database reset successfully!"}), 200
+            except Exception as e:
+                print(f"Error resetting database: {str(e)}")
+                return jsonify({"error": "Database reset failed.", "details": str(e)}), 500
 
         else:
             return jsonify({"error": "Invalid request type."}), 400

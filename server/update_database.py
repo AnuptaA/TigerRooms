@@ -20,7 +20,7 @@ cursor = conn.cursor()
 
 # Function to print all rooms and their availability for debugging purposes
 def print_room_availability():
-    cursor.execute("SELECT room_number, isAvailable FROM RoomOverview")
+    cursor.execute('SELECT "room_number", "isAvailable" FROM "RoomOverview"')
     rooms = cursor.fetchall()
 
     print("Room Number | Availability")
@@ -33,14 +33,16 @@ def print_room_availability():
 
 # Function to mark rooms as unavailable if they are not in the new PDF data
 def update_room_availability(processed_table):
-    cursor.execute("SELECT room_id, room_number FROM RoomOverview")
+    cursor.execute('SELECT "room_id", "room_number" FROM "RoomOverview"')
     current_rooms = cursor.fetchall()
 
     pdf_rooms = processed_table[2].tolist()
 
     for room_id, room_number in current_rooms:
         cursor.execute(
-            "UPDATE RoomOverview SET isAvailable = %s WHERE room_id = %s",
+            '''
+            UPDATE "RoomOverview" SET "isAvailable" = %s WHERE "room_id" = %s
+            ''',
             (room_number in pdf_rooms, room_id)
         )
     conn.commit()
@@ -50,11 +52,11 @@ def update_room_availability(processed_table):
 
 # Function to update the stored timestamp with the new given timestamp
 def update_timestamp(last_updated):
-    cursor.execute("DELETE FROM LastTimestamp")
+    cursor.execute('DELETE FROM "LastTimestamp"')
     cursor.execute(
-        """
-        INSERT INTO LastTimestamp (last_timestamp) VALUES (%s)
-        """,
+        '''
+        INSERT INTO "LastTimestamp" ("last_timestamp") VALUES (%s)
+        ''',
         (last_updated,)
     )
     conn.commit()
@@ -64,7 +66,7 @@ def update_timestamp(last_updated):
 
 # Function to get the last update time from the database as a datetime object
 def get_last_update_time():
-    cursor.execute("SELECT last_timestamp FROM LastTimestamp")
+    cursor.execute('SELECT "last_timestamp" FROM "LastTimestamp"')
     result = cursor.fetchone()
 
     # Check if a result is found and return it as a datetime object in the expected format
@@ -87,32 +89,41 @@ def main():
         sys.exit(1)
 
     filepath = sys.argv[1]
-    last_updated, processed_table = parse_pdf(filepath)
-    
-    # Convert last_updated from the PDF to a datetime object using the expected format
-    last_updated_dt = datetime.strptime(last_updated, '%m/%d/%Y %I:%M %p')
-    
-    # Load the last update time from DB
-    update_time = get_last_update_time()
-    print("Existing update_time:", update_time)
 
-    # Proceed with update if current timestamp is "N/A" or older than last_updated
-    if update_time == "N/A":
-        print("Initial state detected (N/A). Proceeding with update.")
-        update_room_availability(processed_table)
-        update_timestamp(last_updated)  # Store in original format
-    else:
-        # Compare the datetime objects directly
-        if last_updated_dt > update_time:
-            print("New timestamp is more recent. Proceeding with update.")
+    try:
+        # Parse the PDF file
+        last_updated, processed_table = parse_pdf(filepath)
+        
+        # Convert last_updated from the PDF to a datetime object using the expected format
+        last_updated_dt = datetime.strptime(last_updated, '%m/%d/%Y %I:%M %p')
+        
+        # Load the last update time from DB
+        update_time = get_last_update_time()
+        print("Existing update_time:", update_time)
+
+        # Proceed with update if current timestamp is "N/A" or older than last_updated
+        if update_time == "N/A":
+            print("Initial state detected (N/A). Proceeding with update.")
             update_room_availability(processed_table)
             update_timestamp(last_updated)  # Store in original format
         else:
-            print("NO_UPDATE: New timestamp is not more recent than the current timestamp.")
-            sys.exit(0)  # Exit without an update status
+            # Compare the datetime objects directly
+            if last_updated_dt > update_time:
+                print("New timestamp is more recent. Proceeding with update.")
+                update_room_availability(processed_table)
+                update_timestamp(last_updated)  # Store in original format
+            else:
+                print("NO_UPDATE: New timestamp is not more recent than the current timestamp.")
+                sys.exit(0)  # Exit without an update status
 
-    print_room_availability()
-    conn.close()
+        print_room_availability()
+
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+    finally:
+        # Ensure the database connection is always closed
+        conn.close()
+        print("Database connection closed.")
 
 #-----------------------------------------------------------------------
 
