@@ -15,21 +15,21 @@ const App = () => {
   const [username, setUsername] = React.useState(null);
 
   React.useEffect(() => {
-    function fetchUserData() {
+    async function fetchUserData() {
       if (username) {
         console.log("username is present");
         return;
       }
       console.log("username is not present");
       try {
-        const response = fetch(`${apiUrl}/api/user`, {
+        const response = await fetch(`${apiUrl}/api/user`, {
           method: "GET",
           credentials: "include",
         });
 
         if (response.status === 200) {
           console.log("fetches reponse successfully");
-          const data = response.json();
+          const data = await response.json();
           if (data.status === "success") {
             console.log("data.status was successful");
             setUsername(data.username);
