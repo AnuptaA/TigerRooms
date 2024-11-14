@@ -51,9 +51,6 @@ def get_db_connection():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    # # USE THIS ONLY WHILE CAS IS NOT AUTHORIZED FOR BACKEND
-    # return redirect(REACT_APP_URL)
-
     # If the user is already athenticated, redirect to React app
     if 'username' in session:
         return redirect(REACT_APP_URL)

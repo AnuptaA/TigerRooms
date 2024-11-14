@@ -46,7 +46,7 @@ const App = () => {
 
     // Fetch user data on initial load
     fetchUserData();
-  }, [apiUrl]);
+  }, [apiUrl, username]);
 
   return (
     <BrowserRouter>
