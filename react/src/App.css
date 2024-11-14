@@ -207,6 +207,8 @@ footer {
   align-items: center;
 }
 .room-info-thead {
+  position: sticky;
+  top: 0;
   background-color: orange;
 }
 
@@ -673,7 +675,10 @@ input[type="number"] {
   border-collapse: collapse;
   background-color: #fff;
 }
-
+.saved-rooms-thead {
+  position: sticky;
+  top: 0;
+}
 .saved-rooms-table th,
 .saved-rooms-table td {
   padding: 15px;
