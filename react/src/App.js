@@ -16,7 +16,10 @@ const App = () => {
 
   React.useEffect(() => {
     function fetchUserData() {
-      if (username) return;
+      if (username) {
+        console.log("username is present");
+        return;
+      }
       console.log("username is not present");
       try {
         const response = fetch(`${apiUrl}/api/user`, {
