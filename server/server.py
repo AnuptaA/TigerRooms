@@ -53,7 +53,7 @@ def get_db_connection():
 def index():
     # If the user is already athenticated, redirect to React app
     if 'username' in session:
-        print(username)
+        print(session['username'])
         return redirect(REACT_APP_URL)
 
     username = CASauth.authenticate()
