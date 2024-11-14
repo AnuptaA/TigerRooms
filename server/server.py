@@ -98,11 +98,11 @@ def get_unique_halls_and_floors():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    resco = flask.request.args.get('resco')
-    hall = flask.request.args.get('hall')
-    floor = flask.request.args.get('floor')
-    occupancy = flask.request.args.get('occupancy')
-    minSquareFootage = flask.request.args.get('minSquareFootage')
+    resco = flask.request.args.get('resco') or ''
+    hall = flask.request.args.get('hall') or ''
+    floor = flask.request.args.get('floor') or ''
+    occupancy = flask.request.args.get('occupancy') or ''
+    minSquareFootage = flask.request.args.get('minSquareFootage') or ''
 
     params = []
     if resco is not None:
@@ -115,23 +115,29 @@ def get_unique_halls_and_floors():
         params.append(occupancy)
     if minSquareFootage is not None:
         params.append(minSquareFootage)
+    
+    print(params)
 
     cursor.execute('''
         SELECT
             CASE
-                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'B' THEN 'Wendell B Hall'
-                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'C' THEN 'Wendell C Hall'
-                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'E' THEN 'Baker E Hall'
-                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'S' THEN 'Baker S Hall'
+                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'B' THEN 'Wendell-B'
+                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'C' THEN 'Wendell-C'
+                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'E' THEN 'Baker-E'
+                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'S' THEN 'Baker-S'
                 ELSE "hall"
             END AS "hall_display",
             "floor"
         FROM "RoomOverview"
+        WHERE "RoomOverview"."residential_college" LIKE %s 
+        AND "RoomOverview"."hall" LIKE %s 
+        AND "RoomOverview"."floor"::TEXT LIKE %s
         GROUP BY "hall_display", "floor"
         ORDER BY "hall_display", "floor"
-    ''')
+    ''', [resco, hall, floor])
 
     results = cursor.fetchall()
+    print('RESULTS: ' + str(results))
     conn.close()
 
     halls = {}
