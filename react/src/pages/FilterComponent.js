@@ -45,6 +45,8 @@ const FilterComponent = () => {
       "Murley-Pivirotto",
       "Wendell-B",
       "Wendell-C",
+      "Baker-E",
+      "Baker-S",
     ],
     Yeh: ["Fu", "Grousbeck", "Hariri", "Mannion"],
   };
