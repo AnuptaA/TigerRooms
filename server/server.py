@@ -57,6 +57,7 @@ def index():
         return redirect(REACT_APP_URL)
 
     username = CASauth.authenticate()
+    print(f"CAS username returned :{username}")
     # Check if authenticate returned username, if successful, redirect
     if isinstance(username, str):
         session['username'] = username
@@ -84,7 +85,7 @@ def logoutcas():
 @app.route('/api/user', methods=['GET'])
 def get_user_data():
     if 'username' in session:
-        print(session['username'])
+        print(f"username {session['username']}")
         return jsonify({'status': 'success', 'username': session['username']})
     else:
         print("username not in session!")
