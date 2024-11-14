@@ -48,9 +48,7 @@ const App = () => {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        window.location.href(
-          "https://www.cs.princeton.edu/courses/archive/fall24/cos333/"
-        );
+        window.location.href = `${apiUrl}`; // Redirect to login page
         // window.location.href = `${apiUrl}`; // Redirect to login page
       }
     };
