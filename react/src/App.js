@@ -15,43 +15,47 @@ const App = () => {
   const [username, setUsername] = React.useState(null);
 
   React.useEffect(() => {
-    async function fetchUserData() {
-      if (username) {
-        console.log("username is present");
-        return;
-      }
-      console.log("username is not present");
+    if (username) {
+      console.log("Username is already present");
+      return;
+    }
+
+    // Function to fetch user data
+    const fetchUserData = async () => {
+      console.log("Username is not present, attempting to fetch user data...");
+
       try {
         const response = await fetch(`${apiUrl}/api/user`, {
           method: "GET",
           credentials: "include",
         });
+
         if (response.status === 200) {
-          console.log("fetches reponse successfully");
+          console.log("Fetched user data successfully");
           const data = await response.json();
-          if (data.status === "success") {
-            console.log("data.status was successful");
-            setUsername(data.username);
+
+          if (data.status === "success" && data.username) {
+            console.log("User authenticated, setting username:", data.username);
+            setUsername(data.username); // Set username if authenticated
           } else {
-            console.error("User not authenticated");
-            window.location.href = `${apiUrl}`;
+            console.error("User not authenticated or username not available");
+            window.location.href = `${apiUrl}`; // Redirect to login page
           }
         } else if (response.status === 401) {
           console.error("User not authenticated (401 status)");
-          window.location.href = `${apiUrl}`; // Redirect to start CAS login
+          window.location.href = `${apiUrl}`; // Redirect to login page
         } else {
-          console.error("Unexpected response", response);
-          window.location.href = `${apiUrl}`;
+          console.error("Unexpected response:", response);
+          window.location.href = `${apiUrl}`; // Redirect to login page
         }
       } catch (error) {
-        console.error("Fetch error:", error);
-        window.location.href = `${apiUrl}`;
+        console.error("Error fetching user data:", error);
+        window.location.href = `${apiUrl}`; // Redirect to login page
       }
-    }
+    };
 
-    // Fetch user data on initial load
     fetchUserData();
-  }, [apiUrl, username]);
+  }, [apiUrl, username]); // Only run effect when apiUrl or username changes
 
   return (
     <BrowserRouter>
