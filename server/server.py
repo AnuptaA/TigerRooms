@@ -48,6 +48,7 @@ def get_db_connection():
 
 #-----------------------------------------------------------------------
 
+@app.route('/api/user', methods=['GET'])
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
