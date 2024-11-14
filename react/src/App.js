@@ -22,8 +22,6 @@ const App = () => {
 
     // Function to fetch user data
     const fetchUserData = async () => {
-      console.log("Username is not present, attempting to fetch user data...");
-
       try {
         const response = await fetch(`${apiUrl}/api/user`, {
           method: "GET",
@@ -50,7 +48,10 @@ const App = () => {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        window.location.href = `${apiUrl}`; // Redirect to login page
+        window.location.href(
+          "https://www.cs.princeton.edu/courses/archive/fall24/cos333/"
+        );
+        // window.location.href = `${apiUrl}`; // Redirect to login page
       }
     };
 
