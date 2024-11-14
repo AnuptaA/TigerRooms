@@ -15,68 +15,45 @@ const FilterComponent = () => {
 
   // Hardcoded list of residential colleges
   const residentialColleges = [
-    "Butler College",
-    "Forbes College",
-    "Mathey College",
-    "NCW",
-    "Rockefeller College",
-    "Whitman College",
-    "Yeh College",
+    "Butler",
+    "Forbes",
+    "Mathey",
+    "Ncw",
+    "Rocky",
+    "Whitman",
+    "Yeh",
   ];
 
   const collegeHalls = {
-    "Butler College": [
-      "Yoseloff Hall",
-      "Bogle Hall",
-      "1976 Hall",
-      "1967 Hall",
-      "Bloomberg Hall",
-      "Wilf Hall",
-      "Scully Hall",
+    Butler: [
+      "Yoseloff",
+      "Bogle",
+      "1976",
+      "1967",
+      "Bloomberg",
+      "Wilf",
+      "Scully",
     ],
-    "Forbes College": ["Main", "Annex"],
-    "Mathey College": [
-      "Blair Hall",
-      "Campbell Hall",
-      "Edwards Hall",
-      "Hamilton Hall",
-      "Joline Hall",
-      "Little Hall",
+    Forbes: ["Main", "Annex"],
+    Mathey: ["Blair", "Campbell", "Edwards", "Hamilton", "Joline", "Little"],
+    Ncw: ["Addy", "Kanji", "Kwanza-Jones", "Jose-Feliciano"],
+    Rocky: ["Buyers", "Campbell", "Holder", "Witherspoon"],
+    Whitman: [
+      "1981",
+      "Fisher",
+      "Lauritzen",
+      "Murley-Pivirotto",
+      "Wendell-B",
+      "Wendell-C",
     ],
-    NCW: [
-      "Addy Hall",
-      "Kanji Hall",
-      "Kwanza Jones Hall",
-      "Jose Feliciano Hall",
-    ],
-    "Rockefeller College": [
-      "Buyers Hall",
-      "Campbell Hall",
-      "Holder Hall",
-      "Witherspoon Hall",
-    ],
-    "Whitman College": [
-      "1981 Hall",
-      "Fisher Hall",
-      "Lauritzen Hall",
-      "Murley-Pivirotto Family Tower",
-      "Wendell B Hall",
-      "Wendell C Hall",
-    ],
-    "Yeh College": ["Fu Hall", "Grousbeck Hall", "Hariri Hall", "Mannion Hall"],
+    Yeh: ["Fu", "Grousbeck", "Hariri", "Mannion"],
   };
 
   // Hardcoded floors for Wendell B Hall
-  const wendellBFloors = [
-    "Ground Floor",
-    "1st Floor",
-    "2nd Floor",
-    "3rd Floor",
-    "4th Floor",
-  ];
+  const wendellBFloors = [0, 1, 2, 3, 4];
 
   // Hardcoded occupancies for Wendell B Hall
-  const wendellBOccupancies = ["Single", "Double", "Quad"];
+  const wendellBOccupancies = [1, 2, 4];
 
   const handleSubmit = () => {
     // Check if the "Residential College" field is filled out
@@ -97,30 +74,20 @@ const FilterComponent = () => {
 
     // Build URL path based on filled fields
     let url = "/floorplans?";
-    url += `resco=${encodeURIComponent(
-      residentialCollege.toLowerCase().replace(" college", "")
-    )}`;
+    url += `resco=${encodeURIComponent(residentialCollege)}`;
 
     // Create an array to hold query parameters
     let queryParams = [];
 
     // Add query parameters conditionally based on their presence
     if (hall) {
-      queryParams.push(
-        `hall=${encodeURIComponent(
-          hall.toLowerCase().replace(" hall", "").replace(/\s+/g, "-")
-        )}`
-      );
+      queryParams.push(`hall=${encodeURIComponent(hall)}`);
     }
     if (floor) {
-      queryParams.push(
-        `floor=${encodeURIComponent(floor.toLowerCase().replace(/\s+/g, "-"))}`
-      );
+      queryParams.push(`floor=${encodeURIComponent(floor)}`);
     }
     if (occupancy) {
-      queryParams.push(
-        `occupancy=${encodeURIComponent(occupancy.toLowerCase())}`
-      );
+      queryParams.push(`occupancy=${encodeURIComponent(occupancy)}`);
     }
     if (minSquareFootage) {
       queryParams.push(

@@ -52,14 +52,8 @@ const FloorPlans = () => {
         Showing results for all floor plans
       </h1>
       <h1 className="res-college-title">
-        {/* sentence-casing the resCollege title */}
         {/* Adding ternary comparator to handle case where resco isn't provided */}
-        {/* Only NCW is displayed in all-caps, the rest are in sentence case */}
-        {resCollege === null
-          ? "All Residential Colleges"
-          : resCollege.toLowerCase() === "ncw"
-          ? resCollege.toUpperCase()
-          : resCollege.charAt(0).toUpperCase() + resCollege.slice(1)}
+        {resCollege === null ? "All Residential Colleges" : resCollege}
       </h1>
       <AvailabilityTable availabilityInfo={availabilityInfo} />
     </div>
