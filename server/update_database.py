@@ -12,8 +12,9 @@ from datetime import datetime
 
 #-----------------------------------------------------------------------
 
-# Connect to PostgreSQL database
+# Connect to PostgreSQL database (persistent connection for main operations)
 conn = psycopg2.connect(DATABASE_URL)
+conn.autocommit = True  # Enable autocommit to avoid idle transactions
 cursor = conn.cursor()
 
 #-----------------------------------------------------------------------
@@ -45,7 +46,6 @@ def update_room_availability(processed_table):
             ''',
             (room_number in pdf_rooms, room_id)
         )
-    conn.commit()
     print("Room availability updated.")
 
 #-----------------------------------------------------------------------
@@ -59,27 +59,34 @@ def update_timestamp(last_updated):
         ''',
         (last_updated,)
     )
-    conn.commit()
     print("Timestamp updated in database.")
 
 #-----------------------------------------------------------------------
 
-# Function to get the last update time from the database as a datetime object
+# Improved function to get the last update time from the database as a datetime object
 def get_last_update_time():
-    cursor.execute('SELECT "last_timestamp" FROM "LastTimestamp"')
-    result = cursor.fetchone()
+    # Use a short-lived connection specifically for this read-only operation
+    try:
+        with psycopg2.connect(DATABASE_URL) as temp_conn:
+            temp_conn.autocommit = True  # Enable autocommit for this temporary connection
+            with temp_conn.cursor() as temp_cursor:
+                temp_cursor.execute('SELECT "last_timestamp" FROM "LastTimestamp"')
+                result = temp_cursor.fetchone()
 
-    # Check if a result is found and return it as a datetime object in the expected format
-    if result and result[0] != "N/A":
-        try:
-            # Parse the timestamp from the format in which it was stored
-            return datetime.strptime(result[0], '%m/%d/%Y %I:%M %p')
-        except ValueError as e:
-            print(f"Error parsing stored timestamp: {e}")
-            sys.exit(1)
-    else:
-        # Return "N/A" to indicate no valid timestamp found
-        return "N/A"
+        # Check if a result is found and return it as a datetime object in the expected format
+        if result and result[0] != "N/A":
+            try:
+                # Parse the timestamp from the format in which it was stored
+                return datetime.strptime(result[0], '%m/%d/%Y %I:%M %p')
+            except ValueError as e:
+                print(f"Error parsing stored timestamp: {e}")
+                return None  # Handle the parsing error gracefully
+        else:
+            # Return "N/A" to indicate no valid timestamp found
+            return "N/A"
+    except Exception as e:
+        print(f"An error occurred while fetching last update time: {e}")
+        return None
 
 #-----------------------------------------------------------------------
 
@@ -122,6 +129,7 @@ def main():
         print(f"An unexpected error occurred: {e}")
     finally:
         # Ensure the database connection is always closed
+        cursor.close()
         conn.close()
         print("Database connection closed.")
 
