@@ -82,9 +82,6 @@ def logoutcas():
 # Endpoint for React to check if user is authenticated
 @app.route('/api/user', methods=['GET'])
 def get_user_data():
-    # # USE THIS ONLY WHILE CAS IS NOT AUTHORIZED FOR BACKEND
-    # return jsonify({'status': 'success', 'username': 'user123'})
-
     if 'username' in session:
         return jsonify({'status': 'success', 'username': session['username']})
     else:
