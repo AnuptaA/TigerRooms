@@ -53,6 +53,7 @@ def get_db_connection():
 def index():
     # If the user is already athenticated, redirect to React app
     if 'username' in session:
+        print(username)
         return redirect(REACT_APP_URL)
 
     username = CASauth.authenticate()
@@ -83,8 +84,10 @@ def logoutcas():
 @app.route('/api/user', methods=['GET'])
 def get_user_data():
     if 'username' in session:
+        print(session['username'])
         return jsonify({'status': 'success', 'username': session['username']})
     else:
+        print("username not in session!")
         return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
 
 #-----------------------------------------------------------------------

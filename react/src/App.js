@@ -16,15 +16,21 @@ const App = () => {
 
   React.useEffect(() => {
     async function fetchUserData() {
-      if (username) return; // if username is already set, don't fetch again
+      if (username) {
+        console.log("username is present");
+        return;
+      }
+      console.log("username is not present");
       try {
         const response = await fetch(`${apiUrl}/api/user`, {
           method: "GET",
           credentials: "include",
         });
         if (response.status === 200) {
+          console.log("fetches reponse successfully");
           const data = await response.json();
           if (data.status === "success") {
+            console.log("data.status was successful");
             setUsername(data.username);
           } else {
             console.error("User not authenticated");
