@@ -17,7 +17,7 @@ const App = () => {
   React.useEffect(() => {
     function fetchUserData() {
       if (username) return;
-      console.log("");
+      console.log("username is not present");
       try {
         const response = fetch(`${apiUrl}/api/user`, {
           method: "GET",
@@ -25,8 +25,10 @@ const App = () => {
         });
 
         if (response.status === 200) {
+          console.log("fetches reponse successfully");
           const data = response.json();
           if (data.status === "success") {
+            console.log("data.status was successful");
             setUsername(data.username);
           } else {
             console.error("User not authenticated");
