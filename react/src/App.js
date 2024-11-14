@@ -15,16 +15,17 @@ const App = () => {
   const [username, setUsername] = React.useState(null);
 
   React.useEffect(() => {
-    async function fetchUserData() {
-      if (username) return; // if username is already set, don't fetch again
+    function fetchUserData() {
+      if (username) return;
+      console.log("");
       try {
-        const response = await fetch(`${apiUrl}/api/user`, {
+        const response = fetch(`${apiUrl}/api/user`, {
           method: "GET",
           credentials: "include",
         });
 
         if (response.status === 200) {
-          const data = await response.json();
+          const data = response.json();
           if (data.status === "success") {
             setUsername(data.username);
           } else {
