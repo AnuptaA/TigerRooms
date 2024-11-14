@@ -55,7 +55,7 @@ const Cart = () => {
       <h1 className="cart-title">Your Saved Rooms</h1>
       {savedRooms.length > 0 ? (
         <table className="saved-rooms-table">
-          <thead>
+          <thead className="saved-rooms-thead">
             <tr>
               <th>Room</th>
               <th>Total Saves</th>
