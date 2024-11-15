@@ -86,7 +86,7 @@ def logoutcas():
 def get_user_data():
     if 'username' in session:
         print(f"username {session['username']}")
-        return jsonify({'status': 'success', 'username': session['username']})
+        return jsonify({'status': 'success', 'username': session['username']}), 200
     else:
         print("username not in session!")
         return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
