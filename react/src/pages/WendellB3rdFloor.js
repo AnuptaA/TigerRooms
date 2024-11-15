@@ -52,7 +52,7 @@ const WendellB3rdFloor = () => {
         // Update the saved status and total saves in the roomInfo state
         setRoomInfo((prevRoomInfo) =>
           prevRoomInfo.map((room) =>
-            room.name === `Wendell ${roomNumber}`
+            room.name === `Wendell-B ${roomNumber}`
               ? {
                   ...room,
                   isSaved: !isSaved,
