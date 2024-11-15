@@ -8,60 +8,53 @@ from db_config import DATABASE_URL
 
 #-----------------------------------------------------------------------
 
-# Connect to PostgreSQL database
-conn = psycopg2.connect(DATABASE_URL)
-cursor = conn.cursor()
-
-#-----------------------------------------------------------------------
-
 def get_room_id(room_number, hall):
     """Retrieve the room_id for a specific room based on room_number and hall."""
-    cursor.execute(
-        '''
-        SELECT "room_id"
-        FROM "RoomOverview"
-        WHERE "room_number" = %s AND "hall" = %s
-        ''',
-        (room_number, hall)
-    )
-    result = cursor.fetchone()
+    with psycopg2.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT "room_id"
+                FROM "RoomOverview"
+                WHERE "room_number" = %s AND "hall" = %s
+                ''',
+                (room_number, hall)
+            )
+            result = cursor.fetchone()
     return result[0] if result else None
 
 #-----------------------------------------------------------------------
 
 def save_room(netid, room_number, hall):
     """Save a room for a user identified by netid, using room_number and hall."""
-    # Retrieve the room_id based on room_number and hall
     room_id = get_room_id(room_number, hall)
     if room_id is None:
         print(f"Room {room_number} in {hall} not found.")
         return
 
-    try:
-        # Insert a save into RoomSaves table
-        cursor.execute(
-            '''
-            INSERT INTO "RoomSaves" ("netid", "room_id")
-            VALUES (%s, %s)
-            ON CONFLICT ("netid", "room_id") DO NOTHING
-            ''',
-            (netid, room_id)
-        )
-        # Increment the num_saves in RoomDetails
-        cursor.execute(
-            '''
-            UPDATE "RoomDetails"
-            SET "num_saves" = "num_saves" + 1
-            WHERE "room_id" = %s
-            ''',
-            (room_id,)
-        )
-        
-        conn.commit()
-        print(f"Room {room_number} in {hall} saved successfully for netid {netid}.")
-    except Exception as e:
-        conn.rollback()
-        print("Error saving room:", e)
+    with psycopg2.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cursor:
+            try:
+                cursor.execute(
+                    '''
+                    INSERT INTO "RoomSaves" ("netid", "room_id")
+                    VALUES (%s, %s)
+                    ON CONFLICT ("netid", "room_id") DO NOTHING
+                    ''',
+                    (netid, room_id)
+                )
+                cursor.execute(
+                    '''
+                    UPDATE "RoomDetails"
+                    SET "num_saves" = "num_saves" + 1
+                    WHERE "room_id" = %s
+                    ''',
+                    (room_id,)
+                )
+                print(f"Room {room_number} in {hall} saved successfully for netid {netid}.")
+            except Exception as e:
+                conn.rollback()
+                print("Error saving room:", e)
 
 #-----------------------------------------------------------------------
 
@@ -72,32 +65,30 @@ def unsave_room(netid, room_number, hall):
         print(f"Room {room_number} in {hall} not found.")
         return
 
-    try:
-        # Delete the save from RoomSaves table
-        cursor.execute(
-            '''
-            DELETE FROM "RoomSaves"
-            WHERE "netid" = %s AND "room_id" = %s
-            ''',
-            (netid, room_id)
-        )
+    with psycopg2.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cursor:
+            try:
+                cursor.execute(
+                    '''
+                    DELETE FROM "RoomSaves"
+                    WHERE "netid" = %s AND "room_id" = %s
+                    ''',
+                    (netid, room_id)
+                )
 
-        # Decrement the num_saves in RoomDetails if the delete was successful
-        if cursor.rowcount > 0:  # Check if a row was deleted
-            cursor.execute(
-                '''
-                UPDATE "RoomDetails"
-                SET "num_saves" = "num_saves" - 1
-                WHERE "room_id" = %s AND "num_saves" > 0
-                ''',
-                (room_id,)
-            )
-        
-        conn.commit()
-        print(f"Room {room_number} in {hall} unsaved successfully for netid {netid}.")
-    except Exception as e:
-        conn.rollback()
-        print("Error unsaving room:", e)
+                if cursor.rowcount > 0:
+                    cursor.execute(
+                        '''
+                        UPDATE "RoomDetails"
+                        SET "num_saves" = "num_saves" - 1
+                        WHERE "room_id" = %s AND "num_saves" > 0
+                        ''',
+                        (room_id,)
+                    )
+                print(f"Room {room_number} in {hall} unsaved successfully for netid {netid}.")
+            except Exception as e:
+                conn.rollback()
+                print("Error unsaving room:", e)
 
 #-----------------------------------------------------------------------
 
@@ -107,33 +98,37 @@ def get_total_saves(room_number, hall):
     if room_id is None:
         print("Room not found.")
         return 0
-    
-    cursor.execute(
-        '''
-        SELECT "num_saves"
-        FROM "RoomDetails"
-        WHERE "room_id" = %s
-        ''',
-        (room_id,)
-    )
-    result = cursor.fetchone()
+
+    with psycopg2.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT "num_saves"
+                FROM "RoomDetails"
+                WHERE "room_id" = %s
+                ''',
+                (room_id,)
+            )
+            result = cursor.fetchone()
     return result[0] if result else 0
 
 #-----------------------------------------------------------------------
 
 def get_saved_rooms_with_saves(netid):
     """Retrieve all rooms saved by a specific user identified by netid, including total saves for each room."""
-    cursor.execute(
-        '''
-        SELECT r."room_number", r."hall", r."floor", d."num_saves"
-        FROM "RoomOverview" r
-        JOIN "RoomSaves" s ON r."room_id" = s."room_id"
-        JOIN "RoomDetails" d ON r."room_id" = d."room_id"
-        WHERE s."netid" = %s
-        ''',
-        (netid,)
-    )
-    rooms = cursor.fetchall()
+    with psycopg2.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT r."room_number", r."hall", r."floor", d."num_saves"
+                FROM "RoomOverview" r
+                JOIN "RoomSaves" s ON r."room_id" = s."room_id"
+                JOIN "RoomDetails" d ON r."room_id" = d."room_id"
+                WHERE s."netid" = %s
+                ''',
+                (netid,)
+            )
+            rooms = cursor.fetchall()
     return [
         {"room_number": room[0], "hall": room[1], "floor": room[2], "total_saves": room[3]}
         for room in rooms
@@ -148,15 +143,18 @@ def is_room_saved(netid, room_number, hall):
         print(f"Room {room_number} in {hall} not found.")
         return False
 
-    cursor.execute(
-        '''
-        SELECT 1
-        FROM "RoomSaves"
-        WHERE "netid" = %s AND "room_id" = %s
-        ''',
-        (netid, room_id)
-    )
-    result = cursor.fetchone()
+    with psycopg2.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('SET TRANSACTION READ ONLY')
+            cursor.execute(
+                '''
+                SELECT 1
+                FROM "RoomSaves"
+                WHERE "netid" = %s AND "room_id" = %s
+                ''',
+                (netid, room_id)
+            )
+            result = cursor.fetchone()
     return result is not None
 
 #-----------------------------------------------------------------------

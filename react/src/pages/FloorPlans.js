@@ -66,6 +66,24 @@ const AvailabilityTable = ({ availabilityInfo }) => {
     availabilityInfo.length > 0
       ? Math.max(...availabilityInfo.map((info) => info.floors.length))
       : 0;
+
+  // check if the response is not empty
+  if (availabilityInfo.length === 0) {
+    return (
+      <div>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+        <h2 className="res-college-title">
+          No results matched your parameters
+        </h2>
+        <img id="lockup" src="/misc/PU_lockup.png" alt="lockup" />
+      </div>
+    );
+  }
+
   // Helper function to generate URL-friendly links
   const generateLink = (hall, floor) => {
     let hallPrefix = hall.toLowerCase().replace(/\s+/g, "-");

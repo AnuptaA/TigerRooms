@@ -98,42 +98,44 @@ def get_unique_halls_and_floors():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    resco = flask.request.args.get('resco')
-    hall = flask.request.args.get('hall')
-    floor = flask.request.args.get('floor')
-    occupancy = flask.request.args.get('occupancy')
-    minSquareFootage = flask.request.args.get('minSquareFootage')
+    # Set filter parameters, using '%' for wildcard if they are empty
+    resco = flask.request.args.get('resco') or '%'
+    hall = flask.request.args.get('hall') or '%'
+    floor = flask.request.args.get('floor') or '%'
+    occupancy = flask.request.args.get('occupancy') or '%'
+    minSquareFootage = flask.request.args.get('minSquareFootage') or 0  # Default to 0 for numeric filter
 
-    params = []
-    if resco is not None:
-        params.append(resco)
-    if hall is not None:
-        params.append(hall)
-    if floor is not None:
-        params.append(floor)
-    if occupancy is not None:
-        params.append(occupancy)
-    if minSquareFootage is not None:
-        params.append(minSquareFootage)
+    # Prepare parameters list with floor and square footage filters as needed
+    params = [resco, hall, floor, occupancy, minSquareFootage]
+    print(params)
 
+    # Execute the query with filters applied
     cursor.execute('''
         SELECT
             CASE
-                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'B' THEN 'Wendell B Hall'
-                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'C' THEN 'Wendell C Hall'
-                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'E' THEN 'Baker E Hall'
-                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'S' THEN 'Baker S Hall'
+                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'B' THEN 'Wendell-B'
+                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'C' THEN 'Wendell-C'
+                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'E' THEN 'Baker-E'
+                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'S' THEN 'Baker-S'
                 ELSE "hall"
             END AS "hall_display",
             "floor"
         FROM "RoomOverview"
+        JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
+        WHERE "RoomOverview"."residential_college" LIKE %s 
+        AND "RoomOverview"."hall" LIKE %s 
+        AND "RoomOverview"."floor"::TEXT LIKE %s
+        AND "RoomDetails"."occupancy"::TEXT LIKE %s
+        AND "RoomDetails"."square_footage" >= %s
         GROUP BY "hall_display", "floor"
         ORDER BY "hall_display", "floor"
-    ''')
+    ''', params)
 
     results = cursor.fetchall()
+    print('RESULTS: ' + str(results))
     conn.close()
 
+    # Organize results into hall and floor labels
     halls = {}
     for hall_display, floor in results:
         if hall_display not in halls:
@@ -150,6 +152,7 @@ def get_unique_halls_and_floors():
         if floor_label not in halls[hall_display]:
             halls[hall_display].append(floor_label)
 
+    # Convert halls dictionary to JSON-compatible structure
     hall_floor_data = [{"hall": hall, "floors": floors} for hall, floors in halls.items()]
 
     return jsonify(hall_floor_data)
