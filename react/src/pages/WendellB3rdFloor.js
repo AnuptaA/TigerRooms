@@ -147,7 +147,7 @@ const RoomInfoTable = ({
                       onClick={() =>
                         handleSaveToggle(
                           oneRoomInfo.name.split(" ")[1], // Extract room number from name
-                          "Wendell",
+                          "Wendell-B",
                           oneRoomInfo.isSaved
                         )
                       }

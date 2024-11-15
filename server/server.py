@@ -112,14 +112,8 @@ def get_unique_halls_and_floors():
     # Execute the query with filters applied
     cursor.execute('''
         SELECT
-            CASE
-                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'B' THEN 'Wendell-B'
-                WHEN "hall" = 'Wendell' AND LEFT("room_number", 1) = 'C' THEN 'Wendell-C'
-                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'E' THEN 'Baker-E'
-                WHEN "hall" = 'Baker' AND LEFT("room_number", 1) = 'S' THEN 'Baker-S'
-                ELSE "hall"
-            END AS "hall_display",
-            "floor"
+            "RoomOverview"."hall",
+            "RoomOverview"."floor"
         FROM "RoomOverview"
         JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
         WHERE "RoomOverview"."residential_college" LIKE %s 
@@ -127,9 +121,10 @@ def get_unique_halls_and_floors():
         AND "RoomOverview"."floor"::TEXT LIKE %s
         AND "RoomDetails"."occupancy"::TEXT LIKE %s
         AND "RoomDetails"."square_footage" >= %s
-        GROUP BY "hall_display", "floor"
-        ORDER BY "hall_display", "floor"
+        GROUP BY "RoomOverview"."hall", "RoomOverview"."floor"
+        ORDER BY "RoomOverview"."hall", "RoomOverview"."floor"
     ''', params)
+
 
     results = cursor.fetchall()
     print('RESULTS: ' + str(results))
@@ -171,20 +166,21 @@ def get_wendell_b_3rd_floor():
                "RoomDetails"."occupancy", "RoomDetails"."square_footage"
         FROM "RoomOverview"
         JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
-        WHERE "RoomOverview"."hall" = 'Wendell' 
+        WHERE "RoomOverview"."hall" = 'Wendell-B' 
           AND "RoomOverview"."floor" = 3 
-          AND "RoomOverview"."room_number" LIKE 'B%'
-    ''')
+              ''')
 
     rooms = cursor.fetchall()
-    conn.close()
+    print("BRUH1" + str(rooms))
+    # cursor.close()
 
     # Construct the response with room info, total saves, and saved status for the user
     room_info = []
     for room in rooms:
         room_number, is_available, occupancy, square_footage = room
-        total_saves = get_total_saves(room_number, 'Wendell')
-        is_saved = is_room_saved(netid, room_number, 'Wendell') if netid else False
+        total_saves = get_total_saves(room_number, 'Wendell-B', cursor)
+        print("I AM HERE")
+        is_saved = is_room_saved(netid, room_number, 'Wendell-B', cursor) if netid else False
 
         room_info.append({
             "name": f"Wendell {room_number}",
@@ -194,7 +190,8 @@ def get_wendell_b_3rd_floor():
             "total_saves": total_saves,
             "isSaved": is_saved
         })
-
+    conn.close()
+    print("BRUH2" + str(room_info))
     return jsonify(room_info)
 
 #-----------------------------------------------------------------------
@@ -232,16 +229,16 @@ def api_unsave_room():
 #-----------------------------------------------------------------------
 
 # Get total saves for a specific room
-@app.route('/api/total_saves', methods=['GET'])
-def api_get_total_saves():
-    room_number = request.args.get('room_number')
-    hall = request.args.get('hall')
+# @app.route('/api/total_saves', methods=['GET'])
+# def api_get_total_saves():
+#     room_number = request.args.get('room_number')
+#     hall = request.args.get('hall')
 
-    if not all([room_number, hall]):
-        return jsonify({"error": "Missing room_number or hall"}), 400
+#     if not all([room_number, hall]):
+#         return jsonify({"error": "Missing room_number or hall"}), 400
 
-    total_saves = get_total_saves(room_number, hall)
-    return jsonify({"room_number": room_number, "hall": hall, "total_saves": total_saves}), 200
+#     total_saves = get_total_saves(room_number, hall)
+#     return jsonify({"room_number": room_number, "hall": hall, "total_saves": total_saves}), 200
 
 #-----------------------------------------------------------------------
 
