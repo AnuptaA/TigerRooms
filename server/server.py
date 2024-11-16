@@ -51,22 +51,21 @@ def get_db_connection():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 def index():
-    return redirect(REACT_APP_URL)
 
-    # # If the user is already athenticated, redirect to React app
-    # if 'username' in session:
-    #     print(session['username'])
-    #     return redirect(REACT_APP_URL)
+    # If the user is already athenticated, redirect to React app
+    if 'username' in session:
+        print(session['username'])
+        return redirect(REACT_APP_URL)
 
-    # username = CASauth.authenticate()
-    # print(f"CAS username returned :{username}")
-    # # Check if authenticate returned username, if successful, redirect
-    # if isinstance(username, str):
-    #     session['username'] = username
-    #     return redirect(REACT_APP_URL)
+    username = CASauth.authenticate()
+    print(f"CAS username returned :{username}")
+    # Check if authenticate returned username, if successful, redirect
+    if isinstance(username, str):
+        session['username'] = username
+        return redirect(REACT_APP_URL)
 
-    # # Authentication failed
-    # return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
+    # Authentication failed
+    return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
 #-----------------------------------------------------------------------
 
