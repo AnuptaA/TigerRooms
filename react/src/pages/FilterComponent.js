@@ -186,7 +186,6 @@ const FilterComponent = () => {
             id="floor"
             value={floor}
             onChange={(e) => setFloor(e.target.value)}
-            disabled={!hall} // Disable until Hall is selected
           >
             <option value="" className="placeholder-option">
               Select Floor
