@@ -12,65 +12,29 @@ import "./App.css";
 
 const App = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
-  const [username, setUsername] = React.useState(null);
+  const [username, setUsername] = React.useState("");
 
-  React.useEffect(() => {
-    if (username) {
-      console.log("Username is already present");
-      return;
-    }
-
-    // Function to fetch user data
-    const fetchUserData = async () => {
+  useEffect(() => {
+    const authenticateUser = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/user`, {
+        const response = await fetch(`${apiUrl}/api/login`, {
           method: "GET",
           credentials: "include",
         });
-
-        if (response.status === 200) {
-          console.log("Fetched user data successfully");
-          const data = await response.json();
-
-          if (data.status === "success" && data.username) {
-            console.log(
-              "Fetching data was successful, setting username:",
-              data.username
-            );
-            setUsername(data.username); // Set username if authenticated
-          } else {
-            console.error("User not authenticated or username not available");
-            window.location.href = `${apiUrl}`; // Redirect to login page
-          }
-        } else if (response.status === 401) {
-          console.error("User not authenticated (401 status)");
-          const response = await fetch(`${apiUrl}`, {
-            method: "GET",
-            credentials: "include",
-          });
-
-          if (response.status === 200) {
-            console.log("User logged in successfully");
-            const data = await response.json();
-            if (data.status === "success") {
-              setUsername(data.username); // Set username if authenticated
-            } else {
-              console.error("User not authenticated");
-            }
-          }
+        const data = await response.json();
+        if (data.username) {
+          setUsername(data.username);
         } else {
-          console.error("Unexpected response:", response);
-          window.location.href = `${apiUrl}`; // Redirect to login page
+          // Retry or prompt login if net_id is missing
+          console.warn("Net ID is not set, retrying...");
+          setTimeout(authenticateUser, 2000); // Retry after a delay
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        window.location.href = `${apiUrl}`; // Redirect to login page
-        // window.location.href = `${apiUrl}`; // Redirect to login page
+        console.error("Error during authentication: ", error);
       }
     };
-
-    fetchUserData();
-  }, [apiUrl, username]); // Only run effect when apiUrl or username changes
+    authenticateUser();
+  }, []);
 
   return (
     <BrowserRouter>

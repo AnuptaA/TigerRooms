@@ -48,8 +48,7 @@ def get_db_connection():
 
 #-----------------------------------------------------------------------
 
-@app.route('/', methods=['GET'])
-@app.route('/index', methods=['GET'])
+@app.route('/api/login', methods=['GET'])
 def index():
 
     # # If the user is already athenticated, redirect to React app
@@ -60,7 +59,7 @@ def index():
     username = CASauth.authenticate()
     print(f"CAS username returned :{username}")
     # Check if authenticate returned username, if successful, redirect
-    if isinstance(username, str):
+    if username:
         session['username'] = username
         return jsonify({'status': 'success', 'username': session['username']})
 
@@ -69,7 +68,7 @@ def index():
 
 #-----------------------------------------------------------------------
 
-@app.route('/logoutcas', methods=['GET'])
+@app.route('/api/logoutcas', methods=['GET'])
 def logoutcas():
     session.clear()
     try:
