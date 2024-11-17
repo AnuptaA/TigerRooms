@@ -33,7 +33,10 @@ const App = () => {
           const data = await response.json();
 
           if (data.status === "success" && data.username) {
-            console.log("User authenticated, setting username:", data.username);
+            console.log(
+              "Fetchind data was successful, setting username:",
+              data.username
+            );
             setUsername(data.username); // Set username if authenticated
           } else {
             console.error("User not authenticated or username not available");
@@ -41,7 +44,7 @@ const App = () => {
           }
         } else if (response.status === 401) {
           console.error("User not authenticated (401 status)");
-          window.location.href = `${apiUrl}`; // Redirect to login page
+          window.location.href = "https://nike.com"; // Redirect to login page
         } else {
           console.error("Unexpected response:", response);
           window.location.href = `${apiUrl}`; // Redirect to login page
