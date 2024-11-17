@@ -49,12 +49,7 @@ def get_db_connection():
 #-----------------------------------------------------------------------
 
 @app.route('/', methods=['GET'])
-def index():
-
-    # # If the user is already athenticated, redirect to React app
-    # if 'username' in session:
-    #     print(session['username'])
-    #     return redirect(REACT_APP_URL)
+def serve():
 
     username = CASauth.authenticate()
     print(f"CAS username returned :{username}")

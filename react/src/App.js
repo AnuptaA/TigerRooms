@@ -29,7 +29,7 @@ const App = () => {
           setUsername(data.net_id);
         } else {
           // Retry or prompt login if net_id is missing
-          console.warn("Net ID is not set, retrying...");
+          console.warn("Username is not set, retrying...");
           setTimeout(authenticate, 2000); // Retry after a delay
         }
       } catch (error) {
