@@ -21,7 +21,7 @@ from database_setup import main as setup_database
 #-----------------------------------------------------------------------
 
 # app instance
-app = flask.Flask(__name__)
+app = flask.Flask(__name__, static_folder='build', static_url_path='')
 CORS(app, supports_credentials=True)
 
 #-----------------------------------------------------------------------
@@ -48,7 +48,7 @@ def get_db_connection():
 
 #-----------------------------------------------------------------------
 
-@app.route('/api/login', methods=['GET'])
+@app.route('/', methods=['GET'])
 def index():
 
     # # If the user is already athenticated, redirect to React app
@@ -61,10 +61,14 @@ def index():
     # Check if authenticate returned username, if successful, redirect
     if username:
         session['username'] = username
-        return jsonify({'status': 'success', 'username': session['username']})
-
+        return send_from_directory(app.static_folder, 'index.html')
     # Authentication failed
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
+
+@app.route('/static/<path:path>')
+def serve_static_files(path):
+    return send_from_directory(app.static_folder + '/static', path)
+
 
 #-----------------------------------------------------------------------
 

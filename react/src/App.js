@@ -12,29 +12,33 @@ import "./App.css";
 
 const App = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
-  const [username, setUsername] = React.useState("");
+  const [username, setUsername] = React.useState(null);
 
-  useEffect(() => {
-    const authenticateUser = async () => {
+  React.useEffect(() => {
+    if (username) {
+      console.log("Username is already present");
+      return;
+    }
+
+    // Function to fetch user data
+    const authenticate = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/login`, {
-          method: "GET",
-          credentials: "include",
-        });
+        const response = await fetch(`/api/user`);
         const data = await response.json();
-        if (data.username) {
-          setUsername(data.username);
+        if (data.net_id) {
+          setUsername(data.net_id);
         } else {
           // Retry or prompt login if net_id is missing
           console.warn("Net ID is not set, retrying...");
-          setTimeout(authenticateUser, 2000); // Retry after a delay
+          setTimeout(authenticate, 2000); // Retry after a delay
         }
       } catch (error) {
-        console.error("Error during authentication: ", error);
+        console.error("Error fetching user data:", error);
       }
     };
-    authenticateUser();
-  }, []);
+
+    authenticate();
+  }, [apiUrl, username]); // Only run effect when apiUrl or username changes
 
   return (
     <BrowserRouter>
