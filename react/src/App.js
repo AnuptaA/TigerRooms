@@ -34,7 +34,7 @@ const App = () => {
 
           if (data.status === "success" && data.username) {
             console.log(
-              "Fetchind data was scuessful, setting username:",
+              "Fetching data was successful, setting username:",
               data.username
             );
             setUsername(data.username); // Set username if authenticated
@@ -44,7 +44,20 @@ const App = () => {
           }
         } else if (response.status === 401) {
           console.error("User not authenticated (401 status)");
-          window.location.href = `${apiUrl}`; // Redirect to login page
+          const response = await fetch(`${apiUrl}`, {
+            method: "GET",
+            credentials: "include",
+          });
+
+          if (response.status === 200) {
+            console.log("User logged in successfully");
+            const data = await response.json();
+            if (data.status === "success") {
+              setUsername(data.username); // Set username if authenticated
+            } else {
+              console.error("User not authenticated");
+            }
+          }
         } else {
           console.error("Unexpected response:", response);
           window.location.href = `${apiUrl}`; // Redirect to login page
