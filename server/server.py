@@ -50,8 +50,6 @@ def get_db_connection():
 
 @app.route('/', methods=['GET'])
 def index():
-
-    print(f"CAS username returned :{username}")
     # Check if authenticate returned username, if successful, redirect
     if 'username' in session:
         return redirect(REACT_APP_URL)

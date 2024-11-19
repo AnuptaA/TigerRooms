@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import FloorPlans from "./pages/FloorPlans"; // The page listing all floor plans
 import FilterComponent from "./pages/FilterComponent";
@@ -12,14 +12,14 @@ import "./App.css";
 
 const App = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
-  const [username, setUsername] = React.useState(null);
+  const [username, setUsername] = useState(null);
 
-  const redirectToLogin = () => {
-    window.location.href = `${apiUrl}/login`;
-  };
+  const redirectToLogin = useCallback(() => {
+    window.location.href = `${apiUrl}/`;
+  }, [apiUrl]); // Memoize this function to avoid recreating on each render
 
-  // Function to fetch user data
-  const fetchUserData = async () => {
+  // Function to fetch user data (memoized with useCallback)
+  const fetchUserData = useCallback(async () => {
     try {
       const response = await fetch(`${apiUrl}/api/user`, {
         method: "GET",
@@ -57,15 +57,15 @@ const App = () => {
       console.error("Error fetching user data:", error);
       redirectToLogin();
     }
-  };
+  }, [apiUrl, redirectToLogin]); // Memoize function to use latest apiUrl and redirectToLogin
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (username) {
       console.log("Username is already present");
       return;
     }
     fetchUserData();
-  }, [apiUrl, username]); // Only run effect when apiUrl or username changes
+  }, [username, fetchUserData]); // Only re-run the effect if username or fetchUserData changes
 
   return (
     <BrowserRouter>
@@ -78,7 +78,7 @@ const App = () => {
           path="/floorplans/wendell-b-3rd-floor"
           element={<WendellB3rdFloor />}
         />
-        {<Route path="/logout" element={<Logout />}></Route>}
+        <Route path="/logout" element={<Logout />} />
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
         <Route path="/cart" element={<Cart />} />
       </Routes>
