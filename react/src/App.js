@@ -13,50 +13,49 @@ import "./App.css";
 const App = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const [username, setUsername] = React.useState(null);
+  
+  // Function to fetch user data
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/api/user`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (response.status === 200) {
+        console.log("Fetched user data successfully");
+        const data = await response.json();
+
+        if (data.status === "success" && data.username) {
+          console.log(
+            "Fetchind data was successful, setting username:",
+            data.username
+          );
+          setUsername(data.username); // Set username if authenticated
+        } else {
+          console.error("User not authenticated or username not available");
+          window.location.href = `${apiUrl}`; // Redirect to login page
+        }
+      } else if (response.status === 401) {
+        console.error("User not authenticated (401 status)");
+        setTimeout(() => {
+          window.location.href = `${apiUrl}`;
+        }, 2000);
+      } else {
+        console.error("Unexpected response:", response);
+        window.location.href = `${apiUrl}`; // Redirect to login page
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      window.location.href = `${apiUrl}`; // Redirect to login page
+    }
+  };
 
   React.useEffect(() => {
     if (username) {
       console.log("Username is already present");
       return;
     }
-
-    // Function to fetch user data
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/api/user`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (response.status === 200) {
-          console.log("Fetched user data successfully");
-          const data = await response.json();
-
-          if (data.status === "success" && data.username) {
-            console.log(
-              "Fetchind data was successful, setting username:",
-              data.username
-            );
-            setUsername(data.username); // Set username if authenticated
-          } else {
-            console.error("User not authenticated or username not available");
-            window.location.href = `${apiUrl}`; // Redirect to login page
-          }
-        } else if (response.status === 401) {
-          console.error("User not authenticated (401 status)");
-          setTimeout(() => {
-            window.location.href = `${apiUrl}`;
-          }, 2000);
-        } else {
-          console.error("Unexpected response:", response);
-          window.location.href = `${apiUrl}`; // Redirect to login page
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        window.location.href = `${apiUrl}`; // Redirect to login page
-      }
-    };
-
     fetchUserData();
   }, [apiUrl, username]); // Only run effect when apiUrl or username changes
 
