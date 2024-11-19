@@ -14,6 +14,10 @@ const App = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const [username, setUsername] = React.useState(null);
 
+  const redirectToLogin = () => {
+    window.location.href = `${apiUrl}/login`;
+  };
+
   // Function to fetch user data
   const fetchUserData = async () => {
     try {
@@ -24,30 +28,34 @@ const App = () => {
 
       if (response.status === 200) {
         console.log("Fetched user data successfully");
-        const data = await response.json();
+        const data = await response.json().catch((e) => {
+          console.error("Error parsing JSON:", e);
+          redirectToLogin();
+        });
 
-        if (data.status === "success" && data.username) {
+        if (data && data.status === "success") {
           console.log(
-            "Fetchind data was successful, setting username:",
+            "Fetching data was successful, setting username:",
             data.username
           );
           setUsername(data.username); // Set username if authenticated
         } else {
           console.error("User not authenticated or username not available");
-          window.location.href = `${apiUrl}`; // Redirect to login page
+          redirectToLogin();
         }
       } else if (response.status === 401) {
         console.error("User not authenticated (401 status)");
-        setTimeout(() => {
-          window.location.href = `${apiUrl}`;
-        }, 28800000);
+        redirectToLogin();
       } else {
-        console.error("Unexpected response:", response);
-        window.location.href = `${apiUrl}`; // Redirect to login page
+        console.error(
+          `Unexpected response status: ${response.status}`,
+          response
+        );
+        redirectToLogin();
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
-      window.location.href = `${apiUrl}`; // Redirect to login page
+      redirectToLogin();
     }
   };
 

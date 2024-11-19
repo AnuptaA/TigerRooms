@@ -51,20 +51,20 @@ def get_db_connection():
 @app.route('/', methods=['GET'])
 def index():
 
-    username = CASauth.authenticate()
     print(f"CAS username returned :{username}")
     # Check if authenticate returned username, if successful, redirect
-    if username:
-        session['username'] = username
+    if 'username' in session:
         return redirect(REACT_APP_URL)
+    
     # get username
     username = CASauth.authenticate()
     print(f"CAS username returned :{username}")
-    # Check if authenticate returned username, if successful, redirect
+
     if isinstance(username, str):
         session['username'] = username
         return redirect(REACT_APP_URL)
-    # Authentication failed
+
+    # failed authentication
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
 
 
@@ -89,10 +89,10 @@ def logoutcas():
 def get_user_data():
     if 'username' in session:
         print(f"username {session['username']}")
-        return jsonify({'status': 'success', 'username': session['username']}), 200
+        return jsonify({"status": "success", 'username': session['username']}), 200
     else:
-        print("username not in session!")
-        return jsonify({'status': 'failure', 'message': 'User not authenticated'}), 401
+        print("username not in session")
+        return jsonify({"status": "failure", "message": "User not authenticated"}), 401
 
 #-----------------------------------------------------------------------
 
