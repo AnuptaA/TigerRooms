@@ -49,28 +49,32 @@ def get_db_connection():
 #-----------------------------------------------------------------------
 
 @app.route('/', methods=['GET'])
-def serve():
+def index():
 
     username = CASauth.authenticate()
     print(f"CAS username returned :{username}")
     # Check if authenticate returned username, if successful, redirect
     if username:
         session['username'] = username
-        return send_from_directory(app.static_folder, 'index.html')
+        return redirect(REACT_APP_URL)
+    # get username
+    username = CASauth.authenticate()
+    print(f"CAS username returned :{username}")
+    # Check if authenticate returned username, if successful, redirect
+    if isinstance(username, str):
+        session['username'] = username
+        return redirect(REACT_APP_URL)
     # Authentication failed
     return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
-
-@app.route('/static/<path:path>')
-def serve_static_files(path):
-    return send_from_directory(app.static_folder + '/static', path)
 
 
 #-----------------------------------------------------------------------
 
-@app.route('/api/logoutcas', methods=['GET'])
+@app.route('/logoutcas', methods=['GET'])
 def logoutcas():
     session.clear()
     try:
+        print("reached server logout")
         # Construct CAS logout URL
         logout_url = (CASauth._CAS_URL + 'logout')
         # Redirect to CAS logout URL
