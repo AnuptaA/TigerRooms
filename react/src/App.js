@@ -13,7 +13,7 @@ import "./App.css";
 const App = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const [username, setUsername] = React.useState(null);
-  
+
   // Function to fetch user data
   const fetchUserData = async () => {
     try {
@@ -40,7 +40,7 @@ const App = () => {
         console.error("User not authenticated (401 status)");
         setTimeout(() => {
           window.location.href = `${apiUrl}`;
-        }, 2000);
+        }, 28800000);
       } else {
         console.error("Unexpected response:", response);
         window.location.href = `${apiUrl}`; // Redirect to login page
