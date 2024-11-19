@@ -46,7 +46,7 @@ const App = () => {
           console.error("User not authenticated (401 status)");
           setTimeout(() => {
             window.location.href = `${apiUrl}`;
-          }, 500);
+          }, 1000);
         } else {
           console.error("Unexpected response:", response);
           window.location.href = `${apiUrl}`; // Redirect to login page
