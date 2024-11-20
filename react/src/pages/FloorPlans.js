@@ -85,13 +85,9 @@ const AvailabilityTable = ({ availabilityInfo }) => {
   }
 
   // Helper function to generate URL-friendly links
-  const generateLink = (hall, floor) => {
-    let hallPrefix = hall.toLowerCase().replace(/\s+/g, "-");
-    if (hallPrefix.endsWith("-hall")) {
-      hallPrefix = hallPrefix.replace(/-hall$/, ""); // Remove "-hall" suffix
-    }
-    const floorPrefix = floor.toLowerCase().replace(/\s+/g, "-");
-    return `../floorplans/${hallPrefix}-${floorPrefix}`;
+  const generateLink = (resco, hall, floor) => {
+    let floorNum = floor[0];
+    return `../floorplans/hallfloor?resco=${resco}&hall=${hall}&floor=${floorNum}`;
   };
 
   return (
@@ -110,7 +106,7 @@ const AvailabilityTable = ({ availabilityInfo }) => {
               {availabilityInfo.map((info, colIndex) => (
                 <td key={colIndex}>
                   {info.floors[rowIndex] ? (
-                    <a href={generateLink(info.hall, info.floors[rowIndex])}>
+                    <a href={generateLink("Whitman", info.hall, info.floors[rowIndex])}>
                       {info.floors[rowIndex]}
                     </a>
                   ) : (
