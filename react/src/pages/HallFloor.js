@@ -12,7 +12,7 @@ const HallFloor = () => {
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
-  const userNetId = "123";
+  const userNetId = "user123";
 
   // Get query parameters, defaulting to empty string if not found
   const resCollege = searchParams.get("resco");
