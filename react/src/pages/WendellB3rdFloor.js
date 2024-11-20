@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
-import image from "../img/floorplans/Wendell_B_Hall_Floor_3.png";
+import image from "../img/floorplans/Whitman_Wendell-B_3.png";
 
 const WendellB3rdFloor = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
