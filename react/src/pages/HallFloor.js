@@ -67,7 +67,7 @@ const HallFloor = () => {
         // Update the saved status and total saves in the roomInfo state
         setRoomInfo((prevRoomInfo) =>
           prevRoomInfo.map((room) =>
-            room.name === `${floor.split("-")[0]} ${roomNumber}`
+            room.name === `${hall} ${roomNumber}`
               ? {
                 ...room,
                 isSaved: !isSaved,
