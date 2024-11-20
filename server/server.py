@@ -15,7 +15,7 @@ from db_config import DATABASE_URL
 from dotenv import load_dotenv
 from update_database import get_last_update_time
 import CASauth as CASauth
-from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves
+from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability
 from database_setup import main as setup_database
 
 #-----------------------------------------------------------------------
@@ -232,7 +232,7 @@ def api_unsave_room():
 @app.route('/api/saved_rooms', methods=['GET'])
 def api_get_saved_rooms():
     user_id = request.args.get('user_id')
-    saved_rooms = get_saved_rooms_with_saves(user_id)
+    saved_rooms = get_saved_rooms_with_saves_and_availability(user_id)
     return jsonify({"netid": user_id, "saved_rooms": saved_rooms}), 200
 
 #-----------------------------------------------------------------------

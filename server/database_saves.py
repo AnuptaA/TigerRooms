@@ -119,13 +119,13 @@ def get_total_saves(room_number, hall, cursor):
 
 #-----------------------------------------------------------------------
 
-def get_saved_rooms_with_saves(netid):
-    """Retrieve all rooms saved by a specific user identified by netid, including total saves for each room."""
+def get_saved_rooms_with_saves_and_availability(netid):
+    """Retrieve all rooms saved by a specific user identified by netid, including total saves and availability for each room."""
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cursor:
             cursor.execute(
                 '''
-                SELECT r."room_number", r."hall", r."floor", d."num_saves"
+                SELECT r."room_number", r."hall", r."floor", d."num_saves", r."isAvailable"
                 FROM "RoomOverview" r
                 JOIN "RoomSaves" s ON r."room_id" = s."room_id"
                 JOIN "RoomDetails" d ON r."room_id" = d."room_id"
@@ -135,7 +135,13 @@ def get_saved_rooms_with_saves(netid):
             )
             rooms = cursor.fetchall()
     return [
-        {"room_number": room[0], "hall": room[1], "floor": room[2], "total_saves": room[3]}
+        {
+            "room_number": room[0],
+            "hall": room[1],
+            "floor": room[2],
+            "total_saves": room[3],
+            "availability": room[4]
+        }
         for room in rooms
     ]
 

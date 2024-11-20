@@ -59,6 +59,7 @@ const Cart = () => {
             <tr>
               <th>Room</th>
               <th>Total Saves</th>
+              <th>Availability</th> {/* New Availability Column */}
               <th></th>
             </tr>
           </thead>
@@ -68,6 +69,18 @@ const Cart = () => {
                 <td>{`${room.hall} ${room.room_number}`}</td>
                 <td>
                   {room.total_saves !== undefined ? room.total_saves : "N/A"}
+                </td>
+                <td>
+                  <div
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "4px",
+                      backgroundColor:
+                        room.availability === true ? "green" : "red",
+                      margin: "0 auto",
+                    }}
+                  ></div>
                 </td>
                 <td>
                   <button
