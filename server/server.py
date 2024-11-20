@@ -107,7 +107,6 @@ def get_unique_halls_and_floors():
 
     # Prepare parameters list with floor and square footage filters as needed
     params = [resco, hall, floor, occupancy, minSquareFootage]
-    print(params)
 
     # Execute the query with filters applied
     cursor.execute('''
@@ -127,7 +126,6 @@ def get_unique_halls_and_floors():
 
 
     results = cursor.fetchall()
-    print('RESULTS: ' + str(results))
     conn.close()
 
     # Organize results into hall and floor labels
@@ -171,15 +169,12 @@ def get_wendell_b_3rd_floor():
               ''')
 
     rooms = cursor.fetchall()
-    print("BRUH1" + str(rooms))
-    # cursor.close()
 
     # Construct the response with room info, total saves, and saved status for the user
     room_info = []
     for room in rooms:
         room_number, is_available, occupancy, square_footage = room
         total_saves = get_total_saves(room_number, 'Wendell-B', cursor)
-        print("I AM HERE")
         is_saved = is_room_saved(netid, room_number, 'Wendell-B', cursor) if netid else False
 
         room_info.append({
@@ -191,7 +186,6 @@ def get_wendell_b_3rd_floor():
             "isSaved": is_saved
         })
     conn.close()
-    print("BRUH2" + str(room_info))
     return jsonify(room_info)
 
 #-----------------------------------------------------------------------
@@ -266,8 +260,6 @@ def upload_pdf():
             if file and file.filename.endswith('.pdf'):
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
 
-                # Debugging print to check the file path and ensure the folder exists
-                print(f"Saving file to: {file_path}")
                 file.save(file_path)
 
                 # Run the subprocess to update the database with the new file
@@ -308,7 +300,6 @@ def upload_pdf():
             return jsonify({"error": "Invalid request type."}), 400
 
     except Exception as e:
-        # Print the error message to the console for debugging
         print(f"An unexpected error occurred: {str(e)}")
         return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
