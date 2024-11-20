@@ -177,11 +177,11 @@ def get_hallfloor():
     room_info = []
     for room in rooms:
         room_number, is_available, occupancy, square_footage = room
-        total_saves = get_total_saves(room_number, 'Wendell-B', cursor)
-        is_saved = is_room_saved(netid, room_number, 'Wendell-B', cursor) if netid else False
+        total_saves = get_total_saves(room_number, hall, cursor)
+        is_saved = is_room_saved(netid, room_number, hall, cursor) if netid else False
 
         room_info.append({
-            "name": f"Wendell-B {room_number}",
+            "name": f"{hall} {room_number}",
             "size": f"Size: {square_footage} sqft",
             "occupancy": f"Occupancy: {'Single' if occupancy == 1 else 'Double' if occupancy == 2 else 'Triple' if occupancy == 3 else 'Quad'}",
             "isAvailable": 'T' if is_available else 'F',

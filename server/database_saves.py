@@ -94,7 +94,7 @@ def get_total_saves(room_number, hall, cursor):
     """Retrieve the total number of saves for a specific room based on room_number and hall."""
     room_id = get_room_id(room_number, hall, cursor)
     if room_id is None:
-        print("Room not found.")
+        print(f"Room {room_id} not found.")
         return 0
 
     cursor.execute(
