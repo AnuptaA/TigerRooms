@@ -36,7 +36,6 @@ REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:3000")
 
 # Directory for storing uploaded PDFs
 UPLOAD_FOLDER = 'uploads'
-RESET_FILE = 'sample_pdfs/Wendell_All_Available.pdf'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -229,20 +228,6 @@ def api_unsave_room():
 
 #-----------------------------------------------------------------------
 
-# Get total saves for a specific room
-# @app.route('/api/total_saves', methods=['GET'])
-# def api_get_total_saves():
-#     room_number = request.args.get('room_number')
-#     hall = request.args.get('hall')
-
-#     if not all([room_number, hall]):
-#         return jsonify({"error": "Missing room_number or hall"}), 400
-
-#     total_saves = get_total_saves(room_number, hall)
-#     return jsonify({"room_number": room_number, "hall": hall, "total_saves": total_saves}), 200
-
-#-----------------------------------------------------------------------
-
 # Get all saved rooms for a specific user
 @app.route('/api/saved_rooms', methods=['GET'])
 def api_get_saved_rooms():
@@ -308,22 +293,7 @@ def upload_pdf():
             else:
                 return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
 
-        elif request_type == 0:
-            # Reset the database
-            # result = subprocess.run(
-            #     ['python', './database_setup.py'],
-            #     capture_output=True, text=True
-            # )
-            print('bruh')
-            # result = subprocess.run(
-            #     ['python', './database_setup.py']
-            # )
-            # result = subprocess.run(
-            #     ['python', './database_setup.py'],
-            #     stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=60,
-            #     env=os.environ  # Pass current environment
-            # )
-            
+        elif request_type == 0:            
             # Reset the database directly by calling setup_database()
             try:
                 print("Resetting the database...")
