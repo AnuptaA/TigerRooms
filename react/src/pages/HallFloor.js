@@ -18,8 +18,7 @@ const HallFloor = () => {
   const resCollege = searchParams.get("resco");
   const hall = searchParams.get("hall");
   const floor = searchParams.get("floor");
-  const imageSrc =
-    "../img/floorplans/" + resCollege + "_" + hall + "_" + floor + ".png";
+  const imageSrc = require(`../img/floorplans/${resCollege}_${hall}_${floor}.png`);
 
   console.log(imageSrc);
 
@@ -70,12 +69,12 @@ const HallFloor = () => {
           prevRoomInfo.map((room) =>
             room.name === `${floor.split("-")[0]} ${roomNumber}`
               ? {
-                  ...room,
-                  isSaved: !isSaved,
-                  total_saves: isSaved
-                    ? room.total_saves - 1
-                    : room.total_saves + 1,
-                }
+                ...room,
+                isSaved: !isSaved,
+                total_saves: isSaved
+                  ? room.total_saves - 1
+                  : room.total_saves + 1,
+              }
               : room
           )
         );
@@ -87,7 +86,7 @@ const HallFloor = () => {
     <div className="floor-plan-flexbox">
       <div>
         <h1 className="floor-plan-title">
-          {resCollege + " College, " + hall + " Hall, Floor" + floor}
+          {resCollege + " College, " + hall + " Hall, Floor " + floor}
         </h1>
         <img src={imageSrc} alt="HallMap" className="floor-plan-image" />
         <h3 className="back-link">
