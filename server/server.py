@@ -184,7 +184,7 @@ def get_wendell_b_3rd_floor():
         is_saved = is_room_saved(netid, room_number, 'Wendell-B', cursor) if netid else False
 
         room_info.append({
-            "name": f"Wendell {room_number}",
+            "name": f"Wendell-B {room_number}",
             "size": f"Size: {square_footage} sqft",
             "occupancy": f"Occupancy: {'Single' if occupancy == 1 else 'Double' if occupancy == 2 else 'Triple' if occupancy == 3 else 'Quad'}",
             "isAvailable": 'T' if is_available else 'F',
