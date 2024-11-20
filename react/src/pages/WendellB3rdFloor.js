@@ -71,7 +71,7 @@ const WendellB3rdFloor = () => {
     <div className="floor-plan-flexbox">
       <div>
         <h1 className="floor-plan-title">
-          Whitman College, Wendell B Hall, Floor 3
+          Whitman College, Wendell-B Hall, Floor 3
         </h1>
         <img src={image} alt="HallMap" className="floor-plan-image" />
         <h3 className="back-link">
