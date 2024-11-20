@@ -11,7 +11,7 @@ const WendellB3rdFloor = () => {
 
   // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
-    fetch(`${apiUrl}/api/floorplans/wendell-b-3rd-floor?netid=${userNetId}`)
+    fetch(`${apiUrl}/api/floorplans/hallfloor?netid=${userNetId}&hall=Wendell-B&floor=3`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -54,12 +54,12 @@ const WendellB3rdFloor = () => {
           prevRoomInfo.map((room) =>
             room.name === `Wendell-B ${roomNumber}`
               ? {
-                  ...room,
-                  isSaved: !isSaved,
-                  total_saves: isSaved
-                    ? room.total_saves - 1
-                    : room.total_saves + 1,
-                }
+                ...room,
+                isSaved: !isSaved,
+                total_saves: isSaved
+                  ? room.total_saves - 1
+                  : room.total_saves + 1,
+              }
               : room
           )
         );

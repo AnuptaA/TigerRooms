@@ -152,9 +152,12 @@ def get_unique_halls_and_floors():
 
 #-----------------------------------------------------------------------
 
-@app.route('/api/floorplans/wendell-b-3rd-floor', methods=['GET'])
-def get_wendell_b_3rd_floor():
+@app.route('/api/floorplans/hallfloor', methods=['GET'])
+def get_hallfloor():
     netid = request.args.get('netid')  # Get netid from query parameters
+    hall = request.args.get('hall')  # Get hall from query parameters
+    floor = request.args.get('floor')  # Get hall from query parameters
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -164,9 +167,9 @@ def get_wendell_b_3rd_floor():
                "RoomDetails"."occupancy", "RoomDetails"."square_footage"
         FROM "RoomOverview"
         JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
-        WHERE "RoomOverview"."hall" = 'Wendell-B' 
-          AND "RoomOverview"."floor" = 3 
-              ''')
+        WHERE "RoomOverview"."hall" = %s 
+        AND "RoomOverview"."floor" = %s 
+              ''', (hall, floor))
 
     rooms = cursor.fetchall()
 
