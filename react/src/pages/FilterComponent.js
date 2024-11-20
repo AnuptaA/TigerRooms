@@ -55,7 +55,7 @@ const FilterComponent = () => {
   const wendellBFloors = [0, 1, 2, 3, 4];
 
   // Hardcoded occupancies for Wendell B Hall
-  const wendellBOccupancies = [1, 2, 4];
+  const wendellBOccupancies = [1, 2, 3, 4];
 
   const handleSubmit = () => {
     // Check if the "Residential College" field is filled out
