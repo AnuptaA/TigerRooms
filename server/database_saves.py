@@ -10,8 +10,6 @@ from db_config import DATABASE_URL
 
 def get_room_id(room_number, hall, cursor):
     """Retrieve the room_id for a specific room based on room_number and hall."""
-    # with psycopg2.connect(DATABASE_URL) as conn:
-    #     with conn.cursor() as cursor:
     cursor.execute(
         '''
         SELECT "room_id"
@@ -26,7 +24,6 @@ def get_room_id(room_number, hall, cursor):
 #-----------------------------------------------------------------------
 
 def save_room(netid, room_number, hall):
-
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cursor:
             try:
@@ -60,8 +57,6 @@ def save_room(netid, room_number, hall):
 #-----------------------------------------------------------------------
 
 def unsave_room(netid, room_number, hall):
-    
-
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cursor:
             try:
@@ -98,13 +93,10 @@ def unsave_room(netid, room_number, hall):
 def get_total_saves(room_number, hall, cursor):
     """Retrieve the total number of saves for a specific room based on room_number and hall."""
     room_id = get_room_id(room_number, hall, cursor)
-    print(f"The room id is {room_id}!!!")
     if room_id is None:
         print("Room not found.")
         return 0
 
-    # with psycopg2.connect(DATABASE_URL) as conn:
-    #     with conn.cursor() as cursor:
     cursor.execute(
         '''
         SELECT "num_saves"
@@ -114,7 +106,6 @@ def get_total_saves(room_number, hall, cursor):
         (room_id,)
     )
     result = cursor.fetchone()
-    print(f"THE RESULT IS : {result}")
     return result[0] if result else 0
 
 #-----------------------------------------------------------------------
@@ -150,13 +141,10 @@ def get_saved_rooms_with_saves_and_availability(netid):
 def is_room_saved(netid, room_number, hall, cursor):
     """Check if a specific room is saved by the user with the given netid."""
     room_id = get_room_id(room_number, hall, cursor)
-    print(f"IN ROOM SAVED, the room_id is : {room_id}")
     if room_id is None:
         print(f"Room {room_number} in {hall} not found.")
         return False
 
-    # with psycopg2.connect(DATABASE_URL) as conn:
-    #     with conn.cursor() as cursor:
     cursor.execute('SET TRANSACTION READ ONLY')
     cursor.execute(
         '''
@@ -167,5 +155,4 @@ def is_room_saved(netid, room_number, hall, cursor):
         (netid, room_id)
     )
     result = cursor.fetchone()
-    print(f"The result in isroomsaved is : {result is not None}")
     return result is not None
