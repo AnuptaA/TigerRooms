@@ -13,7 +13,7 @@ import os
 import subprocess
 from db_config import DATABASE_URL
 from dotenv import load_dotenv
-from update_database import get_last_update_time
+from update_database import get_last_update_time, get_connection, return_connection
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability
 from database_setup import main as setup_database
@@ -42,7 +42,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 #-----------------------------------------------------------------------
 
 def get_db_connection():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = get_connection()
     return conn
 
 #-----------------------------------------------------------------------
@@ -127,6 +127,7 @@ def get_unique_halls_and_floors():
 
     results = cursor.fetchall()
     conn.close()
+    return_connection(conn)
 
     # Organize results into hall and floor labels
     halls = {}
@@ -189,6 +190,7 @@ def get_hallfloor():
             "isSaved": is_saved
         })
     conn.close()
+    return_connection(conn)
     return jsonify(room_info)
 
 #-----------------------------------------------------------------------

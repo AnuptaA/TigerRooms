@@ -4,6 +4,7 @@
 #-----------------------------------------------------------------------
 
 import psycopg2
+from psycopg2 import pool
 import pandas as pd
 import sys
 from pdfparser import parse_pdf
@@ -12,15 +13,26 @@ from datetime import datetime
 
 #-----------------------------------------------------------------------
 
-# Connect to PostgreSQL database (persistent connection for main operations)
-conn = psycopg2.connect(DATABASE_URL)
-conn.autocommit = True  # Enable autocommit to avoid idle transactions
-cursor = conn.cursor()
+# Initialize the connection pool (size of the pool can be adjusted based on need)
+conn_pool = psycopg2.pool.SimpleConnectionPool(
+    1, 15, DATABASE_URL)  # minconn=1, maxconn=10
+
+#-----------------------------------------------------------------------
+
+# Function to get a connection from the pool
+def get_connection():
+    return conn_pool.getconn()
+
+# Function to return a connection to the pool
+def return_connection(conn):
+    conn_pool.putconn(conn)
 
 #-----------------------------------------------------------------------
 
 # Function to print all rooms and their availability for debugging purposes
 def print_room_availability():
+    conn = get_connection()
+    cursor = conn.cursor()
     cursor.execute('SELECT "room_number", "isAvailable" FROM "RoomOverview"')
     rooms = cursor.fetchall()
 
@@ -30,10 +42,15 @@ def print_room_availability():
         availability = "Available" if is_available else "Unavailable"
         print(f"{room_number} | {availability}")
 
+    cursor.close()
+    return_connection(conn)
+
 #-----------------------------------------------------------------------
 
 # Function to mark rooms as unavailable if they are not in the new PDF data
 def update_room_availability(processed_table):
+    conn = get_connection()
+    cursor = conn.cursor()
     cursor.execute('SELECT "room_id", "room_number" FROM "RoomOverview"')
     current_rooms = cursor.fetchall()
 
@@ -46,12 +63,18 @@ def update_room_availability(processed_table):
             ''',
             (room_number in pdf_rooms, room_id)
         )
+    
+    conn.commit()
+    cursor.close()
+    return_connection(conn)
     print("Room availability updated.")
 
 #-----------------------------------------------------------------------
 
 # Function to update the stored timestamp with the new given timestamp
 def update_timestamp(last_updated):
+    conn = get_connection()
+    cursor = conn.cursor()
     cursor.execute('DELETE FROM "LastTimestamp"')
     cursor.execute(
         '''
@@ -59,19 +82,23 @@ def update_timestamp(last_updated):
         ''',
         (last_updated,)
     )
+    conn.commit()
+    cursor.close()
+    return_connection(conn)
     print("Timestamp updated in database.")
 
 #-----------------------------------------------------------------------
 
 # Improved function to get the last update time from the database as a datetime object
 def get_last_update_time():
-    # Use a short-lived connection specifically for this read-only operation
+    
     try:
-        with psycopg2.connect(DATABASE_URL) as temp_conn:
-            temp_conn.autocommit = True  # Enable autocommit for this temporary connection
-            with temp_conn.cursor() as temp_cursor:
-                temp_cursor.execute('SELECT "last_timestamp" FROM "LastTimestamp"')
-                result = temp_cursor.fetchone()
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT "last_timestamp" FROM "LastTimestamp"')
+        result = cursor.fetchone()
+        cursor.close()
+        return_connection(conn)
 
         # Check if a result is found and return it as a datetime object in the expected format
         if result and result[0] != "N/A":
@@ -129,9 +156,7 @@ def main():
         print(f"An unexpected error occurred: {e}")
     finally:
         # Ensure the database connection is always closed
-        cursor.close()
-        conn.close()
-        print("Database connection closed.")
+        print("Database connection pool closed.")
 
 #-----------------------------------------------------------------------
 
