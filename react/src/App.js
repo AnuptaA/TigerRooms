@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import FloorPlans from "./pages/FloorPlans"; // The page listing all floor plans
 import FilterComponent from "./pages/FilterComponent";
-import WendellB3rdFloor from "./pages/WendellB3rdFloor"; // The detailed view of Wendell B 3rd floor
 import HallFloor from "./pages/HallFloor"; // The detailed view of Hall floor
 import Logout from "./pages/Logout";
 import UploadPDFs from "./pages/UploadPDFs";
@@ -75,10 +74,6 @@ const App = () => {
       <Routes>
         <Route path="/floorplans" element={<FloorPlans />} />
         <Route path="/" element={<FilterComponent />} />
-        <Route
-          path="/floorplans/wendell-b-3rd-floor"
-          element={<WendellB3rdFloor />}
-        />
         <Route path="/floorplans/hallfloor" element={<HallFloor />} />
         {<Route path="/logout" element={<Logout />}></Route>}
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
