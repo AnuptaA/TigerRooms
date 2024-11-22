@@ -492,8 +492,8 @@ tbody tr td[colspan="3"] {
 .dropdown-container {
   display: flex;
   flex-direction: row;
-  gap: 5.1607vh; /* Spacing between each filter */
-  margin-bottom: 2.9455vh;
+  gap: 5vw; /* Spacing between each filter */
+  margin-bottom: 2.9455vw;
   justify-content: center; /* Center-align filters within the container */
   align-items: flex-start; /* Keeps filters vertically aligned */
   padding: 5.154vh;
@@ -503,22 +503,22 @@ tbody tr td[colspan="3"] {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-width: 29.4551vh;
-  max-width: 36.8188vh;
+  min-width: 25%;
+  max-width: 30%;
   align-items: flex-end;
 }
 
 .filter-label {
   margin-bottom: 0.7364vh;
   font-weight: bold;
-  font-size: 0.9em;
+  font-size: 0.75em;
   text-align: left;
   width: 100%;
 }
 
 .filter-select {
   padding: 1.1782vh;
-  font-size: 0.8em;
+  font-size: 0.75em;
   border-radius: 0.5891vh;
   border: 0.147vh solid #ccc;
   width: 100%;
