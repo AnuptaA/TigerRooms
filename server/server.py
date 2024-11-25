@@ -61,6 +61,8 @@ def catch_all(path):
     # Exclude API and static routes
     if path.startswith("api") or path.startswith("static"):
         return None  # Flask will process these routes normally
+    elif path.startswith("misc"):
+        return send_from_directory(app.static_folder, path)
     return send_from_directory(app.static_folder, 'index.html')
 
 #-----------------------------------------------------------------------
