@@ -20,7 +20,7 @@ from database_setup import main as setup_database
 #-----------------------------------------------------------------------
 
 # app instance
-app = flask.Flask(__name__, static_folder='build', static_url_path='/')
+app = flask.Flask(__name__, static_folder='build')
 CORS(app, supports_credentials=True)
 
 #-----------------------------------------------------------------------
@@ -29,9 +29,6 @@ CORS(app, supports_credentials=True)
 load_dotenv()
 app.secret_key = os.getenv('APP_SECRET_KEY')
 PORT = os.getenv('SERVER_PORT')
-
-# Default to localhost in development
-# REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:4000")
 
 # Directory for storing uploaded PDFs
 UPLOAD_FOLDER = 'uploads'
@@ -46,7 +43,7 @@ def get_db_connection():
 
 #-----------------------------------------------------------------------
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
     # Check if authenticate returned username, if successful, redirect
     username = CASauth.authenticate()
@@ -59,11 +56,19 @@ def index():
 
 #-----------------------------------------------------------------------
 
-# Serve React build files
-@app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
-def serve():
+def catch_all(path):
+    # Exclude API and static routes
+    if path.startswith("api") or path.startswith("static"):
+        return None  # Flask will process these routes normally
     return send_from_directory(app.static_folder, 'index.html')
+
+#-----------------------------------------------------------------------
+
+# Route to serve static files (like CSS, JS, images, etc.)
+@app.route('/static/<path:path>')
+def serve_static_files(path):
+    return send_from_directory(app.static_folder + '/static', path)
 
 #-----------------------------------------------------------------------
 
