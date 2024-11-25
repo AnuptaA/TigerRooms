@@ -8,7 +8,6 @@
 import flask
 from flask import request, jsonify, session, redirect, send_from_directory
 from flask_cors import CORS
-import psycopg2
 import os
 import subprocess
 from db_config import DATABASE_URL
@@ -21,7 +20,7 @@ from database_setup import main as setup_database
 #-----------------------------------------------------------------------
 
 # app instance
-app = flask.Flask(__name__, static_folder='build', static_url_path='')
+app = flask.Flask(__name__, static_folder='build', static_url_path='/')
 CORS(app, supports_credentials=True)
 
 #-----------------------------------------------------------------------
@@ -32,7 +31,7 @@ app.secret_key = os.getenv('APP_SECRET_KEY')
 PORT = os.getenv('SERVER_PORT')
 
 # Default to localhost in development
-REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:3000")
+# REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:4000")
 
 # Directory for storing uploaded PDFs
 UPLOAD_FOLDER = 'uploads'
@@ -50,20 +49,21 @@ def get_db_connection():
 @app.route('/', methods=['GET'])
 def index():
     # Check if authenticate returned username, if successful, redirect
-    if 'username' in session:
-        return redirect(REACT_APP_URL)
-    
-    # get username
     username = CASauth.authenticate()
-    print(f"CAS username returned :{username}")
+    print(f"CAS username returned: {username}")
 
-    if isinstance(username, str):
+    if username:
         session['username'] = username
-        return redirect(REACT_APP_URL)
 
-    # failed authentication
-    return jsonify({'status': 'failure', 'message': 'Authentication failed'}), 401
+    return send_from_directory(app.static_folder, 'index.html')
 
+#-----------------------------------------------------------------------
+
+# Serve React build files
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve():
+    return send_from_directory(app.static_folder, 'index.html')
 
 #-----------------------------------------------------------------------
 
