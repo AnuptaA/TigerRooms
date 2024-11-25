@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
 
-const Cart = ( {username} ) => {
+const Cart = ({ username }) => {
   const [savedRooms, setSavedRooms] = useState([]);
-//   const userNetId = "user123"; // Assume this is fetched or passed as a prop
+  //   const userNetId = "user123"; // Assume this is fetched or passed as a prop
 
   // Fetch saved rooms for the user
   useEffect(() => {
@@ -27,7 +27,7 @@ const Cart = ( {username} ) => {
     );
     if (!confirmed) return;
 
-    fetch('/api/unsave_room', {
+    fetch("/api/unsave_room", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

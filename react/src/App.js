@@ -39,7 +39,7 @@ const App = () => {
       <Routes>
         <Route path="/floorplans" element={<FloorPlans />} />
         <Route path="/" element={<FilterComponent />} />
-        <Route path="/floorplans/hallfloor" element={<HallFloor />} />
+        <Route path="/floorplans/hallfloor" element={<HallFloor username={username}/>} />
         {<Route path="/logout" element={<Logout />}></Route>}
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
         <Route path="/cart" element={<Cart username={username}/>} />

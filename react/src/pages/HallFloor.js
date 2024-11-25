@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "../App.css";
 
-const HallFloor = () => {
+const HallFloor = ({ username }) => {
   console.log("hallfloor route hit");
   // Retrieve query params from URL using useLocation
   const location = useLocation();
@@ -11,7 +11,7 @@ const HallFloor = () => {
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
-  const userNetId = "user123";
+  //   const userNetId = "user123";
 
   // Get query parameters, defaulting to empty string if not found
   const resCollege = searchParams.get("resco");
@@ -24,7 +24,7 @@ const HallFloor = () => {
   // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
     fetch(
-      `/api/floorplans/hallfloor?netid=${userNetId}&hall=${hall}&floor=${floor}`
+      `/api/floorplans/hallfloor?netid=${username}&hall=${hall}&floor=${floor}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -36,7 +36,7 @@ const HallFloor = () => {
         setRoomInfo(data);
       })
       .catch((error) => console.error("Error fetching room data:", error));
-  }, [floor, userNetId]);
+  }, [floor, username]);
 
   // Toggle row expansion
   const toggleExpandRow = (index) => {
@@ -56,7 +56,7 @@ const HallFloor = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        netid: userNetId,
+        netid: username,
         room_number: roomNumber,
         hall: hall,
       }),
@@ -68,12 +68,12 @@ const HallFloor = () => {
           prevRoomInfo.map((room) =>
             room.name === `${hall} ${roomNumber}`
               ? {
-                ...room,
-                isSaved: !isSaved,
-                total_saves: isSaved
-                  ? room.total_saves - 1
-                  : room.total_saves + 1,
-              }
+                  ...room,
+                  isSaved: !isSaved,
+                  total_saves: isSaved
+                    ? room.total_saves - 1
+                    : room.total_saves + 1,
+                }
               : room
           )
         );
