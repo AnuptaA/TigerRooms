@@ -6,7 +6,7 @@ const Logout = () => {
   const [message, setMessage] = useState("Error, please try again");
 
   useEffect(() => {
-    fetch(`${apiUrl}/logoutcas`, {
+    fetch("/logoutcas", {
       method: "GET",
       credentials: "include",
     })

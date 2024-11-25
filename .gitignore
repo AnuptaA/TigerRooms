@@ -6,7 +6,6 @@ __pycache__/
 **/package.json
 
 # Build output
-**/build/
 **/dist/
 
 # Log files
