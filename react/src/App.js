@@ -11,7 +11,6 @@ import Cart from "./pages/Cart";
 import "./App.css";
 
 const App = () => {
-  const apiUrl = process.env.REACT_APP_API_URL;
   const [username, setUsername] = React.useState("");
 
   React.useEffect(() => {
@@ -43,7 +42,7 @@ const App = () => {
         <Route path="/floorplans/hallfloor" element={<HallFloor />} />
         {<Route path="/logout" element={<Logout />}></Route>}
         <Route path="/upload-pdfs" element={<UploadPDFs />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route path="/cart" element={<Cart username={username}/>} />
       </Routes>
 
       <Footer />

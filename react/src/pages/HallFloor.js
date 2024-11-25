@@ -4,7 +4,6 @@ import "../App.css";
 
 const HallFloor = () => {
   console.log("hallfloor route hit");
-  const apiUrl = process.env.REACT_APP_API_URL;
   // Retrieve query params from URL using useLocation
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -25,7 +24,7 @@ const HallFloor = () => {
   // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
     fetch(
-      `${apiUrl}/api/floorplans/hallfloor?netid=${userNetId}&hall=${hall}&floor=${floor}`
+      `/api/floorplans/hallfloor?netid=${userNetId}&hall=${hall}&floor=${floor}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -37,7 +36,7 @@ const HallFloor = () => {
         setRoomInfo(data);
       })
       .catch((error) => console.error("Error fetching room data:", error));
-  }, [apiUrl, floor, userNetId]);
+  }, [floor, userNetId]);
 
   // Toggle row expansion
   const toggleExpandRow = (index) => {
@@ -50,7 +49,7 @@ const HallFloor = () => {
 
   // Handle Save/Unsave action
   const handleSaveToggle = (roomNumber, hall, isSaved) => {
-    const url = `${apiUrl}/api/${isSaved ? "unsave_room" : "save_room"}`;
+    const url = `/api/${isSaved ? "unsave_room" : "save_room"}`;
     fetch(url, {
       method: "POST",
       headers: {

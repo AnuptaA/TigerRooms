@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
 
-const Cart = () => {
-  const apiUrl = process.env.REACT_APP_API_URL;
+const Cart = ( {username} ) => {
   const [savedRooms, setSavedRooms] = useState([]);
-  const userNetId = "user123"; // Assume this is fetched or passed as a prop
+//   const userNetId = "user123"; // Assume this is fetched or passed as a prop
 
   // Fetch saved rooms for the user
   useEffect(() => {
-    fetch(`${apiUrl}/api/saved_rooms?user_id=${userNetId}`)
+    fetch(`/api/saved_rooms?user_id=${username}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -19,7 +18,7 @@ const Cart = () => {
         setSavedRooms(data.saved_rooms);
       })
       .catch((error) => console.error("Error fetching saved rooms:", error));
-  }, [apiUrl, userNetId]);
+  }, [username]);
 
   // Handle room unsave
   const handleUnsaveRoom = (roomNumber, hall) => {
@@ -28,13 +27,13 @@ const Cart = () => {
     );
     if (!confirmed) return;
 
-    fetch(`${apiUrl}/api/unsave_room`, {
+    fetch('/api/unsave_room', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        netid: userNetId,
+        netid: username,
         room_number: roomNumber,
         hall: hall,
       }),

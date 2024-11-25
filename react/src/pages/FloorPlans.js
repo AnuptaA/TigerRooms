@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import "../App.css";
 
 const FloorPlans = () => {
-  const apiUrl = process.env.REACT_APP_API_URL;
   // Retrieve query params from URL using useLocation
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -33,7 +32,7 @@ const FloorPlans = () => {
     // Remove the trailing "&" if there's one
     if (queryString.endsWith("&")) queryString = queryString.slice(0, -1);
 
-    fetch(`${apiUrl}/api/floorplans${queryString ? `?${queryString}` : ""}`)
+    fetch(`/api/floorplans${queryString ? `?${queryString}` : ""}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -44,7 +43,7 @@ const FloorPlans = () => {
         setAvailabilityInfo(data);
       })
       .catch((error) => console.error("Error fetching floor plans:", error));
-  }, [apiUrl, resCollege, hall, floor, occupancy, minSquareFootage]);
+  }, [resCollege, hall, floor, occupancy, minSquareFootage]);
 
   return (
     <div>
