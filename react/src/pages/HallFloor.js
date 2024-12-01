@@ -11,7 +11,7 @@ const HallFloor = ({ username }) => {
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
-  //   const userNetId = "user123";
+  const [debouncing, setDebouncing] = useState(false); // Debouncing state
 
   // Get query parameters, defaulting to empty string if not found
   const resCollege = searchParams.get("resco");
@@ -47,8 +47,11 @@ const HallFloor = ({ username }) => {
     }
   };
 
-  // Handle Save/Unsave action
+  // Handle Save/Unsave action with Debouncing
   const handleSaveToggle = (roomNumber, hall, isSaved) => {
+    if (debouncing) return; // Prevent further actions if debouncing
+
+    setDebouncing(true); // Start debouncing
     const url = `/api/${isSaved ? "unsave_room" : "save_room"}`;
     fetch(url, {
       method: "POST",
@@ -65,20 +68,34 @@ const HallFloor = ({ username }) => {
       .then((data) => {
         // Update the saved status and total saves in the roomInfo state
         setRoomInfo((prevRoomInfo) =>
-          prevRoomInfo.map((room) =>
-            room.name === `${hall} ${roomNumber}`
-              ? {
+          prevRoomInfo.map((room) => {
+            if (room.name === `${hall} ${roomNumber}`) {
+              // Prevent decreasing total_saves below 0
+              if (isSaved && room.total_saves === 0) {
+                return {
                   ...room,
-                  isSaved: !isSaved,
-                  total_saves: isSaved
-                    ? room.total_saves - 1
-                    : room.total_saves + 1,
-                }
-              : room
-          )
+                  isSaved: false, // Force the Save button to reappear
+                };
+              }
+              return {
+                ...room,
+                isSaved: !isSaved,
+                total_saves: isSaved
+                  ? room.total_saves - 1
+                  : room.total_saves + 1,
+              };
+            }
+            return room;
+          })
         );
       })
-      .catch((error) => console.error("Error toggling save status:", error));
+      .catch((error) => console.error("Error toggling save status:", error))
+      .finally(() => {
+        // End debouncing after a delay
+        setTimeout(() => {
+          setDebouncing(false);
+        }, 500); // Adjust delay as needed
+      });
   };
 
   return (
