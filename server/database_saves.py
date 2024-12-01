@@ -38,6 +38,21 @@ def save_room(netid, room_number, hall):
                     print(f"Room {room_number} in {hall} not found.")
                     return
 
+                # Check if the room is available
+                cursor.execute(
+                    '''
+                    SELECT "isAvailable"
+                    FROM "RoomOverview"
+                    WHERE "room_id" = %s
+                    ''',
+                    (room_id,)
+                )
+                room = cursor.fetchone()
+                if not room or not room[0]:  # Availability is indicated by `True`
+                    print(f"Room {room_number} in {hall} is not available and cannot be saved.")
+                    return
+
+                # Insert the save if the room is available
                 cursor.execute(
                     '''
                     INSERT INTO "RoomSaves" ("netid", "room_id")
