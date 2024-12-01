@@ -12,6 +12,7 @@ import "./App.css";
 
 const App = () => {
   const [username, setUsername] = React.useState("");
+  const [adminStatus, setAdminStatus] = React.useState(false);
 
   React.useEffect(() => {
     const auth = async () => {
@@ -20,6 +21,9 @@ const App = () => {
         const data = await response.json();
         if (data.username) {
           setUsername(data.username);
+          setAdminStatus(data.admin_status);
+          console.log(`my username is ${data.username}`);
+          console.log(`my admin status is ${data.admin_status}`);
         } else {
           console.alert("NetID is not set, retrying...");
           setTimeout(auth, 2000);
@@ -34,15 +38,18 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <NavBar />
+      <NavBar adminStatus={adminStatus} />
 
       <Routes>
         <Route path="/floorplans" element={<FloorPlans />} />
         <Route path="/" element={<FilterComponent />} />
-        <Route path="/floorplans/hallfloor" element={<HallFloor username={username}/>} />
+        <Route
+          path="/floorplans/hallfloor"
+          element={<HallFloor username={username} />}
+        />
         {<Route path="/logout" element={<Logout />}></Route>}
-        <Route path="/upload-pdfs" element={<UploadPDFs />} />
-        <Route path="/cart" element={<Cart username={username}/>} />
+        <Route path="/upload-pdfs" element={<UploadPDFs adminStatus={adminStatus}/>} />
+        <Route path="/cart" element={<Cart username={username} />} />
       </Routes>
 
       <Footer />

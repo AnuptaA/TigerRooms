@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
-const NavBar = () => {
+const NavBar = ({ adminStatus }) => {
   const navigator = useNavigate();
   return (
     <nav>
@@ -18,9 +18,11 @@ const NavBar = () => {
             <li>
               <a href="/floorplans">Floor Plans</a>
             </li>
-            <li>
-              <a href="/upload-pdfs">Upload PDFs</a>
-            </li>
+            {adminStatus && (
+              <li>
+                <a href="/upload-pdfs">Upload PDFs</a>
+              </li>
+            )}
           </ul>
         </li>
         <li>

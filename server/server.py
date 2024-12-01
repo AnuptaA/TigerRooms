@@ -14,7 +14,7 @@ from db_config import DATABASE_URL
 from dotenv import load_dotenv
 from update_database import get_last_update_time, get_connection, return_connection
 import CASauth as CASauth
-from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability
+from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
 
 #-----------------------------------------------------------------------
@@ -93,7 +93,10 @@ def logoutcas():
 def get_user_data():
     if 'username' in session:
         print(f"username {session['username']}")
-        return jsonify({"status": "success", 'username': session['username']}), 200
+        print(f"admin status: {is_admin(session['username'])}")
+        return jsonify({"status": "success",
+                         'username': session['username'],
+                         "admin_status": is_admin(session['username']) }), 200
     else:
         print("username not in session")
         return jsonify({"status": "failure", "message": "User not authenticated"}), 401

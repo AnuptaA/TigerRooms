@@ -467,6 +467,41 @@ tbody tr td[colspan="3"] {
   color: #ff4742;
 }
 
+/* For some reason this doesn't work so I transferred it to the actual
+   page as inline CSS */
+
+.unauthorized-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+  padding: 0 5vw;
+}
+
+/* really aggressive lol */
+.unauthorized-page h1 {
+  color: red;
+  font-size: 8vw;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 5vh;
+  margin-bottom: 2vh;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  word-wrap: break-word;
+}
+
+.unauthorized-page p {
+  color: darkred;
+  font-size: 4vw;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 2vh;
+  word-wrap: break-word;
+}
+
 /*--------------------------------------------------------------------*/
 /* This is the styling for the homepage route for filtering.          */
 /*--------------------------------------------------------------------*/

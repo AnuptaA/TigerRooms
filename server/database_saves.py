@@ -8,6 +8,11 @@ from db_config import DATABASE_URL
 
 #-----------------------------------------------------------------------
 
+# temporary hashset for testing admin
+admin_set = {"aa6328", "jm7048"}
+
+#-----------------------------------------------------------------------
+
 def get_room_id(room_number, hall, cursor):
     """Retrieve the room_id for a specific room based on room_number and hall."""
     cursor.execute(
@@ -156,3 +161,11 @@ def is_room_saved(netid, room_number, hall, cursor):
     )
     result = cursor.fetchone()
     return result is not None
+
+#-----------------------------------------------------------------------
+
+def is_admin(netid):
+    ''''Check if a given user is an admin, return true if they are an admin, false otherwise.'''
+    if netid in admin_set:
+        return True
+    return False
