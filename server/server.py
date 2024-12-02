@@ -331,30 +331,43 @@ def get_updated_time():
 
 @app.route('/api/clear_drawn_rooms', methods=['POST'])
 def clear_drawn_rooms():
+    print("Endpoint '/api/clear_drawn_rooms' was hit.")  # Confirm endpoint is reached
     data = request.json
-    netid = data.get('netid')
+    print(f"Request data received: {data}")  # Debugging request data
 
+    netid = data.get('netid')
     if not netid:
+        print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
 
+    conn = get_db_connection()
     try:
-        with psycopg2.connect(DATABASE_URL) as conn:
-            with conn.cursor() as cursor:
-                # Delete all saved rooms that are unavailable for the user
-                cursor.execute(
-                    '''
-                    DELETE FROM "RoomSaves"
-                    WHERE "netid" = %s
-                    AND "room_id" IN (
-                        SELECT "room_id" FROM "RoomOverview" WHERE "isAvailable" = FALSE
-                    )
-                    ''',
-                    (netid,)
-                )
-                conn.commit()
-        return jsonify({"message": "All drawn rooms cleared from cart."}), 200
+        cursor = conn.cursor()
+        print(f"Executing DELETE query for netid: {netid}")
+
+        # Execute the DELETE query
+        cursor.execute('''
+            DELETE FROM "RoomSaves"
+            WHERE "netid" = %s
+            AND "room_id" IN (
+                SELECT "room_id" FROM "RoomOverview" WHERE "isAvailable" = FALSE
+            )
+        ''', (netid,))
+        
+        # Fetch the number of rows deleted
+        rows_deleted = cursor.rowcount
+        print(f"Rows deleted: {rows_deleted}")
+
+        conn.commit()
+        print("Transaction committed successfully.")
+        return jsonify({"message": f"All drawn rooms cleared from cart. Rows affected: {rows_deleted}"}), 200
     except Exception as e:
+        print(f"Error during clearing drawn rooms: {e}")
         return jsonify({"error": "Failed to clear drawn rooms.", "details": str(e)}), 500
+    finally:
+        print("Closing database connection.")
+        conn.close()
+        return_connection(conn)
 
 #-----------------------------------------------------------------------
 
