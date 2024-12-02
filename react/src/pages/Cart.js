@@ -125,7 +125,7 @@ const Cart = ({ username }) => {
             className="clear-drawn-rooms-button"
             onClick={handleClearDrawnRooms}
           >
-            Clear All Drawn Rooms From Cart
+            Clear All Unavailable (Drawn) Rooms From Cart
           </button>
         </>
       ) : (

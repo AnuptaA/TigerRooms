@@ -749,3 +749,32 @@ input[type="number"] {
 .trash-button:hover {
   color: #ff0000;
 }
+
+.clear-drawn-rooms-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: red;
+  border: 2px solid #d9534f; /* Adds a more defined border with a red tone */
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #f8f9fa; /* Light gray background for a cleaner look */
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
+}
+
+.clear-drawn-rooms-button:hover {
+  background-color: #f5c6cb; /* Softer red background on hover */
+  border-color: #c9302c; /* Slightly darker border color on hover */
+  transform: scale(1.05);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* More prominent shadow */
+}
+
+.clear-drawn-rooms-button:active {
+  background-color: #f1b0b7; /* Even softer red background when active */
+  transform: scale(1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduced shadow on click */
+}
