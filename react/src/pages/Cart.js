@@ -52,51 +52,82 @@ const Cart = ({ username }) => {
       .catch((error) => console.error("Error unsaving room:", error));
   };
 
+  // Handle clearing all drawn rooms
+  const handleClearDrawnRooms = () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to clear all drawn rooms from the cart?"
+    );
+    if (!confirmed) return;
+
+    fetch("/api/clear_drawn_rooms", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ netid: username }),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setSavedRooms((prevRooms) =>
+          prevRooms.filter((room) => room.availability === true)
+        );
+      })
+      .catch((error) => console.error("Error clearing drawn rooms:", error));
+  };
+
   return (
     <div className="cart-page">
       <h1 className="cart-title">Your Saved Rooms</h1>
       {savedRooms.length > 0 ? (
-        <table className="saved-rooms-table">
-          <thead className="saved-rooms-thead">
-            <tr>
-              <th>Room</th>
-              <th>Total Saves</th>
-              <th>Availability</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {savedRooms.map((room, index) => (
-              <tr key={index}>
-                <td>{`${room.hall} ${room.room_number}`}</td>
-                <td>
-                  {room.total_saves !== undefined ? room.total_saves : "N/A"}
-                </td>
-                <td>
-                  <div
-                    style={{
-                      width: "20px",
-                      height: "20px",
-                      borderRadius: "4px",
-                      backgroundColor: room.availability ? "green" : "red",
-                      margin: "0 auto",
-                    }}
-                  ></div>
-                </td>
-                <td>
-                  <button
-                    className="trash-button"
-                    onClick={() =>
-                      handleUnsaveRoom(room.room_number, room.hall)
-                    }
-                  >
-                    🗑️
-                  </button>
-                </td>
+        <>
+          <table className="saved-rooms-table">
+            <thead className="saved-rooms-thead">
+              <tr>
+                <th>Room</th>
+                <th>Total Saves</th>
+                <th>Availability</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {savedRooms.map((room, index) => (
+                <tr key={index}>
+                  <td>{`${room.hall} ${room.room_number}`}</td>
+                  <td>
+                    {room.total_saves !== undefined ? room.total_saves : "N/A"}
+                  </td>
+                  <td>
+                    <div
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "4px",
+                        backgroundColor: room.availability ? "green" : "red",
+                        margin: "0 auto",
+                      }}
+                    ></div>
+                  </td>
+                  <td>
+                    <button
+                      className="trash-button"
+                      onClick={() =>
+                        handleUnsaveRoom(room.room_number, room.hall)
+                      }
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            className="clear-drawn-rooms-button"
+            onClick={handleClearDrawnRooms}
+          >
+            Clear All Drawn Rooms From Cart
+          </button>
+        </>
       ) : (
         <p className="no-saved-rooms">You haven't saved any rooms yet.</p>
       )}

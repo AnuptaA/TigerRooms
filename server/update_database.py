@@ -153,10 +153,10 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
             f"Dear {netid},\n\n"
             f"The following rooms you saved have been drawn and are no longer available:\n"
             f"{room_list}\n\n"
-            f"They will now appear at the bottom of your saved rooms table.\n"
-            f"If you no longer need these drawn rooms for reference, you can remove them from your saved rooms at any time.\n\n"
+            f"They will now appear at the bottom of your saved rooms table in your cart.\n"
+            f"If you no longer need these drawn rooms for reference, you can remove them at any time.\n\n"
             f"This update reflects the transition from the previous timestamp {past_timestamp} to the current timestamp {current_timestamp}.\n\n"
-            f"View your updated saved rooms here: https://tigerrooms-l48h.onrender.com/\n\n"
+            f"View your saved rooms here: https://tigerrooms-l48h.onrender.com/\n\n"
             f"Best regards,\n"
             f"TigerRooms Team"
         )

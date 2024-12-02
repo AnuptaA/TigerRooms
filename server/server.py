@@ -329,5 +329,34 @@ def get_updated_time():
 
 #-----------------------------------------------------------------------
 
+@app.route('/api/clear_drawn_rooms', methods=['POST'])
+def clear_drawn_rooms():
+    data = request.json
+    netid = data.get('netid')
+
+    if not netid:
+        return jsonify({"error": "Missing netid"}), 400
+
+    try:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cursor:
+                # Delete all saved rooms that are unavailable for the user
+                cursor.execute(
+                    '''
+                    DELETE FROM "RoomSaves"
+                    WHERE "netid" = %s
+                    AND "room_id" IN (
+                        SELECT "room_id" FROM "RoomOverview" WHERE "isAvailable" = FALSE
+                    )
+                    ''',
+                    (netid,)
+                )
+                conn.commit()
+        return jsonify({"message": "All drawn rooms cleared from cart."}), 200
+    except Exception as e:
+        return jsonify({"error": "Failed to clear drawn rooms.", "details": str(e)}), 500
+
+#-----------------------------------------------------------------------
+
 if __name__ == '__main__':
     app.run(port=PORT, debug=True)
