@@ -123,6 +123,9 @@ def notify_users_and_update_carts(newly_unavailable):
     conn = get_connection()
     cursor = conn.cursor()
 
+    # Dictionary to collect rooms per user
+    user_rooms = {}
+
     for room in newly_unavailable:
         print(f"Processing room {room['room_number']} in {room['hall']}.")
         cursor.execute('''
@@ -135,23 +138,38 @@ def notify_users_and_update_carts(newly_unavailable):
 
         for user in users:
             netid = user[0]
-            print(f"Notifying user {netid}.")
+            if netid not in user_rooms:
+                user_rooms[netid] = []
+            user_rooms[netid].append(room)
 
-            send_email(
-                to_email=f"{netid}@princeton.edu",
-                subject="[TigerRooms] - Saved Room Drawn",
-                body=f"Dear {netid},\n\nYour saved room, {room['hall']} {room['room_number']}, has been drawn. "
-                     f"It is now unavailable and has been removed from your cart.\n\n"
-                     f"Please visit https://tigerrooms-l48h.onrender.com/ to view your updated cart.\n\n"
-                     f"Best regards,\nTigerRooms Team"
-            )
-
+            # Remove room from the user's cart
             cursor.execute('''
                 DELETE FROM "RoomSaves"
                 WHERE "netid" = %s AND "room_id" = %s
             ''', (netid, room["room_id"]))
 
     conn.commit()
+
+    # Send one email per user with all their affected rooms
+    for netid, rooms in user_rooms.items():
+        print(f"Notifying user {netid} about {len(rooms)} rooms.")
+        room_list = "\n".join([f"{room['hall']} {room['room_number']}" for room in rooms])
+        email_body = (
+            f"Dear {netid},\n\n"
+            f"The following rooms you saved have been drawn and are now unavailable:\n"
+            f"{room_list}\n\n"
+            f"They have been removed from your cart. "
+            f"Please visit https://tigerrooms-l48h.onrender.com/ to view your updated cart.\n\n"
+            f"Best regards,\n"
+            f"TigerRooms Team"
+        )
+
+        send_email(
+            to_email=f"{netid}@princeton.edu",
+            subject="[TigerRooms] - Saved Rooms Drawn",
+            body=email_body
+        )
+
     print("Notifications sent and carts updated.")
     cursor.close()
     return_connection(conn)
