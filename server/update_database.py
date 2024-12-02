@@ -114,7 +114,7 @@ def update_room_availability_and_find_changes(processed_table, snapshot):
 #-----------------------------------------------------------------------
 
 # Function to notify users and update carts for newly unavailable rooms
-def notify_users_and_update_carts(newly_unavailable):
+def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_timestamp):
     if not newly_unavailable:
         print("No rooms became unavailable.")
         return
@@ -158,6 +158,8 @@ def notify_users_and_update_carts(newly_unavailable):
             f"Dear {netid},\n\n"
             f"The following rooms you saved have been drawn and are now unavailable:\n"
             f"{room_list}\n\n"
+            f"This change reflects the transition from the previous timestamp {past_timestamp} "
+            f"to the current timestamp {current_timestamp}.\n\n"
             f"They have been removed from your cart. "
             f"Please visit https://tigerrooms-l48h.onrender.com/ to view your updated cart.\n\n"
             f"Best regards,\n"
@@ -271,6 +273,12 @@ def main():
         update_time = get_last_update_time()
         print("Existing update_time:", update_time)
 
+        # Transform timestamps into desired formats
+        past_timestamp = (
+            update_time.strftime("%m/%d/%Y %I:%M %p")
+            if isinstance(update_time, datetime) else "N/A"
+        )
+
         # Proceed with update if current timestamp is "N/A" or older than last_updated
         if update_time == "N/A" or last_updated_dt > update_time:
             print("New timestamp is more recent. Proceeding with update.")
@@ -282,7 +290,7 @@ def main():
             newly_unavailable = update_room_availability_and_find_changes(processed_table, snapshot)
 
             # Notify users and update carts
-            notify_users_and_update_carts(newly_unavailable)
+            notify_users_and_update_carts(newly_unavailable, past_timestamp, last_updated)
 
             # Update timestamp
             update_timestamp(last_updated)  # Store in original format
