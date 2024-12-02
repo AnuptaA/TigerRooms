@@ -262,6 +262,15 @@ tbody tr td[colspan="3"] {
   /* gap: 15.528vh; Optional spacing between items */
 }
 
+.floor-plan-error-container {
+  margin-top: 15%;
+}
+
+.floor-plan-error-message {
+  color: orange;
+  text-align: center;
+}
+
 .results-page-title {
   margin-top: 11.8173vh;
   font-size: 5.8824vh;
