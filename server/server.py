@@ -282,6 +282,7 @@ def upload_pdf():
                     ['python', 'update_database.py', file_path],
                     capture_output=True, text=True
                 )
+                print(f"Result subprocess ouput: {result.stdout}")
 
                 # Check subprocess output for a specific message indicating no update was needed
                 if "NO_UPDATE" in result.stdout:

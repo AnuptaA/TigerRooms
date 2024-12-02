@@ -12,27 +12,36 @@ from db_config import DATABASE_URL
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
+from dotenv import load_dotenv
+import os
 
 #-----------------------------------------------------------------------
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize the connection pool (size of the pool can be adjusted based on need)
 conn_pool = psycopg2.pool.SimpleConnectionPool(
     1, 15, DATABASE_URL)  # minconn=1, maxconn=10
 
+print("Database connection pool initialized.")
+
 #-----------------------------------------------------------------------
 
 # Function to get a connection from the pool
 def get_connection():
+    print("Getting a database connection from the pool.")
     return conn_pool.getconn()
 
 # Function to return a connection to the pool
 def return_connection(conn):
+    print("Returning the connection to the pool.")
     conn_pool.putconn(conn)
 
 #-----------------------------------------------------------------------
 
 # Function to print all rooms and their availability for debugging purposes
 def print_room_availability():
+    print("Fetching all rooms and their availability.")
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT "room_number", "isAvailable" FROM "RoomOverview"')
@@ -51,6 +60,7 @@ def print_room_availability():
 
 # Function to take a snapshot of available rooms
 def take_snapshot():
+    print("Taking a snapshot of currently available rooms.")
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('''
@@ -59,6 +69,7 @@ def take_snapshot():
         WHERE "isAvailable" = TRUE
     ''')
     snapshot = cursor.fetchall()
+    print(f"Snapshot taken: {len(snapshot)} rooms available.")
     cursor.close()
     return_connection(conn)
     return [{"room_id": row[0], "hall": row[1], "room_number": row[2]} for row in snapshot]
@@ -67,6 +78,7 @@ def take_snapshot():
 
 # Function to update room availability and find newly unavailable rooms
 def update_room_availability_and_find_changes(processed_table, snapshot):
+    print("Updating room availability and identifying newly unavailable rooms.")
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('SELECT "room_id", "room_number" FROM "RoomOverview"')
@@ -74,6 +86,7 @@ def update_room_availability_and_find_changes(processed_table, snapshot):
 
     pdf_rooms = processed_table[2].tolist()
     newly_unavailable = []
+    print(f"Processing {len(current_rooms)} rooms from the database.")
 
     for room_id, room_number in current_rooms:
         is_now_available = room_number in pdf_rooms
@@ -86,7 +99,6 @@ def update_room_availability_and_find_changes(processed_table, snapshot):
             (is_now_available, room_id)
         )
 
-        # Identify newly unavailable rooms
         if not is_now_available:
             for snap in snapshot:
                 if snap["room_id"] == room_id:
@@ -94,6 +106,7 @@ def update_room_availability_and_find_changes(processed_table, snapshot):
                     break
 
     conn.commit()
+    print(f"Newly unavailable rooms identified: {len(newly_unavailable)}")
     cursor.close()
     return_connection(conn)
     return newly_unavailable
@@ -106,52 +119,58 @@ def notify_users_and_update_carts(newly_unavailable):
         print("No rooms became unavailable.")
         return
 
+    print("Notifying users and updating carts.")
     conn = get_connection()
     cursor = conn.cursor()
 
     for room in newly_unavailable:
-        # Find users who have the room in their carts
+        print(f"Processing room {room['room_number']} in {room['hall']}.")
         cursor.execute('''
             SELECT "netid"
             FROM "RoomSaves"
             WHERE "room_id" = %s
         ''', (room["room_id"],))
         users = cursor.fetchall()
+        print(f"Users affected: {len(users)}")
 
-        # Notify each user and remove the room from their carts
         for user in users:
             netid = user[0]
+            print(f"Notifying user {netid}.")
 
-            # Send email notification
             send_email(
                 to_email=f"{netid}@princeton.edu",
-                subject="Room Unavailable Notification",
+                subject="[TigerRooms] - Saved Room Drawn",
                 body=f"Dear {netid},\n\nYour saved room, {room['hall']} {room['room_number']}, has been drawn. "
                      f"It is now unavailable and has been removed from your cart.\n\n"
-                     f"Please visit https://tigerrooms-l48h.onrender.com/.\n\n"
+                     f"Please visit https://tigerrooms-l48h.onrender.com/ to view your updated cart.\n\n"
                      f"Best regards,\nTigerRooms Team"
             )
 
-            # Remove room from the cart
             cursor.execute('''
                 DELETE FROM "RoomSaves"
                 WHERE "netid" = %s AND "room_id" = %s
             ''', (netid, room["room_id"]))
 
     conn.commit()
+    print("Notifications sent and carts updated.")
     cursor.close()
     return_connection(conn)
-    print("Notifications sent and carts updated.")
 
 #-----------------------------------------------------------------------
 
 # Function to send email notifications
 def send_email(to_email, subject, body):
+    print(f"Sending email to {to_email} with subject '{subject}'.")
     try:
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
-        from_email = "tigerroomsteam@gmail.com"
-        password = "bruh123456"
+
+        # Load credentials from environment variables
+        from_email = os.getenv("EMAIL_ADDRESS")
+        app_password = os.getenv("EMAIL_APP_PASSWORD")
+
+        if not from_email or not app_password:
+            raise ValueError("Email credentials are not set in environment variables.")
 
         msg = MIMEText(body)
         msg["Subject"] = subject
@@ -160,7 +179,7 @@ def send_email(to_email, subject, body):
 
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
-            server.login(from_email, password)
+            server.login(from_email, app_password)
             server.sendmail(from_email, to_email, msg.as_string())
 
         print(f"Email sent to {to_email}")
@@ -169,10 +188,9 @@ def send_email(to_email, subject, body):
 
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
-
 # Function to update the stored timestamp with the new given timestamp
 def update_timestamp(last_updated):
+    print(f"Updating timestamp to {last_updated}.")
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute('DELETE FROM "LastTimestamp"')
