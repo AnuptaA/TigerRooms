@@ -98,6 +98,26 @@ const HallFloor = ({ username }) => {
       });
   };
 
+  const getCookie = (key) => {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+      const [cookieKey, cookieValue] = cookie.split("=");
+      if (cookieKey === key) {
+        return cookieValue || ""; // Decode in case of encoded values
+      }
+    }
+    return ""; // Return empty string if the key isn't found
+  };
+
+  // Unpacking cookies
+  const rescoFromCookie = getCookie("resco") || "";
+  const hallFromCookie = getCookie("hall") || "";
+  const floorFromCookie = getCookie("floor") || "";
+  const occupancyFromCookie = getCookie("occupancy") || "";
+  const minSquareFootageFromCookie = getCookie("minSquareFootage") || "";
+
+  const returnLink = `/floorplans?resco=${rescoFromCookie}&hall=${hallFromCookie}&floor=${floorFromCookie}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`
+
   return (
     <div className="floor-plan-flexbox">
       <div>
@@ -107,7 +127,7 @@ const HallFloor = ({ username }) => {
         <img src={imageSrc} alt="HallMap" className="floor-plan-image" />
         <h3 className="back-link">
           Click{" "}
-          <a href="/floorplans" className="back-to-floorplans">
+          <a href={returnLink} className="back-to-floorplans">
             here
           </a>{" "}
           to return to floor plans list

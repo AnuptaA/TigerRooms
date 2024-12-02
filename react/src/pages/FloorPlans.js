@@ -13,7 +13,23 @@ const FloorPlans = () => {
   const floor = searchParams.get("floor");
   const occupancy = searchParams.get("occupancy");
   const minSquareFootage = searchParams.get("minSquareFootage");
+
+  const resCollegeForCookie = searchParams.get("resco") || "";
+  const hallForCookie = searchParams.get("hall") || "";
+  const floorForCookie = searchParams.get("floor") || "";
+  const occupancyForCookie = searchParams.get("occupancy") || "";
+  const minSquareFootageForCookie = searchParams.get("minSquareFootage") || "";
+
   const [availabilityInfo, setAvailabilityInfo] = useState([]);
+
+  useEffect(() => {
+    // Set cookies
+    document.cookie = `resco=${resCollegeForCookie}; path=/;`;
+    document.cookie = `hall=${hallForCookie}; path=/;`;
+    document.cookie = `floor=${floorForCookie}; path=/;`;
+    document.cookie = `occupancy=${occupancyForCookie}; path=/;`;
+    document.cookie = `minSquareFootage=${minSquareFootageForCookie}; path=/;`;
+  }, [resCollegeForCookie, hallForCookie, floorForCookie, occupancyForCookie, minSquareFootageForCookie]);
 
   // Fetch unique halls and floors from the backend
   useEffect(() => {
