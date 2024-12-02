@@ -119,7 +119,7 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
         print("No rooms became unavailable.")
         return
 
-    print("Notifying users and updating carts.")
+    print("Notifying users about drawn rooms.")
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -142,12 +142,7 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
                 user_rooms[netid] = []
             user_rooms[netid].append(room)
 
-            # Remove room from the user's cart
-            cursor.execute('''
-                DELETE FROM "RoomSaves"
-                WHERE "netid" = %s AND "room_id" = %s
-            ''', (netid, room["room_id"]))
-
+    # Commit to ensure changes, even though we don't delete rows now
     conn.commit()
 
     # Send one email per user with all their affected rooms
@@ -156,12 +151,12 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
         room_list = "\n".join([f"{room['hall']} {room['room_number']}" for room in rooms])
         email_body = (
             f"Dear {netid},\n\n"
-            f"The following rooms you saved have been drawn and are now unavailable:\n"
+            f"The following rooms you saved have been drawn and are no longer available:\n"
             f"{room_list}\n\n"
-            f"This change reflects the transition from the previous timestamp {past_timestamp} "
-            f"to the current timestamp {current_timestamp}.\n\n"
-            f"They have been removed from your cart. "
-            f"Please visit https://tigerrooms-l48h.onrender.com/ to view your updated cart.\n\n"
+            f"They will now appear at the bottom of your saved rooms table.\n"
+            f"If you no longer need these drawn rooms for reference, you can remove them from your saved rooms at any time.\n\n"
+            f"This update reflects the transition from the previous timestamp {past_timestamp} to the current timestamp {current_timestamp}.\n\n"
+            f"View your updated saved rooms here: https://tigerrooms-l48h.onrender.com/\n\n"
             f"Best regards,\n"
             f"TigerRooms Team"
         )
@@ -172,7 +167,7 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
             body=email_body
         )
 
-    print("Notifications sent and carts updated.")
+    print("Notifications sent to users about drawn rooms.")
     cursor.close()
     return_connection(conn)
 

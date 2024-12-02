@@ -3,7 +3,6 @@ import "../App.css";
 
 const Cart = ({ username }) => {
   const [savedRooms, setSavedRooms] = useState([]);
-  //   const userNetId = "user123"; // Assume this is fetched or passed as a prop
 
   // Fetch saved rooms for the user
   useEffect(() => {
@@ -15,7 +14,11 @@ const Cart = ({ username }) => {
         return response.json();
       })
       .then((data) => {
-        setSavedRooms(data.saved_rooms);
+        // Sort rooms so available ones come first
+        const sortedRooms = data.saved_rooms.sort((a, b) => {
+          return b.availability - a.availability;
+        });
+        setSavedRooms(sortedRooms);
       })
       .catch((error) => console.error("Error fetching saved rooms:", error));
   }, [username]);
@@ -39,7 +42,7 @@ const Cart = ({ username }) => {
       }),
     })
       .then((response) => response.json())
-      .then((data) => {
+      .then(() => {
         setSavedRooms((prevRooms) =>
           prevRooms.filter(
             (room) => !(room.room_number === roomNumber && room.hall === hall)
@@ -58,7 +61,7 @@ const Cart = ({ username }) => {
             <tr>
               <th>Room</th>
               <th>Total Saves</th>
-              <th>Availability</th> {/* New Availability Column */}
+              <th>Availability</th>
               <th></th>
             </tr>
           </thead>
@@ -75,8 +78,7 @@ const Cart = ({ username }) => {
                       width: "20px",
                       height: "20px",
                       borderRadius: "4px",
-                      backgroundColor:
-                        room.availability === true ? "green" : "red",
+                      backgroundColor: room.availability ? "green" : "red",
                       margin: "0 auto",
                     }}
                   ></div>
