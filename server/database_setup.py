@@ -185,8 +185,8 @@ def main():
             # Lauritzen Floors --------------------------------------------------
             {
                 "residential_college": "Whitman", "hall": "Lauritzen", "floor": 0, 
-                "room_numbers": ['D018', 'D020'],
-                "occupancies": [2, 2], "square_footages": [194, 187]
+                "room_numbers": ['D002', 'D003', 'D004', 'D006', 'D008', 'D010', 'D012', 'D014', 'D016', 'D018', 'D020'],
+                "occupancies": [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2], "square_footages": [160, 160, 160, 160, 160, 160, 160, 160, 190, 194, 187]
             },
             {
                 "residential_college": "Whitman", "hall": "Lauritzen", "floor": 1, 
