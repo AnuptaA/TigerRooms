@@ -17,9 +17,6 @@ const HallFloor = ({ username }) => {
   const resCollege = searchParams.get("resco");
   const hall = searchParams.get("hall");
   const floor = searchParams.get("floor");
-  const imageSrc = require(`../img/floorplans/${resCollege}_${hall}_${floor}.png`);
-
-  console.log(imageSrc);
 
   // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
@@ -37,6 +34,33 @@ const HallFloor = ({ username }) => {
       })
       .catch((error) => console.error("Error fetching room data:", error));
   }, [floor, username]);
+
+  let imageSrc;
+
+  try {
+    imageSrc = require(`../img/floorplans/${resCollege}_${hall}_${floor}.png`);
+
+    console.log(imageSrc);
+  } catch (error) {
+    console.log("non-existent combination of resco, hall and floor");
+
+    return (
+      <div className="floor-plan-error-container">
+        <h1 className="floor-plan-error-message">
+          No results matched your parameters
+        </h1>
+
+        <h3 className="floor-plan-error-message">
+          Click{" "}
+          <a href="/" className="back-to-floorplans">
+            here
+          </a>{" "}
+          to do another search
+        </h3>
+      </div>
+    );
+  }
+
 
   // Toggle row expansion
   const toggleExpandRow = (index) => {
@@ -120,7 +144,7 @@ const HallFloor = ({ username }) => {
 
   return (
     <div className="floor-plan-flexbox">
-      <div>
+      <div className="floor-plan-map">
         <h1 className="floor-plan-title">
           {resCollege + " College, " + hall + " Hall, Floor " + floor}
         </h1>
@@ -133,7 +157,7 @@ const HallFloor = ({ username }) => {
           to return to floor plans list
         </h3>
       </div>
-      <div>
+      <div className="available-rooms-table">
         <RoomInfoTable
           roomInfo={roomInfo}
           expandedRows={expandedRows}
