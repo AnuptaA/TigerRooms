@@ -119,6 +119,7 @@ Whitman: [
 "Wendell-C",
 "Baker-E",
 "Baker-S",
+Hargadon
 ],
 Yeh: ["Fu", "Grousbeck", "Hariri", "Mannion"],
 };
