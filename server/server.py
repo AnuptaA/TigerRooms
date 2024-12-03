@@ -6,7 +6,7 @@
 #-----------------------------------------------------------------------
 
 import flask
-from flask import request, jsonify, session, redirect, send_from_directory
+from flask import request, jsonify, session, redirect, send_from_directory, url_for
 from flask_cors import CORS
 import os
 import subprocess
@@ -40,6 +40,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def get_db_connection():
     conn = get_connection()
     return conn
+
+#-----------------------------------------------------------------------
+
+def require_login():
+    # Helper function that forces user to log-in
+    if 'username' not in session:
+        return redirect(url_for('index')) 
+    return None
 
 #-----------------------------------------------------------------------
 
@@ -163,9 +171,19 @@ def get_unique_halls_and_floors():
 
 #-----------------------------------------------------------------------
 
+#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/floorplans/hallfloor', methods=['GET'])
 def get_hallfloor():
+    # Ensure usser is logged in before accessing API
+    if require_login():
+        return require_login()
+
     netid = request.args.get('netid')  # Get netid from query parameters
+
+    # Must be logged in as the user to obtain data
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+
     hall = request.args.get('hall')  # Get hall from query parameters
     floor = request.args.get('floor')  # Get hall from query parameters
 
@@ -206,10 +224,21 @@ def get_hallfloor():
 #-----------------------------------------------------------------------
 
 # Save a room
+
+#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/save_room', methods=['POST'])
 def api_save_room():
+    # Ensure usser is logged in before accessing API
+    if require_login():
+        return require_login()
+
     data = request.json
     netid = data.get('netid')
+
+    # Must be logged in as the user to obtain data
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+
     room_number = data.get('room_number')
     hall = data.get('hall')
 
@@ -222,10 +251,21 @@ def api_save_room():
 #-----------------------------------------------------------------------
 
 # Unsave a room
+
+#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/unsave_room', methods=['POST'])
 def api_unsave_room():
+    # Ensure user is logged in before accessing API
+    if require_login():
+        return require_login()
+    
     data = request.json
     netid = data.get('netid')
+
+    # Must be logged in as the user to obtain data
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+
     room_number = data.get('room_number')
     hall = data.get('hall')
 
@@ -237,12 +277,21 @@ def api_unsave_room():
 
 #-----------------------------------------------------------------------
 
-# Get all saved rooms for a specific user
+#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/saved_rooms', methods=['GET'])
 def api_get_saved_rooms():
-    user_id = request.args.get('user_id')
-    saved_rooms = get_saved_rooms_with_saves_and_availability(user_id)
-    return jsonify({"netid": user_id, "saved_rooms": saved_rooms}), 200
+    # Ensure usser is logged in before accessing API
+    if require_login():
+        return require_login()
+    
+    netid = request.args.get('user_id')
+
+    # Must be logged in as the user to obtain data
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+
+    saved_rooms = get_saved_rooms_with_saves_and_availability(netid)
+    return jsonify({"netid": netid, "saved_rooms": saved_rooms}), 200
 
 #-----------------------------------------------------------------------
 
