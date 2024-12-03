@@ -1,0 +1,148 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "DM sans", sans-serif, Helvetica;
+}
+
+nav {
+  background-color: #2a668f;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  width: 100%;
+  padding: 10px 1%;
+  top: 0;
+  z-index: 999;
+}
+
+.logo-cont {
+    padding-left: 3vw;
+}
+
+nav ul li {
+  list-style-type: none;
+  display: inline-block;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.75em;
+  font-weight: 700;
+}
+
+nav ul li a:hover {
+  color: #e77500;
+  transition: all 0.3s ease 0s;
+}
+
+#nav-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 1vw;
+  width: 100%;
+}
+
+#left-options,
+#right-options {
+  display: flex;
+  align-items: center;
+  padding: 0 2vw;
+}
+
+#left-options li,
+#right-options li {
+  padding: 0 2vw;
+}
+
+#logo {
+  height: 5vh;
+  width: auto;
+}
+
+#cart-btn {
+  background-clip: padding-box;
+  background-color: #e77500;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  min-height: 0.35rem;
+  padding: calc(0.3rem - 1px) calc(1.25rem - 1px);
+  transition: all 0.3s;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  width: auto;
+}
+
+#cart-btn:hover,
+#cart-btn:focus {
+  background-color: #fb8332;
+}
+
+#cart-btn:hover {
+  transform: translateY(-1px);
+}
+
+#cart-btn:active {
+  background-color: #c85000;
+  transform: translateY(0);
+}
+
+#cart-svg {
+  height: 3.5vh;
+  width: auto;
+}
+
+nav::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 0.75vh;
+  width: 100%;
+  background-color: #e77500;
+}
+
+#lockup {
+  height: 5.5vh;
+  width: auto;
+}
+
+#middle-text-cont {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#middle-text-cont ul li {
+  list-style-type: none;
+  text-align: center;
+}
+
+#middle-text-cont ul {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+footer {
+  background-color: #a0a0a0;
+  color: white;
+  display: flex;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  align-content: center;
+  justify-content: space-between;
+  font-size: 0.85em;
+  text-align: right;
+  padding: 0.85% 3.5%;
+  position: fixed;
+}
