@@ -202,8 +202,8 @@ const UploadPDFs = ({ adminStatus }) => {
       </h1>
       <div id="file-links" style={{ marginTop: "2rem", textAlign: "center" }}>
         <h2 style={{ marginBottom: "1.5rem" }}>
-          Please refer to the following Excel file and corresponding exported
-          PDF:
+          Please refer to the following PDF format, generated from the sample
+          Excel file:
         </h2>
         <ul style={{ listStyleType: "none", padding: "0" }}>
           <li style={{ marginBottom: "1rem" }}>
