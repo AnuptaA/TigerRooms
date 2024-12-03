@@ -200,6 +200,43 @@ const UploadPDFs = ({ adminStatus }) => {
       <h1 id="pdf-upload-text">
         Upload the latest PDF here! Our students will thank you!
       </h1>
+      <div id="file-links" style={{ marginTop: "2rem", textAlign: "center" }}>
+        <h2 style={{ marginBottom: "1.5rem" }}>
+          Please refer to the following Excel file and corresponding exported
+          PDF:
+        </h2>
+        <ul style={{ listStyleType: "none", padding: "0" }}>
+          <li style={{ marginBottom: "1rem" }}>
+            <h3 style={{ margin: "0" }}>
+              <a
+                href={require("../img/misc/Excel_Sample.xlsx")}
+                download="Excel_Sample.xlsx"
+                style={{
+                  textDecoration: "none",
+                  color: "#007bff",
+                }}
+              >
+                Excel_Sample.xlsx
+              </a>
+            </h3>
+          </li>
+          <li>
+            <h3 style={{ margin: "0" }}>
+              <a
+                href={require("../img/misc/PDF_Sample.pdf")}
+                download="PDF_Sample.pdf"
+                style={{
+                  textDecoration: "none",
+                  color: "#007bff",
+                }}
+              >
+                PDF_Sample.pdf
+              </a>
+            </h3>
+          </li>
+        </ul>
+      </div>
+
       <div id="upload-pdfs-cont">
         <form id="pdf-form" onSubmit={handleSubmit}>
           <div id="file-upload" onClick={handleDivClick}>
