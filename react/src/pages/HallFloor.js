@@ -144,7 +144,7 @@ const HallFloor = ({ username }) => {
 
   return (
     <div className="floor-plan-flexbox">
-      <div>
+      <div className="floor-plan-map">
         <h1 className="floor-plan-title">
           {resCollege + " College, " + hall + " Hall, Floor " + floor}
         </h1>
@@ -157,7 +157,7 @@ const HallFloor = ({ username }) => {
           to return to floor plans list
         </h3>
       </div>
-      <div>
+      <div className="available-rooms-table">
         <RoomInfoTable
           roomInfo={roomInfo}
           expandedRows={expandedRows}

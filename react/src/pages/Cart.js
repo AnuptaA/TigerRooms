@@ -99,10 +99,11 @@ const Cart = ({ username }) => {
                   <td>
                     <div
                       style={{
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "4px",
-                        backgroundColor: room.availability ? "green" : "red",
+                        width: "1vw",
+                        height: "1vw",
+                        borderRadius: "0.2vw",
+                        backgroundColor:
+                          room.availability === true ? "green" : "red",
                         margin: "0 auto",
                       }}
                     ></div>

@@ -60,7 +60,7 @@ nav ul li {
 nav ul li a {
   color: white;
   text-decoration: none;
-  font-size: 1.75rem;
+  font-size: 1.75vw;
   font-weight: 700;
 }
 
@@ -166,6 +166,13 @@ nav::after {
   align-items: center;
 }
 
+#right-text-cont {
+  display: flex; /* Ensures the container becomes a flexbox */
+  flex-direction: column; /* Align text vertically */
+  justify-content: center; /* Vertically aligns the text */
+  text-align: right; /* Keeps the text aligned to the right */
+}
+
 footer {
   background-color: #a0a0a0;
   color: white;
@@ -176,7 +183,8 @@ footer {
   right: 0;
   align-content: center;
   justify-content: space-between;
-  font-size: 0.85rem;
+  align-items: center;
+  font-size: 0.85vw;
   text-align: right;
   padding: 0.85% 3.5%;
   position: fixed;
@@ -200,6 +208,28 @@ footer {
   width: 100%;
   height: auto;
   border-radius: 1.4728vh;
+}
+/* Hides the floorplan for smaller screens*/
+@media (max-width: 768px) {
+  .floor-plan-flexbox {
+    flex-direction: column; /* Stack items vertically */
+    align-items: stretch; /* Ensure items take full width */
+  }
+  /*.floor-plan-map {
+    display: none;
+  } */
+  .room-availability-table {
+    float: none;
+    margin: 10vh auto 12vh auto;
+    text-align: center;
+  }
+
+  /* for the availability table to occupy the middle space*/
+  .available-rooms-table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .availability {
@@ -247,11 +277,10 @@ tbody tr td[colspan="3"] {
 }
 
 .floor-plan-title {
-  margin-top: 11.8173vh; /* Adjust this value based on your header's height */
-  font-size: 4.4176vh;
+  margin-top: 11vh; /* Adjust this value based on your header's height */
+  font-size: 2vw;
   font-weight: bold;
-  /* text-align: center; */
-  margin-left: 44.1541vh;
+  text-align: center;
   color: orange;
 }
 
@@ -273,13 +302,8 @@ tbody tr td[colspan="3"] {
 
 .results-page-title {
   margin-top: 11.8173vh;
-  font-size: 5.8824vh;
+  font-size: 5.8824vw;
   font-weight: bold;
-  color: orange;
-  text-align: center;
-}
-
-.res-college-title {
   color: orange;
   text-align: center;
 }
@@ -299,6 +323,7 @@ tbody tr td[colspan="3"] {
   width: auto;
   max-width: 100%;
   background-color: #f9f9f9; /* Light background color */
+  font: 5vw;
 }
 
 /* Header cell styles */
@@ -322,8 +347,9 @@ tbody tr td[colspan="3"] {
 }
 
 .back-link {
-  margin-left: 57.6vh;
   color: orange;
+  font-size: 1vw;
+  text-align: center;
 }
 .back-to-floorplans {
   color: blue;
@@ -517,52 +543,64 @@ tbody tr td[colspan="3"] {
 .filter-container {
   padding: 0vh;
   border-radius: 1.1782vh;
-  max-width: 102.1vh;
-  margin: 29.4551vh auto;
+  max-width: 75vw;
+  max-height: 80vh;
+  margin: 20vh auto;
 }
 
 .filter-container-title {
   color: orange;
   text-align: center;
-  font-size: 3.7em;
+  font-size: 3.7vw;
 }
 
 .filter-container-subtitle {
   color: orange;
   text-align: center;
-  font-size: 1.8em;
+  font-size: 1.8vw;
 }
 
 .dropdown-container {
   display: flex;
   flex-direction: row;
-  gap: 5vw; /* Spacing between each filter */
+  gap: 2vw; /* Spacing between filters */
   margin-bottom: 2.9455vw;
-  justify-content: center; /* Center-align filters within the container */
+  justify-content: center; /* Center-align filters */
   align-items: flex-start; /* Keeps filters vertically aligned */
-  padding: 5.154vh;
+  padding: 3vh;
 }
 
+@media (max-width: 768px) {
+  /* Target devices with width 768px or less */
+  .dropdown-container {
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    flex-direction: column;
+    justify-content: center; /* Horizontally center items */
+    align-items: center; /* Vertically center items (for single row) */
+    align-content: center;
+    gap: 1vw; /* Adjust gap for better alignment */
+  }
+}
 .dropdown-group {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 25%;
   max-width: 30%;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .filter-label {
   margin-bottom: 0.7364vh;
   font-weight: bold;
-  font-size: 0.75em;
+  font-size: 0.75vw;
   text-align: left;
   width: 100%;
 }
 
 .filter-select {
   padding: 1.1782vh;
-  font-size: 0.75em;
+  font-size: 0.75vw;
   border-radius: 0.5891vh;
   border: 0.147vh solid #ccc;
   width: 100%;
@@ -573,16 +611,17 @@ tbody tr td[colspan="3"] {
   color: #888; /* Optional: lighter color for placeholder text */
   font-size: 0.5em; /* Reduced font size for placeholder */
 }
-
-.filter-submit-button {
+.filter-submit-button,
+.filter-reset-button {
   background-color: orange;
   color: white;
-  padding: 1.4728vh 1.8785vh;
-  font-size: 1rem;
+  padding: 0.5vw 1vh;
+  font-size: 1vw;
   border: none;
-  border-radius: 1.4728vh;
+  border-radius: 1vh;
   cursor: pointer;
-  margin-top: 1.4728vh;
+  margin-top: 1.5vh;
+  margin-left: 1.5vw;
 }
 
 .filter-reset-button {
@@ -590,14 +629,7 @@ tbody tr td[colspan="3"] {
   color: orange;
   border-color: orange;
   border-style: solid;
-  padding: 1.4728vh 1.8785vh;
-  font-size: 1rem;
-  border-radius: 1.4728vh;
-  cursor: pointer;
-  margin-top: 1.4728vh;
-  margin-left: 1.4728vh;
 }
-
 .filter-reset-button:hover,
 .filter-submit-button:hover {
   background-color: #a09c9c;
@@ -631,7 +663,6 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Removes the spin button in Firefox */
 }
-
 /*--------------------------------------------------------------------*/
 /* This is the styling for  Floorplan Results page.                   */
 /*--------------------------------------------------------------------*/
@@ -645,15 +676,20 @@ input[type="number"] {
 
 /* Center container */
 .table-container {
+  width: 90%; /* Increase width for smaller screens */
+  max-width: 100%; /* Allow it to fill the screen on very narrow devices */
+  margin: 2vh auto; /* Reduce vertical margins for better proportions */
   display: flex;
   justify-content: center;
-  margin-top: 3.1vh; /* Adds space from the top of the page */
-  width: 100%;
+  box-sizing: border-box; /* Include padding in width calculations */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
 }
 
 .res-college-title {
   color: orange;
   text-align: center;
+  font: 8vw;
 }
 
 /* Table styles */
@@ -694,28 +730,30 @@ input[type="number"] {
   text-align: left;
   padding-left: 3.1vh;
 }
-
+/*--------------------------------------------------------------------*/
+/* This is the styling for Cart page.                                 */
+/*--------------------------------------------------------------------*/
 .cart-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px 20px; /* Adjusted padding to move everything slightly down */
+  padding: 10vh 20vw; /* Adjusted padding to move everything slightly down */
   box-sizing: border-box;
   text-align: center;
   background-color: #f9f9f9;
 }
 
 .cart-title {
-  font-size: 2.5em;
+  font-size: 2vw;
   color: #333;
-  margin-top: 40px; /* Adds space between the header and the title */
-  margin-bottom: 30px;
+  margin-top: 10vh; /* Adds space between the header and the title */
+  margin-bottom: 5vh;
 }
 
 .saved-rooms-table {
   width: 80%;
-  max-width: 800px;
-  margin: 20px auto;
+  max-width: 80%;
+  margin: 10vh auto;
   border-collapse: collapse;
   background-color: #fff;
 }
@@ -725,10 +763,10 @@ input[type="number"] {
 }
 .saved-rooms-table th,
 .saved-rooms-table td {
-  padding: 15px;
-  border: 1px solid #ddd;
+  padding: 1vw;
+  border: 0.1vw solid #ddd;
   text-align: center;
-  font-size: 1.1em;
+  font-size: 1vw;
 }
 
 .saved-rooms-table th {
@@ -742,15 +780,15 @@ input[type="number"] {
 }
 
 .no-saved-rooms {
-  font-size: 1.2em;
+  font-size: 1 vw;
   color: #777;
-  margin-top: 20px;
+  margin-top: 20vh;
 }
 
 .trash-button {
   background-color: transparent;
   border: none;
-  font-size: 1.2em;
+  font: 1vw;
   cursor: pointer;
   color: #ff4c4c;
 }
