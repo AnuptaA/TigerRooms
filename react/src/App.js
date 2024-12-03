@@ -8,6 +8,7 @@ import UploadPDFs from "./pages/UploadPDFs";
 import Footer from "./Components/Footer";
 import NavBar from "./Components/NavBar";
 import Cart from "./pages/Cart";
+import InvalidRoute from "./pages/InvalidRoute";
 import "./App.css";
 
 const App = () => {
@@ -48,8 +49,9 @@ const App = () => {
           element={<HallFloor username={username} />}
         />
         {<Route path="/logout" element={<Logout />}></Route>}
-        <Route path="/upload-pdfs" element={<UploadPDFs adminStatus={adminStatus}/>} />
+        <Route path="/upload-pdfs" element={<UploadPDFs adminStatus={adminStatus} />} />
         <Route path="/cart" element={<Cart username={username} />} />
+        <Route path="*" element={<InvalidRoute />} />
       </Routes>
 
       <Footer />
