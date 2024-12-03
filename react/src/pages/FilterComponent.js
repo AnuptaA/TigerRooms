@@ -64,13 +64,6 @@ const FilterComponent = () => {
       return;
     }
 
-    if (minSquareFootage < 0 || isNaN(minSquareFootage)) {
-      setSquareFootageError(
-        "Please enter a valid positive integer for square footage."
-      );
-      return;
-    }
-
     setError(false); // Reset error if residentialCollege is selected
     setSquareFootageError(""); // Reset square footage error if valid
 
@@ -224,17 +217,18 @@ const FilterComponent = () => {
             Minimum Square Footage
           </label>
           <input
-            type="number"
             id="squareFootage"
-            min="0"
-            // step="1" // Enforce integer input
             value={minSquareFootage}
             onChange={(e) => {
               const value = e.target.value;
-              // Ensure the input value is a positive integer
+              // Ensure the input value is a non-negative integer
               if (
-                value === "" ||
-                (Number.isInteger(Number(value)) && Number(value) >= 0)
+                !value.includes("-") && // Check for negative numbers
+                !value.includes("e") && // Check for 'e' (scientific notation)
+                !value.includes(".") && // Check for decimals
+                !value.includes(" ") && // Check for whitespace
+                Number.isInteger(Number(value)) && // Ensure it's an integer
+                Number(value) >= 0
               ) {
                 setMinSquareFootage(value);
                 setSquareFootageError(""); // Clear error if input is valid

@@ -825,3 +825,16 @@ input[type="number"] {
   transform: scale(1);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduced shadow on click */
 }
+
+/*--------------------------------------------------------------------*/
+/* This is the styling for InvalidPRoute page.                        */
+/*--------------------------------------------------------------------*/
+
+.invalid-route-error-container {
+  margin-top: 15%;
+}
+
+.invalid-route-error-message {
+  color: red;
+  text-align: center;
+}
