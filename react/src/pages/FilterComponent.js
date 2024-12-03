@@ -226,6 +226,7 @@ const FilterComponent = () => {
                 !value.includes("-") && // Check for negative numbers
                 !value.includes("e") && // Check for 'e' (scientific notation)
                 !value.includes(".") && // Check for decimals
+                !value.includes(" ") && // Check for whitespace
                 Number.isInteger(Number(value)) && // Ensure it's an integer
                 Number(value) >= 0
               ) {
