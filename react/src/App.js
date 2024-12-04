@@ -43,13 +43,16 @@ const App = () => {
 
       <Routes>
         <Route path="/floorplans" element={<FloorPlans />} />
-        <Route path="/" element={<FilterComponent username={username}/>} />
+        <Route path="/" element={<FilterComponent username={username} />} />
         <Route
           path="/floorplans/hallfloor"
-          element={<HallFloor username={username} />}
+          element={<HallFloor username={username} adminStatus={adminStatus} />}
         />
         {<Route path="/logout" element={<Logout />}></Route>}
-        <Route path="/upload-pdfs" element={<UploadPDFs adminStatus={adminStatus} />} />
+        <Route
+          path="/upload-pdfs"
+          element={<UploadPDFs adminStatus={adminStatus} />}
+        />
         <Route path="/cart" element={<Cart username={username} />} />
         <Route path="*" element={<InvalidRoute />} />
       </Routes>

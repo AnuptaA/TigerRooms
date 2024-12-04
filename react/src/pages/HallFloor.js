@@ -1,15 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import "../App.css";
 
-const HallFloor = ({ username }) => {
+const HallFloor = ({ username, adminStatus }) => {
   console.log("hallfloor route hit");
   // Retrieve query params from URL using useLocation
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
+  const MySwal = withReactContent(Swal);
 
   // State for room information and expanded rows
-  const [roomInfo, setRoomInfo] = useState([]);
+  const [roomInfo, setRoomInfo] = useState([
+    {
+      name: "Room 101",
+      isAvailable: "T", // T for available, F for unavailable
+      size: "200 sqft",
+      occupancy: "Single",
+      total_saves: 10,
+      isSaved: false,
+    },
+  ]);
   const [expandedRows, setExpandedRows] = useState([]);
   const [debouncing, setDebouncing] = useState(false); // Debouncing state
 
@@ -60,7 +72,6 @@ const HallFloor = ({ username }) => {
       </div>
     );
   }
-
 
   // Toggle row expansion
   const toggleExpandRow = (index) => {
@@ -122,6 +133,127 @@ const HallFloor = ({ username }) => {
       });
   };
 
+  // CREATED WITH THE HELP OF CHATGPT ****
+  const handleReview = (roomNumber, username) => {
+    MySwal.fire({
+      title: "Submit a review!",
+      html: `<label for="rating">Rating (1 to 5 stars):</label>
+        <div id="rating" style="display: flex; justify-content: center; margin-bottom: 15px;">
+          <input type="radio" name="star" value="1" id="star1" class="star" style="display:none;">
+          <input type="radio" name="star" value="2" id="star2" class="star" style="display:none;">
+          <input type="radio" name="star" value="3" id="star3" class="star" style="display:none;">
+          <input type="radio" name="star" value="4" id="star4" class="star" style="display:none;">
+          <input type="radio" name="star" value="5" id="star5" class="star" style="display:none;">
+          <div class="rating" style="font-size: 2rem; cursor: pointer;">
+            <span class="star-icon" data-value="1">★</span>
+            <span class="star-icon" data-value="2">★</span>
+            <span class="star-icon" data-value="3">★</span>
+            <span class="star-icon" data-value="4">★</span>
+            <span class="star-icon" data-value="5">★</span>
+          </div>
+        </div>
+        <textarea id="review-comments" class="swal2-input" placeholder="Write your review here..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;"></textarea>`,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: "Submit Review",
+      cancelButtonText: "Cancel",
+      preConfirm: () => {
+        const rating = document.querySelector(
+          'input[name="star"]:checked'
+        )?.value;
+        const comments = document.getElementById("review-comments").value;
+
+        if (!rating || !comments) {
+          MySwal.showValidationMessage(
+            "Please select a rating and write a comment"
+          );
+          return false;
+        }
+
+        // Get the current date
+        const reviewDate = new Date().toISOString();
+
+        // Create the review object
+        return {
+          room_id: roomNumber,
+          netid: username,
+          rating: parseInt(rating),
+          comments: comments,
+          review_date: reviewDate,
+        };
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { room_id, netid, rating, comments, review_date } = result.value;
+        submitReviewToDatabase(room_id, netid, rating, comments, review_date);
+      }
+    });
+
+    // Handle star rating click interaction
+    const ratingStars = document.querySelectorAll(".star-icon");
+    ratingStars.forEach((star) => {
+      star.addEventListener("click", (e) => {
+        const value = e.target.getAttribute("data-value");
+        document.querySelector(
+          `input[name="star"][value="${value}"]`
+        ).checked = true;
+        ratingStars.forEach((star) => (star.style.color = "gray")); // Reset color
+        for (let i = 0; i < value; i++) {
+          ratingStars[i].style.color = "gold"; // Highlight selected stars
+        }
+      });
+    });
+  };
+
+  const submitReviewToDatabase = (
+    room_id,
+    netid,
+    rating,
+    comments,
+    review_date
+  ) => {
+
+    fetch("/api/submit-review", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        room_id,
+        netid,
+        rating,
+        comments,
+        review_date,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          MySwal.fire(
+            "Thank you!",
+            "Your review has been submitted successfully!",
+            "success"
+          );
+        } else {
+          MySwal.fire(
+            "Error.",
+            "Something went wrong while submitting your review. Please try again.",
+            "error"
+          );
+        }
+      })
+      .catch((err) => {
+        MySwal.fire(
+          "Error.",
+          "Something went wrong while submitting your review. Please try again.",
+          "error"
+        );
+        console.error(err);
+      });
+  };
+
+  const handleDisplayReview = () => {};
+
   const getCookie = (key) => {
     const cookies = document.cookie.split("; ");
     for (const cookie of cookies) {
@@ -140,7 +272,7 @@ const HallFloor = ({ username }) => {
   const occupancyFromCookie = getCookie("occupancy") || "";
   const minSquareFootageFromCookie = getCookie("minSquareFootage") || "";
 
-  const returnLink = `/floorplans?resco=${rescoFromCookie}&hall=${hallFromCookie}&floor=${floorFromCookie}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`
+  const returnLink = `/floorplans?resco=${rescoFromCookie}&hall=${hallFromCookie}&floor=${floorFromCookie}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`;
 
   return (
     <div className="floor-plan-flexbox">
@@ -163,7 +295,10 @@ const HallFloor = ({ username }) => {
           expandedRows={expandedRows}
           toggleExpandRow={toggleExpandRow}
           handleSaveToggle={handleSaveToggle}
+          handleReview={handleReview}
           hallName={hall}
+          adminStatus={!adminStatus}
+          username={username}
         />
       </div>
     </div>
@@ -176,7 +311,10 @@ const RoomInfoTable = ({
   expandedRows,
   toggleExpandRow,
   handleSaveToggle,
+  handleReview,
   hallName,
+  adminStatus,
+  username,
 }) => {
   return (
     <table border="1" cellPadding="10" className="room-availability-table">
@@ -220,22 +358,52 @@ const RoomInfoTable = ({
                     <strong>{oneRoomInfo.occupancy}</strong> <br />
                     <strong>Total Saves: {oneRoomInfo.total_saves}</strong>
                     <br />
-                    <button
-                      onClick={() =>
-                        handleSaveToggle(
-                          oneRoomInfo.name.split(" ")[1], // Extract room number from name
-                          hallName,
-                          oneRoomInfo.isSaved
-                        )
-                      }
-                      style={{
-                        marginTop: "10px",
-                        padding: "5px 10px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {oneRoomInfo.isSaved ? "Unsave" : "Save"}
-                    </button>
+                    <div>
+                      <button
+                        onClick={() =>
+                          handleSaveToggle(
+                            oneRoomInfo.name.split(" ")[1], // Extract room number from name
+                            hallName,
+                            oneRoomInfo.isSaved
+                          )
+                        }
+                        style={{
+                          marginTop: "10px",
+                          padding: "5px 10px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {oneRoomInfo.isSaved ? "Unsave" : "Save"}
+                      </button>
+                      {adminStatus && (
+                        <button
+                          onClick={() =>
+                            handleReview(
+                              oneRoomInfo.name.split(" "[1]),
+                              username
+                            )
+                          }
+                          style={{
+                            marginTop: "10px",
+                            padding: "5px 10px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Create Review
+                        </button>
+                      )}
+                      {adminStatus && (
+                        <button
+                          style={{
+                            marginTop: "10px",
+                            padding: "5px 10px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Display Reviews
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </td>
               </tr>
