@@ -20,6 +20,7 @@ const HallFloor = ({ username, adminStatus }) => {
       occupancy: "Single",
       total_saves: 10,
       isSaved: false,
+      has_reviewed: false,
     },
   ]);
   const [expandedRows, setExpandedRows] = useState([]);
@@ -101,7 +102,7 @@ const HallFloor = ({ username, adminStatus }) => {
   };
 
   // Handle Save/Unsave action with Debouncing
-  const handleSaveToggle = (roomNumber, hall, isSaved) => {
+  const handleSaveToggle = (room_id, isSaved) => {
     if (debouncing) return; // Prevent further actions if debouncing
 
     setDebouncing(true); // Start debouncing
@@ -113,8 +114,7 @@ const HallFloor = ({ username, adminStatus }) => {
       },
       body: JSON.stringify({
         netid: username,
-        room_number: roomNumber,
-        hall: hall,
+        room_id: room_id,
       }),
     })
       .then((response) => response.json())
@@ -122,7 +122,7 @@ const HallFloor = ({ username, adminStatus }) => {
         // Update the saved status and total saves in the roomInfo state
         setRoomInfo((prevRoomInfo) =>
           prevRoomInfo.map((room) => {
-            if (room.name === `${hall} ${roomNumber}`) {
+            if (room.room_id === room_id) {
               // Prevent decreasing total_saves below 0
               if (isSaved && room.total_saves === 0) {
                 return {
@@ -152,7 +152,7 @@ const HallFloor = ({ username, adminStatus }) => {
   };
 
   // CREATED WITH THE HELP OF CHATGPT ****
-  const handleReview = (roomNumber, hall, username) => {
+  const handleCreateReview = (room_id, username) => {
     MySwal.fire({
       title: "Submit a review!",
       html: `<label for="rating">Rating (1 to 5 stars):</label>
@@ -188,13 +188,28 @@ const HallFloor = ({ username, adminStatus }) => {
           return false;
         }
 
-        // Get the current date
-        const reviewDate = new Date().toISOString();
+        // Get the current date and time
+        const currentDate = new Date();
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          timeZone: "America/New_York",
+        }).format(currentDate);
+
+        const formattedTime = new Intl.DateTimeFormat("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+          timeZone: "America/New_York",
+        }).format(currentDate);
+
+        const reviewDate = `${formattedDate} ${formattedTime}`;
 
         // Create the review object
         return {
-          room_number: roomNumber,
-          hall: hall,
+          room_id: room_id,
           netid: username,
           rating: parseInt(rating),
           comments: comments,
@@ -203,16 +218,8 @@ const HallFloor = ({ username, adminStatus }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        const { room_number, hall, netid, rating, comments, review_date } =
-          result.value;
-        submitReviewToDatabase(
-          room_number,
-          hall,
-          netid,
-          rating,
-          comments,
-          review_date
-        );
+        const { room_id, netid, rating, comments, review_date } = result.value;
+        submitReviewToDatabase(room_id, netid, rating, comments, review_date);
       }
     });
 
@@ -232,22 +239,151 @@ const HallFloor = ({ username, adminStatus }) => {
     });
   };
 
+  const handleModifyReview = (room_id, username) => {
+    // Fetch the existing review
+    fetch("/api/reviews/get_review_of_user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ netid: username, room_id: room_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success && data.comments) {
+          // Open SweetAlert to modify the review
+          MySwal.fire({
+            title: "Modify your review.",
+            html: `
+              <label for="rating">Rating (1 to 5 stars):</label>
+              <div id="rating" style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <input type="radio" name="star" value="1" id="star1" class="star" style="display:none;">
+                <input type="radio" name="star" value="2" id="star2" class="star" style="display:none;">
+                <input type="radio" name="star" value="3" id="star3" class="star" style="display:none;">
+                <input type="radio" name="star" value="4" id="star4" class="star" style="display:none;">
+                <input type="radio" name="star" value="5" id="star5" class="star" style="display:none;">
+                <div class="rating" style="font-size: 2rem; cursor: pointer;">
+                  <span class="star-icon" data-value="1">★</span>
+                  <span class="star-icon" data-value="2">★</span>
+                  <span class="star-icon" data-value="3">★</span>
+                  <span class="star-icon" data-value="4">★</span>
+                  <span class="star-icon" data-value="5">★</span>
+                </div>
+              </div>
+              <textarea id="review-comments" class="swal2-input" placeholder="Write your review here..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;">${data.comments}</textarea>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Modify Review",
+            cancelButtonText: "Cancel",
+            preConfirm: () => {
+              const rating = document.querySelector(
+                'input[name="star"]:checked'
+              )?.value;
+              const comments = document.getElementById("review-comments").value;
+
+              if (!rating || !comments) {
+                MySwal.showValidationMessage(
+                  "Please select a rating and write a comment"
+                );
+                return false;
+              }
+
+              const currentDate = new Date();
+              const formattedDate = new Intl.DateTimeFormat("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                timeZone: "America/New_York",
+              }).format(currentDate);
+
+              const formattedTime = new Intl.DateTimeFormat("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true,
+                timeZone: "America/New_York",
+              }).format(currentDate);
+
+              const reviewDate = `${formattedDate} ${formattedTime}`;
+
+              return {
+                room_id: room_id,
+                netid: username,
+                rating: parseInt(rating),
+                comments: comments,
+                review_date: reviewDate,
+              };
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const { room_id, netid, rating, comments, review_date } =
+                result.value;
+
+              // Call the function to submit the modified review
+              submitReviewToDatabase(
+                room_id,
+                netid,
+                rating,
+                comments,
+                review_date
+              );
+            }
+          });
+
+          // Set the star rating based on the existing rating
+          const ratingStars = document.querySelectorAll(".star-icon");
+          ratingStars.forEach((star) => {
+            star.addEventListener("click", (e) => {
+              const value = e.target.getAttribute("data-value");
+              document.querySelector(
+                `input[name="star"][value="${value}"]`
+              ).checked = true;
+              ratingStars.forEach((star) => (star.style.color = "gray"));
+              for (let i = 0; i < value; i++) {
+                ratingStars[i].style.color = "gold";
+              }
+            });
+          });
+
+          // Set the stars to match the current review rating
+          const selectedStar = data.review.rating;
+          for (let i = 0; i < selectedStar; i++) {
+            ratingStars[i].style.color = "gold";
+          }
+
+          // Set the corresponding radio button to checked
+          document.querySelector(
+            `input[name="star"][value="${selectedStar}"]`
+          ).checked = true;
+        } else {
+          MySwal.fire("Error", "No review found for this room", "error");
+        }
+      })
+      .catch((err) => {
+        MySwal.fire(
+          "Error",
+          "Something went wrong while fetching your review",
+          "error"
+        );
+        console.error(err);
+      });
+  };
+
   const submitReviewToDatabase = (
-    room_number,
-    hall,
+    room_id,
     netid,
     rating,
     comments,
     review_date
   ) => {
-    fetch("/api/submit_review", {
+    fetch("/api/reviews/submit_review", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        room_number,
-        hall,
+        room_id,
         netid,
         rating,
         comments,
@@ -262,10 +398,18 @@ const HallFloor = ({ username, adminStatus }) => {
             "Your review has been submitted successfully!",
             "success"
           );
+
+          // Update the roomInfo state to reflect that the room has been reviewed
+          setRoomInfo((prevRoomInfo) =>
+            prevRoomInfo.map((room) =>
+              room.room_id === room_id ? { ...room, has_reviewed: true } : room
+            )
+          );
         } else if (data.error) {
           MySwal.fire(
             "Error.",
-            data.error || "Something went wrong while submitting your review. Please try again.",
+            data.error ||
+              "Something went wrong while submitting your review. Please try again.",
             "error"
           );
         }
@@ -279,7 +423,6 @@ const HallFloor = ({ username, adminStatus }) => {
         console.error(err);
       });
   };
-  
 
   const handleDisplayReview = () => {};
 
@@ -306,7 +449,8 @@ const HallFloor = ({ username, adminStatus }) => {
           expandedRows={expandedRows}
           toggleExpandRow={toggleExpandRow}
           handleSaveToggle={handleSaveToggle}
-          handleReview={handleReview}
+          handleCreateReview={handleCreateReview}
+          handleModifyReview={handleModifyReview}
           hallName={hall}
           adminStatus={!adminStatus}
           username={username}
@@ -322,7 +466,8 @@ const RoomInfoTable = ({
   expandedRows,
   toggleExpandRow,
   handleSaveToggle,
-  handleReview,
+  handleCreateReview,
+  handleModifyReview,
   hallName,
   adminStatus,
   username,
@@ -373,8 +518,7 @@ const RoomInfoTable = ({
                       <button
                         onClick={() =>
                           handleSaveToggle(
-                            oneRoomInfo.name.split(" ")[1], // Extract room number from name
-                            hallName,
+                            oneRoomInfo.room_id,
                             oneRoomInfo.isSaved
                           )
                         }
@@ -389,11 +533,15 @@ const RoomInfoTable = ({
                       {adminStatus && (
                         <button
                           onClick={() =>
-                            handleReview(
-                              oneRoomInfo.name.split(" "[1]),
-                              hallName,
-                              username
-                            )
+                            oneRoomInfo.has_reviewed
+                              ? handleModifyReview(
+                                  oneRoomInfo.room_id,
+                                  username
+                                )
+                              : handleCreateReview(
+                                  oneRoomInfo.room_id,
+                                  username
+                                )
                           }
                           style={{
                             marginTop: "10px",
@@ -401,9 +549,12 @@ const RoomInfoTable = ({
                             cursor: "pointer",
                           }}
                         >
-                          Create Review
+                          {oneRoomInfo.has_reviewed
+                            ? "Modify Review"
+                            : "Create Review"}
                         </button>
                       )}
+
                       {adminStatus && (
                         <button
                           style={{

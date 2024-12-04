@@ -16,7 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
-from database_reviews import save_review
+from database_reviews import save_review, get_review_of_user
 from update_database import send_email
 
 #-----------------------------------------------------------------------
@@ -176,7 +176,7 @@ def get_unique_halls_and_floors():
 #-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/floorplans/hallfloor', methods=['GET'])
 def get_hallfloor():
-    # Ensure usser is logged in before accessing API
+    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
@@ -205,38 +205,62 @@ def get_hallfloor():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Fetch rooms and details including room_number and hall
-    cursor.execute('''
-        SELECT "RoomOverview"."room_number", "RoomOverview"."isAvailable", 
-               "RoomDetails"."occupancy", "RoomDetails"."square_footage"
-        FROM "RoomOverview"
-        JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
-        WHERE "RoomOverview"."hall" = %s 
-        AND "RoomOverview"."floor" = %s 
-        AND (%s = -1 OR "RoomDetails"."occupancy" = %s)
-        AND "RoomDetails"."square_footage" >= %s  
-              ''', (hall, floor, desired_occupancy, desired_occupancy, desired_min_sqft))
+    try:
+        # Fetch rooms and details, including room_id
+        cursor.execute('''
+            SELECT "RoomOverview"."room_id", "RoomOverview"."room_number", "RoomOverview"."isAvailable", 
+                   "RoomDetails"."occupancy", "RoomDetails"."square_footage"
+            FROM "RoomOverview"
+            JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
+            WHERE "RoomOverview"."hall" = %s 
+            AND "RoomOverview"."floor" = %s 
+            AND (%s = -1 OR "RoomDetails"."occupancy" = %s)
+            AND "RoomDetails"."square_footage" >= %s
+        ''', (hall, floor, desired_occupancy, desired_occupancy, desired_min_sqft))
 
-    rooms = cursor.fetchall()
+        rooms = cursor.fetchall()
 
-    # Construct the response with room info, total saves, and saved status for the user
-    room_info = []
-    for room in rooms:
-        room_number, is_available, occupancy, square_footage = room
-        total_saves = get_total_saves(room_number, hall, cursor)
-        is_saved = is_room_saved(netid, room_number, hall, cursor) if netid else False
+        # Construct the response with room info, total saves, and saved status for the user
+        room_info = []
+        for room in rooms:
+            room_id, room_number, is_available, occupancy, square_footage = room
+            total_saves = get_total_saves(room_number, hall, cursor)
+            is_saved = is_room_saved(netid, room_number, hall, cursor) if netid else False
 
-        room_info.append({
-            "name": f"{hall} {room_number}",
-            "size": f"Size: {square_footage} sqft",
-            "occupancy": f"Occupancy: {'Single' if occupancy == 1 else 'Double' if occupancy == 2 else 'Triple' if occupancy == 3 else 'Quad'}",
-            "isAvailable": 'T' if is_available else 'F',
-            "total_saves": total_saves,
-            "isSaved": is_saved
-        })
-    conn.close()
-    return_connection(conn)
-    return jsonify(room_info)
+            room_info.append({
+                "room_id": room_id,  # Now including room_id in the response
+                "name": f"{hall} {room_number}",
+                "size": f"Size: {square_footage} sqft",
+                "occupancy": f"Occupancy: {'Single' if occupancy == 1 else 'Double' if occupancy == 2 else 'Triple' if occupancy == 3 else 'Quad'}",
+                "isAvailable": 'T' if is_available else 'F',
+                "total_saves": total_saves,
+                "isSaved": is_saved
+            })
+
+        # Fetch the list of room_ids where the user has written a review
+        cursor.execute('''
+            SELECT "room_id"
+            FROM "RoomReviews"
+            WHERE "netid" = %s
+        ''', (netid,))
+
+        # A set of room_ids where reviews exist
+        reviewed_room_ids = {row[0] for row in cursor.fetchall()}
+
+        # Add a boolean field "has_reviewed" to each room indicating if the user has reviewed it
+        for room in room_info:
+            room['has_reviewed'] = room['room_id'] in reviewed_room_ids  # Check if the room_id is in the set of reviewed room_ids
+
+        return jsonify(room_info), 200
+
+    except Exception as e:
+        # Log the error and return a server error response
+        print(f"Error fetching data: {e}")
+        return jsonify({"error": "Error fetching data"}), 500
+
+    finally:
+        # Close the connection and return it to the pool
+        return_connection(conn)
 
 #-----------------------------------------------------------------------
 
@@ -255,15 +279,14 @@ def api_save_room():
     # Must be logged in as the user to obtain data
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    room_id = data.get('room')
 
-    room_number = data.get('room_number')
-    hall = data.get('hall')
+    if not all([netid, room_id]):
+        return jsonify({"error": "Missing netid or room_id"}), 400
 
-    if not all([netid, room_number, hall]):
-        return jsonify({"error": "Missing netid, room_number, or hall"}), 400
-
-    save_room(netid, room_number, hall)
-    return jsonify({"message": f"Room {room_number} in {hall} saved successfully for {netid}"}), 200
+    save_room(netid, room_id)
+    return jsonify({"message": f"Room {room_id} saved successfully for {netid}"}), 200
 
 #-----------------------------------------------------------------------
 
@@ -282,15 +305,14 @@ def api_unsave_room():
     # Must be logged in as the user to obtain data
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    room_id = data.get('room')
 
-    room_number = data.get('room_number')
-    hall = data.get('hall')
+    if not all([netid, room_id]):
+        return jsonify({"error": "Missing netid or room_id"}), 400
 
-    if not all([netid, room_number, hall]):
-        return jsonify({"error": "Missing netid, room_number, or hall"}), 400
-
-    unsave_room(netid, room_number, hall)
-    return jsonify({"message": f"Room {room_number} in {hall} unsaved successfully for {netid}"}), 200
+    unsave_room(netid, room_id)
+    return jsonify({"message": f"Room {room_id} unsaved successfully for {netid}"}), 200
 
 #-----------------------------------------------------------------------
 
@@ -482,13 +504,47 @@ def clear_drawn_rooms():
 
 #-----------------------------------------------------------------------
         
-@app.route('/api/submit_review', methods=['POST'])
+@app.route('/api/reviews/get_review_of_user', methods=['POST'])
+def get_review_of_user():
+    # Ensure user is logged in before accessing API
+    if require_login():
+        require_login
+    
+    print("Endpoint 'api/reviews/get_review_of_user")
+    data = request.json
+    print(f"Request data received: {data}")
+    netid = data.get('netid')
+
+    if not netid:
+        print("Error: Missing netid in request.")
+        return jsonify({"error": "Missing netid"}), 400
+    
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    room_id = data.get('room_id')
+
+    if not all([netid, room_id]):
+        return jsonify({"error": "Missing netid, room_id"}), 400
+    
+    result = get_review_of_user(netid, room_id)
+
+    if not result["success"]:
+        return jsonify({"error": result["error"]}), 500
+    
+    return jsonify({
+        "success": "Successfully fetched user reviews",
+        "reviews": result["reviews"]}), 200
+        
+#-----------------------------------------------------------------------
+        
+@app.route('/api/reviews/submit_review', methods=['POST'])
 def submit_review():
     # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
-    print("Endpoint '/api/submit_review'")
+    print("Endpoint '/api/reviews/submit_review'")
     data = request.json
     print(f"Request data received: {data}")
     netid = data.get('netid')
@@ -501,16 +557,15 @@ def submit_review():
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
     
-    room_number = data.get('room_number')
-    hall = data.get('hall')
+    room_id = data.get('room_id')
     rating = data.get('rating')
     comments = data.get('comments')
     review_date = data.get('review_date')
 
-    if not all([netid, room_number, hall, rating, comments, review_date]):
+    if not all([room_id, rating, comments, review_date]):
         return jsonify({"error": "Missing required fields"}), 400
     
-    message = save_review(room_number, hall, netid, rating, comments, review_date)
+    message = save_review(room_id, netid, rating, comments, review_date)
 
     # Return success or error message
     if "Error" in message:

@@ -28,16 +28,11 @@ def get_room_id(room_number, hall, cursor):
 
 #-----------------------------------------------------------------------
 
-def save_room(netid, room_number, hall):
+def save_room(netid, room_id):
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cursor:
             try:
                 """Save a room for a user identified by netid, using room_number and hall."""
-                room_id = get_room_id(room_number, hall, cursor)
-                if room_id is None:
-                    print(f"Room {room_number} in {hall} not found.")
-                    return
-
                 # Check if the room is available
                 cursor.execute(
                     '''
@@ -49,7 +44,7 @@ def save_room(netid, room_number, hall):
                 )
                 room = cursor.fetchone()
                 if not room or not room[0]:  # Availability is indicated by `True`
-                    print(f"Room {room_number} in {hall} is not available and cannot be saved.")
+                    print(f"Room {room_id} is not available and cannot be saved.")
                     return
 
                 # Insert the save if the room is available
@@ -69,22 +64,18 @@ def save_room(netid, room_number, hall):
                     ''',
                     (room_id,)
                 )
-                print(f"Room {room_number} in {hall} saved successfully for netid {netid}.")
+                print(f"Room {room_id} saved successfully for netid {netid}.")
             except Exception as e:
                 conn.rollback()
                 print("Error saving room:", e)
 
 #-----------------------------------------------------------------------
 
-def unsave_room(netid, room_number, hall):
+def unsave_room(netid, room_id):
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cursor:
             try:
                 """Unsave a room for a user identified by netid, using room_number and hall."""
-                room_id = get_room_id(room_number, hall, cursor)
-                if room_id is None:
-                    print(f"Room {room_number} in {hall} not found.")
-                    return
 
                 cursor.execute(
                     '''
@@ -103,7 +94,7 @@ def unsave_room(netid, room_number, hall):
                         ''',
                         (room_id,)
                     )
-                print(f"Room {room_number} in {hall} unsaved successfully for netid {netid}.")
+                print(f"Room {room_id} unsaved successfully for netid {netid}.")
             except Exception as e:
                 conn.rollback()
                 print("Error unsaving room:", e)
