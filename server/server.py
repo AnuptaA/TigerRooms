@@ -592,7 +592,8 @@ def add_member():
             body=(
                 f"Dear {invitee},\n\n"
                 f"You have been invited to join TigerRooms group {group_id}. "
-                "To respond to this invitation, please log in to TigerRooms and navigate to the 'My Group' page.\n\n"
+                "To accept or decline this invitation, please log in to TigerRooms and navigate to the 'My Group' page at the following link:\n"
+                "https://tigerrooms-l48h.onrender.com/mygroup\n\n"
                 "Best regards,\n"
                 "The TigerRooms Team"
             )
