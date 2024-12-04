@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
-const FilterComponent = () => {
+const FilterComponent = ({ username }) => {
   const [residentialCollege, setResidentialCollege] = useState("");
   const [hall, setHall] = useState("");
   const [floor, setFloor] = useState("");
@@ -114,7 +114,7 @@ const FilterComponent = () => {
 
   return (
     <div className="filter-container">
-      <h1 className="filter-container-title">Welcome to TigerRooms</h1>
+      <h1 className="filter-container-title">Welcome to TigerRooms, {username}!</h1>
       <br></br>
       <h3 className="filter-container-subtitle">
         Looking for an available room?

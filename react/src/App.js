@@ -43,7 +43,7 @@ const App = () => {
 
       <Routes>
         <Route path="/floorplans" element={<FloorPlans />} />
-        <Route path="/" element={<FilterComponent />} />
+        <Route path="/" element={<FilterComponent username={username}/>} />
         <Route
           path="/floorplans/hallfloor"
           element={<HallFloor username={username} />}
