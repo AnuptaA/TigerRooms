@@ -30,10 +30,28 @@ const HallFloor = ({ username, adminStatus }) => {
   const hall = searchParams.get("hall");
   const floor = searchParams.get("floor");
 
+  const getCookie = (key) => {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+      const [cookieKey, cookieValue] = cookie.split("=");
+      if (cookieKey === key) {
+        return cookieValue || ""; // Decode in case of encoded values
+      }
+    }
+    return ""; // Return empty string if the key isn't found
+  };
+
+  // Unpacking cookies
+  const rescoFromCookie = getCookie("resco") || "";
+  const hallFromCookie = getCookie("hall") || "";
+  const floorFromCookie = getCookie("floor") || "";
+  const occupancyFromCookie = getCookie("occupancy") || "";
+  const minSquareFootageFromCookie = getCookie("minSquareFootage") || "";
+
   // Fetch room data along with saved status for the user from the backend
   useEffect(() => {
     fetch(
-      `/api/floorplans/hallfloor?netid=${username}&hall=${hall}&floor=${floor}`
+      `/api/floorplans/hallfloor?netid=${username}&hall=${hall}&floor=${floor}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -252,25 +270,7 @@ const HallFloor = ({ username, adminStatus }) => {
       });
   };
 
-  const handleDisplayReview = () => {};
-
-  const getCookie = (key) => {
-    const cookies = document.cookie.split("; ");
-    for (const cookie of cookies) {
-      const [cookieKey, cookieValue] = cookie.split("=");
-      if (cookieKey === key) {
-        return cookieValue || ""; // Decode in case of encoded values
-      }
-    }
-    return ""; // Return empty string if the key isn't found
-  };
-
-  // Unpacking cookies
-  const rescoFromCookie = getCookie("resco") || "";
-  const hallFromCookie = getCookie("hall") || "";
-  const floorFromCookie = getCookie("floor") || "";
-  const occupancyFromCookie = getCookie("occupancy") || "";
-  const minSquareFootageFromCookie = getCookie("minSquareFootage") || "";
+  const handleDisplayReview = () => { };
 
   const returnLink = `/floorplans?resco=${rescoFromCookie}&hall=${hallFromCookie}&floor=${floorFromCookie}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`;
 

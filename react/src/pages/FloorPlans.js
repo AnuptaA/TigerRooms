@@ -70,12 +70,12 @@ const FloorPlans = () => {
         {/* Adding ternary comparator to handle case where resco isn't provided */}
         {resCollege === null ? "All Residential Colleges" : resCollege}
       </h1>
-      <AvailabilityTable availabilityInfo={availabilityInfo} />
+      <AvailabilityTable availabilityInfo={availabilityInfo} occupancy={occupancy || ""} minSquareFootage={minSquareFootage || 0} />
     </div>
   );
 };
 
-const AvailabilityTable = ({ availabilityInfo }) => {
+const AvailabilityTable = ({ availabilityInfo, occupancy, minSquareFootage }) => {
   // Determine the maximum number of floors to set the number of rows
   const maxFloors =
     availabilityInfo.length > 0

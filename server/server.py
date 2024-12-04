@@ -186,6 +186,19 @@ def get_hallfloor():
 
     hall = request.args.get('hall')  # Get hall from query parameters
     floor = request.args.get('floor')  # Get hall from query parameters
+    
+    try:
+        desired_occupancy = int(request.args.get('occupancy', -1))  # Get occupancy from query parameters
+    except: # handles case where non-integer params are given
+        desired_occupancy = -1
+
+    try: 
+        desired_min_sqft = int(request.args.get('minSquareFootage', -1))  # Get hall from query parameters
+    except: # handles case where non-integer params are given
+        desired_min_sqft = -1
+
+    print("desired occupancy=", desired_occupancy, end='')
+    print("desired min_sqft=", desired_min_sqft)
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -198,7 +211,9 @@ def get_hallfloor():
         JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
         WHERE "RoomOverview"."hall" = %s 
         AND "RoomOverview"."floor" = %s 
-              ''', (hall, floor))
+        AND (%s = -1 OR "RoomDetails"."occupancy" = %s)
+        AND "RoomDetails"."square_footage" >= %s  
+              ''', (hall, floor, desired_occupancy, desired_occupancy, desired_min_sqft))
 
     rooms = cursor.fetchall()
 
