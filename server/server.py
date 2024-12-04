@@ -16,6 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
+from database_reviews import save_review
 
 #-----------------------------------------------------------------------
 
@@ -243,7 +244,7 @@ def get_hallfloor():
 #-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/save_room', methods=['POST'])
 def api_save_room():
-    # Ensure usser is logged in before accessing API
+    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
@@ -395,14 +396,22 @@ def get_updated_time():
 
 @app.route('/api/clear_drawn_rooms', methods=['POST'])
 def clear_drawn_rooms():
-    print("Endpoint '/api/clear_drawn_rooms' was hit.")  # Confirm endpoint is reached
+    # Ensure user is logged in before accessing API
+    if require_login():
+        return require_login()
+    
+    print("Endpoint '/api/clear_drawn_rooms' was hit.")
     data = request.json
-    print(f"Request data received: {data}")  # Debugging request data
+    print(f"Request data received: {data}")
 
     netid = data.get('netid')
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
+    
+    # Must be logged in as the user to clear draw rooms
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
 
     conn = get_db_connection()
     try:
@@ -432,6 +441,44 @@ def clear_drawn_rooms():
         print("Closing database connection.")
         conn.close()
         return_connection(conn)
+
+#-----------------------------------------------------------------------
+        
+@app.route('/api/submit_review', methods=['POST'])
+def submit_review():
+    # Ensure user is logged in before accessing API
+    if require_login():
+        return require_login()
+
+    print("Endpoint '/api/submit_review'")
+    data = request.json
+    print(f"Request data received: {data}")
+    netid = data.get('netid')
+
+    if not netid:
+        print("Error: Missing netid in request.")
+        return jsonify({"error": "Missing netid"}), 400
+    
+    # Must be logged in as the user to submit review
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    room_number = data.get('room_number')
+    hall = data.get('hall')
+    rating = data.get('rating')
+    comments = data.get('comments')
+    review_date = data.get('review_date')
+
+    if not all([netid, room_number, hall, rating, comments, review_date]):
+        return jsonify({"error": "Missing required fields"}), 400
+    
+    message = save_review(room_number, hall, netid, rating, comments, review_date)
+
+    # Return success or error message
+    if "Error" in message:
+        return jsonify({"error": message}), 500
+    
+    return jsonify({"success": message}), 200
 
 #-----------------------------------------------------------------------
 

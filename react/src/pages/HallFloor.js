@@ -152,7 +152,7 @@ const HallFloor = ({ username, adminStatus }) => {
   };
 
   // CREATED WITH THE HELP OF CHATGPT ****
-  const handleReview = (roomNumber, username) => {
+  const handleReview = (roomNumber, hall, username) => {
     MySwal.fire({
       title: "Submit a review!",
       html: `<label for="rating">Rating (1 to 5 stars):</label>
@@ -193,7 +193,8 @@ const HallFloor = ({ username, adminStatus }) => {
 
         // Create the review object
         return {
-          room_id: roomNumber,
+          room_number: roomNumber,
+          hall: hall,
           netid: username,
           rating: parseInt(rating),
           comments: comments,
@@ -202,8 +203,16 @@ const HallFloor = ({ username, adminStatus }) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        const { room_id, netid, rating, comments, review_date } = result.value;
-        submitReviewToDatabase(room_id, netid, rating, comments, review_date);
+        const { room_number, hall, netid, rating, comments, review_date } =
+          result.value;
+        submitReviewToDatabase(
+          room_number,
+          hall,
+          netid,
+          rating,
+          comments,
+          review_date
+        );
       }
     });
 
@@ -224,20 +233,21 @@ const HallFloor = ({ username, adminStatus }) => {
   };
 
   const submitReviewToDatabase = (
-    room_id,
+    room_number,
+    hall,
     netid,
     rating,
     comments,
     review_date
   ) => {
-
-    fetch("/api/submit-review", {
+    fetch("/api/submit_review", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        room_id,
+        room_number,
+        hall,
         netid,
         rating,
         comments,
@@ -252,10 +262,10 @@ const HallFloor = ({ username, adminStatus }) => {
             "Your review has been submitted successfully!",
             "success"
           );
-        } else {
+        } else if (data.error) {
           MySwal.fire(
             "Error.",
-            "Something went wrong while submitting your review. Please try again.",
+            data.error || "Something went wrong while submitting your review. Please try again.",
             "error"
           );
         }
@@ -269,8 +279,9 @@ const HallFloor = ({ username, adminStatus }) => {
         console.error(err);
       });
   };
+  
 
-  const handleDisplayReview = () => { };
+  const handleDisplayReview = () => {};
 
   const returnLink = `/floorplans?resco=${rescoFromCookie}&hall=${hallFromCookie}&floor=${floorFromCookie}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`;
 
@@ -380,6 +391,7 @@ const RoomInfoTable = ({
                           onClick={() =>
                             handleReview(
                               oneRoomInfo.name.split(" "[1]),
+                              hallName,
                               username
                             )
                           }
