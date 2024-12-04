@@ -16,6 +16,9 @@ const NavBar = ({ adminStatus }) => {
               <a href="/">Home</a>
             </li>
             <li>
+              <a href="/mygroup">MyGroup</a>
+            </li>
+            <li>
               <a href="/floorplans">Floor Plans</a>
             </li>
             {adminStatus && (

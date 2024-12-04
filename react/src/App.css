@@ -838,3 +838,51 @@ input[type="number"] {
   color: red;
   text-align: center;
 }
+
+/*--------------------------------------------------------------------*/
+/* This is the styling for the MyGroup page.                          */
+/*--------------------------------------------------------------------*/
+
+.my-group {
+  margin: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.my-group h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.my-group p {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+.my-group ul {
+  list-style: none;
+  padding: 0;
+}
+
+.my-group ul li {
+  margin: 5px 0;
+}
+
+.add-member {
+  margin-top: 20px;
+}
+
+.add-member input {
+  padding: 8px;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.add-member button {
+  padding: 8px 12px;
+  font-size: 16px;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}

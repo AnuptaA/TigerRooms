@@ -9,6 +9,7 @@ import Footer from "./Components/Footer";
 import NavBar from "./Components/NavBar";
 import Cart from "./pages/Cart";
 import InvalidRoute from "./pages/InvalidRoute";
+import MyGroup from "./pages/MyGroup";
 import "./App.css";
 
 const App = () => {
@@ -55,6 +56,8 @@ const App = () => {
         />
         <Route path="/cart" element={<Cart username={username} />} />
         <Route path="*" element={<InvalidRoute />} />
+        {/* TODO: this should be unavailable to admins */}
+        <Route path="/mygroup" element={<MyGroup username={username} />} />
       </Routes>
 
       <Footer />

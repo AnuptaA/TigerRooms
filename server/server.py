@@ -17,6 +17,7 @@ import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
 from database_reviews import save_review
+from update_database import send_email
 
 #-----------------------------------------------------------------------
 
@@ -479,6 +480,525 @@ def submit_review():
         return jsonify({"error": message}), 500
     
     return jsonify({"success": message}), 200
+
+#-----------------------------------------------------------------------
+
+# Create a group or return the existing group for the user
+@app.route('/api/create_group', methods=['POST'])
+def create_group():
+    print("HERE BITCH")
+    if require_login():
+        print("PENIS")
+        return require_login()
+
+    netid = session['username']
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Check if the user is already in a group
+        cursor.execute('''
+            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
+        ''', (netid,))
+        group = cursor.fetchone()
+
+        if group:
+            print("In a group bruh")
+            return jsonify({"message": "User already in a group", "group_id": group[0]}), 200
+
+        # Create a new group
+        cursor.execute('''
+            INSERT INTO "Groups" ("creator_netid") VALUES (%s) RETURNING "group_id"
+        ''', (netid,))
+        group_id = cursor.fetchone()[0]
+        print(f"Created a group bruh, with group_id {group_id}")
+
+        # Add the creator to the group
+        cursor.execute('''
+            INSERT INTO "GroupMembers" ("group_id", "netid") VALUES (%s, %s)
+        ''', (group_id, netid))
+
+        conn.commit()
+        return jsonify({"message": "Group created successfully", "group_id": group_id}), 201
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Add a member to a group by sending an invitation
+@app.route('/api/add_member', methods=['POST'])
+def add_member():
+    if require_login():
+        return require_login()
+
+    inviter = session['username']
+    data = request.json
+    invitee = data.get('invitee')  # The NetID of the person being invited
+
+    if not invitee:
+        return jsonify({"error": "Missing invitee NetID"}), 400
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Check if the inviter is in a group
+        cursor.execute('''
+            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
+        ''', (inviter,))
+        group = cursor.fetchone()
+
+        if not group:
+            return jsonify({"error": "You are not in a group"}), 400
+
+        group_id = group[0]
+
+        # Check if the group has space
+        cursor.execute('''
+            SELECT COUNT(*) FROM "GroupMembers" WHERE "group_id" = %s
+        ''', (group_id,))
+        member_count = cursor.fetchone()[0]
+
+        if member_count >= 8:
+            return jsonify({"error": "Group size limit reached"}), 400
+
+        # Check if the invitee is already in a group
+        cursor.execute('''
+            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
+        ''', (invitee,))
+        existing_group = cursor.fetchone()
+
+        if existing_group:
+            return jsonify({"error": f"{invitee} is already in another group."}), 400
+
+        # Check if the invitee already has a pending invitation
+        cursor.execute('''
+            SELECT 1 FROM "GroupInvites" WHERE "group_id" = %s AND "invitee_netid" = %s
+        ''', (group_id, invitee))
+        existing_invite = cursor.fetchone()
+
+        if existing_invite:
+            return jsonify({"error": f"{invitee} already has a pending invitation to this group."}), 400
+
+        # Send an invitation email
+        email = f"{invitee}@princeton.edu"
+        send_email(
+            to_email=email,
+            subject="TigerRooms Group Invitation",
+            body=(
+                f"Dear {invitee},\n\n"
+                f"You have been invited to join TigerRooms group {group_id}. "
+                "To respond to this invitation, please log in to TigerRooms and navigate to the 'My Group' page.\n\n"
+                "Best regards,\n"
+                "The TigerRooms Team"
+            )
+        )
+
+        # Add the invitation to the GroupInvites table only if the email was successfully sent
+        cursor.execute('''
+            INSERT INTO "GroupInvites" ("group_id", "invitee_netid") VALUES (%s, %s)
+        ''', (group_id, invitee))
+
+        conn.commit()
+        return jsonify({"message": f"Invitation sent to {invitee}@princeton.edu and added to the database."}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Accept an invitation to join a group
+@app.route('/api/accept_invite', methods=['POST'])
+def accept_invite():
+    if require_login():
+        return require_login()
+
+    invitee = session['username']
+    data = request.json
+    group_id = data.get('group_id')  # Use group_id instead of inviter
+
+    if not group_id:
+        return jsonify({"error": "Missing group_id parameter"}), 400
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Check if the invitee is already in a group
+        cursor.execute('''
+            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
+        ''', (invitee,))
+        existing_group = cursor.fetchone()
+
+        if existing_group:
+            return jsonify({"error": "You are already in a group"}), 400
+
+        # Add the invitee to the group
+        cursor.execute('''
+            INSERT INTO "GroupMembers" ("group_id", "netid") VALUES (%s, %s)
+        ''', (group_id, invitee))
+
+        # Remove the invitation
+        cursor.execute('''
+            DELETE FROM "GroupInvites"
+            WHERE "invitee_netid" = %s AND "group_id" = %s
+        ''', (invitee, group_id))
+
+        conn.commit()
+        return jsonify({"message": "You have joined the group", "group_id": group_id}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Decline an invitation to join a group
+@app.route('/api/decline_invite', methods=['POST'])
+def decline_invite():
+    if require_login():
+        return require_login()
+
+    invitee = session['username']
+    data = request.json
+    group_id = data.get('group_id')
+
+    if not group_id:
+        return jsonify({"error": "Missing group_id parameter"}), 400
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Remove the specific invitation for the invitee and group
+        cursor.execute('''
+            DELETE FROM "GroupInvites"
+            WHERE "invitee_netid" = %s AND "group_id" = %s
+        ''', (invitee, group_id))
+
+        conn.commit()
+        return jsonify({"message": "Invitation declined"}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Get the user's group details
+@app.route('/api/my_group', methods=['GET'])
+def my_group():
+    if require_login():
+        return require_login()
+
+    netid = session['username']
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Check if the user has a pending invitation
+        cursor.execute('''
+            SELECT "Groups"."group_id"
+            FROM "GroupInvites"
+            JOIN "Groups" ON "GroupInvites"."group_id" = "Groups"."group_id"
+            WHERE "invitee_netid" = %s
+        ''', (netid,))
+        invitation = cursor.fetchone()
+
+        if invitation:
+            group_id = invitation[0]
+            # Get members of the invited group
+            cursor.execute('''
+                SELECT "netid" FROM "GroupMembers" WHERE "group_id" = %s
+            ''', (group_id,))
+            members = [row[0] for row in cursor.fetchall()]
+            return jsonify({
+                "invitation": {
+                    "group_id": group_id,
+                    "members": members
+                }
+            }), 200
+
+        # If no invitation, check for the user's group
+        cursor.execute('''
+            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
+        ''', (netid,))
+        group = cursor.fetchone()
+
+        if not group:
+            return jsonify({"message": "You are not in a group"}), 200
+
+        group_id = group[0]
+
+        # Get all members of the group
+        cursor.execute('''
+            SELECT "netid" FROM "GroupMembers" WHERE "group_id" = %s
+        ''', (group_id,))
+        members = [row[0] for row in cursor.fetchall()]
+
+        return jsonify({"group_id": group_id, "members": members}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Get the group's shared cart
+@app.route('/api/group_cart', methods=['GET'])
+def group_cart():
+    if require_login():
+        return require_login()
+
+    netid = session['username']
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Get the user's group
+        cursor.execute('''
+            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
+        ''', (netid,))
+        group = cursor.fetchone()
+
+        if not group:
+            return jsonify({"error": "You are not in a group"}), 400
+
+        group_id = group[0]
+
+        # Get the group's cart
+        cursor.execute('''
+            SELECT "RoomOverview"."room_number", "RoomOverview"."hall", "RoomDetails"."square_footage", 
+                   "RoomDetails"."occupancy", "RoomOverview"."isAvailable"
+            FROM "GroupCarts"
+            JOIN "RoomOverview" ON "GroupCarts"."room_id" = "RoomOverview"."room_id"
+            JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
+            WHERE "GroupCarts"."group_id" = %s
+        ''', (group_id,))
+
+        cart = [
+            {
+                "room_number": row[0],
+                "hall": row[1],
+                "square_footage": row[2],
+                "occupancy": row[3],
+                "isAvailable": row[4],
+            }
+            for row in cursor.fetchall()
+        ]
+
+        return jsonify({"group_id": group_id, "cart": cart}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Get pending invitations for the user
+@app.route('/api/my_pending_invites', methods=['GET'])
+def my_pending_invites():
+    if require_login():
+        return require_login()
+
+    invitee_netid = session['username']
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Fetch pending invitations for the user
+        cursor.execute('''
+            SELECT "Groups"."group_id"
+            FROM "GroupInvites"
+            JOIN "Groups" ON "GroupInvites"."group_id" = "Groups"."group_id"
+            WHERE "GroupInvites"."invitee_netid" = %s
+        ''', (invitee_netid,))
+
+        invites = []
+        for group_id, in cursor.fetchall():
+            # Get members of the group
+            cursor.execute('''
+                SELECT "netid" FROM "GroupMembers" WHERE "group_id" = %s
+            ''', (group_id,))
+            members = [row[0] for row in cursor.fetchall()]
+
+            invites.append({
+                "group_id": group_id,
+                "members": members
+            })
+
+        return jsonify({"invites": invites}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Get pending members for a group
+@app.route('/api/group_pending_members', methods=['GET'])
+def group_pending_members():
+    if require_login():
+        return require_login()
+
+    # Get the group_id from the request arguments
+    group_id = request.args.get('group_id')
+    if not group_id:
+        return jsonify({"error": "Missing group_id parameter"}), 400
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Query to fetch all pending invitees for the given group_id
+        cursor.execute('''
+            SELECT "invitee_netid"
+            FROM "GroupInvites"
+            WHERE "group_id" = %s
+        ''', (group_id,))
+        pending_members = [row[0] for row in cursor.fetchall()]
+
+        return jsonify({"group_id": group_id, "pending_members": pending_members}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Leave the current group
+@app.route('/api/leave_group', methods=['POST'])
+def leave_group():
+    if require_login():
+        return require_login()
+
+    netid = session['username']
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Get the user's current group
+        cursor.execute('''
+            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
+        ''', (netid,))
+        group = cursor.fetchone()
+
+        if not group:
+            return jsonify({"error": "You are not in a group"}), 400
+
+        group_id = group[0]
+
+        # Remove the user from the group
+        cursor.execute('''
+            DELETE FROM "GroupMembers" WHERE "netid" = %s
+        ''', (netid,))
+
+        # Check if the group is now empty
+        cursor.execute('''
+            SELECT COUNT(*) FROM "GroupMembers" WHERE "group_id" = %s
+        ''', (group_id,))
+        remaining_members = cursor.fetchone()[0]
+
+        # If no members remain, delete the group
+        if remaining_members == 0:
+            cursor.execute('''
+                DELETE FROM "Groups" WHERE "group_id" = %s
+            ''', (group_id,))
+
+            # Clean up any group invites for the deleted group
+            cursor.execute('''
+                DELETE FROM "GroupInvites" WHERE "group_id" = %s
+            ''', (group_id,))
+
+        conn.commit()
+        return jsonify({"message": "You have successfully left the group"}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
+
+#-----------------------------------------------------------------------
+
+# Remove a pending invitation
+@app.route('/api/remove_invite', methods=['POST'])
+def remove_invite():
+    if require_login():
+        return require_login()
+
+    inviter = session['username']
+    data = request.json
+    group_id = data.get('group_id')  # Group ID to which the invitee was invited
+    invitee_netid = data.get('invitee_netid')  # The NetID of the invitee to remove
+
+    if not group_id or not invitee_netid:
+        return jsonify({"error": "Missing group_id or invitee_netid"}), 400
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # Check if the inviter is part of the group
+        cursor.execute('''
+            SELECT 1
+            FROM "GroupMembers"
+            WHERE "group_id" = %s AND "netid" = %s
+        ''', (group_id, inviter))
+        is_member = cursor.fetchone()
+
+        if not is_member:
+            return jsonify({"error": "You are not authorized to manage this group"}), 403
+
+        # Remove the pending invitation
+        cursor.execute('''
+            DELETE FROM "GroupInvites"
+            WHERE "group_id" = %s AND "invitee_netid" = %s
+        ''', (group_id, invitee_netid))
+
+        # Send an email notification to the invitee
+        invitee_email = f"{invitee_netid}@princeton.edu"
+        email_subject = "TigerRooms Invitation Removed"
+        email_body = (
+            f"Dear {invitee_netid},\n\n"
+            f"Your pending invitation to join TigerRooms group {group_id} has been removed.\n\n"
+            "Best regards,\n"
+            "The TigerRooms Team"
+        )
+
+        try:
+            send_email(
+                to_email=invitee_email,
+                subject=email_subject,
+                body=email_body
+            )
+        except Exception as e:
+            return jsonify({"error": "Failed to send email notification", "details": str(e)}), 500
+
+        conn.commit()
+
+        return jsonify({"message": f"Invitation for {invitee_netid} has been removed, and an email notification has been sent."}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
 
 #-----------------------------------------------------------------------
 
