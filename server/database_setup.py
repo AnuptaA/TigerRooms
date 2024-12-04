@@ -22,8 +22,17 @@ def main():
         print("Dropping existing tables if they exist...")
 
         # List of tables to drop
-        tables = ["LastTimestamp", "RoomSaves", "RoomDetails", "RoomOverview"]
-
+        tables = [
+            "LastTimestamp", 
+            "RoomSaves", 
+            "RoomDetails", 
+            "RoomOverview",
+            "RoomReviews", 
+            "GroupCarts", 
+            "GroupMembers", 
+            "Groups", 
+            "GroupInvites"
+        ]
         # Drop each table with autocommit enabled
         for table in tables:
             try:
@@ -75,6 +84,19 @@ def main():
             ''')
             print("RoomSaves table created.")
 
+            # Create RoomReviews table
+            cursor.execute('''
+                CREATE TABLE "RoomReviews" (
+                    "netid" TEXT,
+                    "room_id" INTEGER REFERENCES "RoomOverview"("room_id"),
+                    "rating" INTEGER CHECK ("rating" BETWEEN 1 AND 5),
+                    "review_date" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    "comments" TEXT,
+                    PRIMARY KEY ("netid", "room_id")
+                )
+            ''')
+            print("RoomReviews table created.")
+
             # Create LastTimestamp table
             cursor.execute('''
                 CREATE TABLE "LastTimestamp" (
@@ -82,6 +104,46 @@ def main():
                 )
             ''')
             print("LastTimestamp table created.")
+
+            # Create Groups table
+            cursor.execute('''
+                CREATE TABLE "Groups" (
+                    "group_id" SERIAL PRIMARY KEY,
+                    "creator_netid" TEXT UNIQUE NOT NULL,
+                    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            print("Groups table created.")
+
+            # Create GroupMembers table
+            cursor.execute('''
+                CREATE TABLE "GroupMembers" (
+                    "group_id" INTEGER REFERENCES "Groups"("group_id") ON DELETE CASCADE,
+                    "netid" TEXT UNIQUE NOT NULL,
+                    PRIMARY KEY ("group_id", "netid")
+                )
+            ''')
+            print("GroupMembers table created.")
+
+            # Create GroupCarts table
+            cursor.execute('''
+                CREATE TABLE "GroupCarts" (
+                    "group_id" INTEGER REFERENCES "Groups"("group_id") ON DELETE CASCADE,
+                    "room_id" INTEGER REFERENCES "RoomOverview"("room_id"),
+                    PRIMARY KEY ("group_id", "room_id")
+                )
+            ''')
+            print("GroupCarts table created.")
+
+            # Create GroupInvites table
+            cursor.execute('''
+                CREATE TABLE "GroupInvites" (
+                    "group_id" INTEGER REFERENCES "Groups"("group_id") ON DELETE CASCADE,
+                    "invitee_netid" TEXT NOT NULL,
+                    PRIMARY KEY ("group_id", "invitee_netid")
+                )
+            ''')
+            print("GroupInvites table created.")
 
             conn.commit()  # Commit all create table operations at once
         except Exception as e:
