@@ -338,11 +338,6 @@ def main():
             },
             # Hargadon Floors --------------------------------------------------
             {
-                "residential_college": "Whitman", "hall": "Hargadon", "floor": 1, 
-                "room_numbers": ['G101A', 'G101D'],
-                "occupancies": [3, 3], "square_footages": [430, 475]
-            },
-            {
                 "residential_college": "Whitman", "hall": "Hargadon", "floor": 2, 
                 "room_numbers": ['G203A', 'G203B', 'G205', 'G207'],
                 "occupancies": [1, 1, 1, 1], "square_footages": [157, 220, 156, 155]
