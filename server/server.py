@@ -297,18 +297,55 @@ def api_unsave_room():
 #-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/saved_rooms', methods=['GET'])
 def api_get_saved_rooms():
-    # Ensure usser is logged in before accessing API
+    # Ensure user is logged in before accessing the API
     if require_login():
         return require_login()
     
-    netid = request.args.get('user_id')
+    requesting_netid = session['username']
+    target_netid = request.args.get('user_id')
 
-    # Must be logged in as the user to obtain data
-    if netid != session['username']:
-        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    if not target_netid:
+        return jsonify({"error": "Missing user_id parameter"}), 400
 
-    saved_rooms = get_saved_rooms_with_saves_and_availability(netid)
-    return jsonify({"netid": netid, "saved_rooms": saved_rooms}), 200
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor()
+
+        # If the requesting user is trying to fetch their own saved rooms, allow it without group checks
+        if requesting_netid == target_netid:
+            saved_rooms = get_saved_rooms_with_saves_and_availability(target_netid)
+            return jsonify({"netid": target_netid, "saved_rooms": saved_rooms}), 200
+
+        # Check if both users are in the same group (for accessing others' saved rooms)
+        cursor.execute('''
+            SELECT "group_id"
+            FROM "GroupMembers"
+            WHERE "netid" = %s
+        ''', (requesting_netid,))
+        requesting_user_group = cursor.fetchone()
+
+        if not requesting_user_group:
+            return jsonify({"error": "You are not in a group"}), 403
+
+        cursor.execute('''
+            SELECT "group_id"
+            FROM "GroupMembers"
+            WHERE "netid" = %s
+        ''', (target_netid,))
+        target_user_group = cursor.fetchone()
+
+        if not target_user_group or requesting_user_group[0] != target_user_group[0]:
+            return jsonify({"error": "You do not have permission to view this user's saved rooms"}), 403
+
+        # Fetch the saved rooms for the target user
+        saved_rooms = get_saved_rooms_with_saves_and_availability(target_netid)
+        return jsonify({"netid": target_netid, "saved_rooms": saved_rooms}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        conn.close()
+        return_connection(conn)
 
 #-----------------------------------------------------------------------
 
