@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.b3879316.css",
-    "main.js": "/static/js/main.8acca18a.js",
-    "static/js/453.080d68db.chunk.js": "/static/js/453.080d68db.chunk.js",
+    "main.js": "/static/js/main.9283baeb.js",
+    "static/js/453.28c81ab3.chunk.js": "/static/js/453.28c81ab3.chunk.js",
     "static/media/Whitman_Wendell-C_2.png": "/static/media/Whitman_Wendell-C_2.2f89dc4cfeb722231cca.png",
     "static/media/Whitman_1981_2.png": "/static/media/Whitman_1981_2.19e3949e254e803318b4.png",
     "static/media/Whitman_Baker-E_3.png": "/static/media/Whitman_Baker-E_3.03894b1949381d1d5608.png",
@@ -28,7 +28,6 @@
     "static/media/Whitman_Lauritzen_4.png": "/static/media/Whitman_Lauritzen_4.5d1341f660af6977b88c.png",
     "static/media/Whitman_Murley-Pivirotto_3.png": "/static/media/Whitman_Murley-Pivirotto_3.ff248398aab7379bf7c4.png",
     "static/media/Whitman_Hargadon_2.png": "/static/media/Whitman_Hargadon_2.fa1805ad9447a2b2d33f.png",
-    "static/media/Whitman_Hargadon_1.png": "/static/media/Whitman_Hargadon_1.2bb5594b1d0e05aedc89.png",
     "static/media/Whitman_Hargadon_3.png": "/static/media/Whitman_Hargadon_3.8c11862d3f5a7acadec8.png",
     "static/media/Whitman_Lauritzen_2.png": "/static/media/Whitman_Lauritzen_2.528ed39287dc8d400bb0.png",
     "static/media/Whitman_Baker-S_4.png": "/static/media/Whitman_Baker-S_4.f12c0ee2dbe98704aa06.png",
@@ -43,11 +42,11 @@
     "static/media/upload-file-svgrepo-com.svg": "/static/media/upload-file-svgrepo-com.74656e884378cf85d429b09387e4521a.svg",
     "index.html": "/index.html",
     "main.b3879316.css.map": "/static/css/main.b3879316.css.map",
-    "main.8acca18a.js.map": "/static/js/main.8acca18a.js.map",
-    "453.080d68db.chunk.js.map": "/static/js/453.080d68db.chunk.js.map"
+    "main.9283baeb.js.map": "/static/js/main.9283baeb.js.map",
+    "453.28c81ab3.chunk.js.map": "/static/js/453.28c81ab3.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b3879316.css",
-    "static/js/main.8acca18a.js"
+    "static/js/main.9283baeb.js"
   ]
 }
