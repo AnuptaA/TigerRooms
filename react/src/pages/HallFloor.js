@@ -14,7 +14,7 @@ const HallFloor = ({ username, adminStatus }) => {
   // State for room information and expanded rows
   const [roomInfo, setRoomInfo] = useState([
     {
-      name: "Room 101",
+      name: "Loading...",
       isAvailable: "T", // T for available, F for unavailable
       size: "200 sqft",
       occupancy: "Single",
