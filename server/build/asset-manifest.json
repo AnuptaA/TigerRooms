@@ -1,10 +1,11 @@
 {
   "files": {
     "main.css": "/static/css/main.d400a4c4.css",
-    "main.js": "/static/js/main.f41afdf4.js",
+    "main.js": "/static/js/main.e96c1a56.js",
     "static/js/453.080d68db.chunk.js": "/static/js/453.080d68db.chunk.js",
     "static/media/Whitman_Wendell-C_2.png": "/static/media/Whitman_Wendell-C_2.2f89dc4cfeb722231cca.png",
     "static/media/Whitman_1981_2.png": "/static/media/Whitman_1981_2.19e3949e254e803318b4.png",
+    "static/media/Whitman_Baker-E_2.png": "/static/media/Whitman_Baker-E_2.fbedba5f2ad988a053e3.png",
     "static/media/Whitman_Baker-E_3.png": "/static/media/Whitman_Baker-E_3.03894b1949381d1d5608.png",
     "static/media/Whitman_Wendell-B_2.png": "/static/media/Whitman_Wendell-B_2.935c6bac20d2e8ad3e90.png",
     "static/media/Whitman_Wendell-C_3.png": "/static/media/Whitman_Wendell-C_3.11486a43c720fed85699.png",
@@ -18,7 +19,7 @@
     "static/media/Whitman_1981_3.png": "/static/media/Whitman_1981_3.dfa444fdd949c7519753.png",
     "static/media/Whitman_Baker-E_4.png": "/static/media/Whitman_Baker-E_4.0b45d7a10acec966f4f9.png",
     "static/media/Whitman_Baker-E_1.png": "/static/media/Whitman_Baker-E_1.b07d7a010f2863d814db.png",
-    "static/media/Whitman_Baker-E_2.png": "/static/media/Whitman_Baker-E_2.7081ee4a9e2a5999f9b1.png",
+    "static/media/Whitman_Baker-S_0.png": "/static/media/Whitman_Baker-S_0.2de4db1535c530fc9724.png",
     "static/media/Whitman_Lauritzen_0.png": "/static/media/Whitman_Lauritzen_0.2154b5f137f5a3fe0375.png",
     "static/media/Whitman_Fisher_2.png": "/static/media/Whitman_Fisher_2.66df991223251d536fde.png",
     "static/media/Whitman_Lauritzen_1.png": "/static/media/Whitman_Lauritzen_1.39d280f33fa77501f0ec.png",
@@ -33,7 +34,6 @@
     "static/media/Whitman_Lauritzen_2.png": "/static/media/Whitman_Lauritzen_2.528ed39287dc8d400bb0.png",
     "static/media/Whitman_Baker-S_4.png": "/static/media/Whitman_Baker-S_4.f12c0ee2dbe98704aa06.png",
     "static/media/Whitman_Hargadon_4.png": "/static/media/Whitman_Hargadon_4.0522d8eac61f48668fbf.png",
-    "static/media/Whitman_Baker-S_0.png": "/static/media/Whitman_Baker-S_0.d0164fe91d802fb441b2.png",
     "static/media/Whitman_Baker-S_2.png": "/static/media/Whitman_Baker-S_2.f9efa670f050bc0a3ac9.png",
     "static/media/Whitman_Baker-S_3.png": "/static/media/Whitman_Baker-S_3.aa7107a4a79f0a70dd65.png",
     "static/media/Whitman_Baker-S_1.png": "/static/media/Whitman_Baker-S_1.5f2422f2b5e602872018.png",
@@ -43,11 +43,11 @@
     "static/media/upload-file-svgrepo-com.svg": "/static/media/upload-file-svgrepo-com.74656e884378cf85d429b09387e4521a.svg",
     "index.html": "/index.html",
     "main.d400a4c4.css.map": "/static/css/main.d400a4c4.css.map",
-    "main.f41afdf4.js.map": "/static/js/main.f41afdf4.js.map",
+    "main.e96c1a56.js.map": "/static/js/main.e96c1a56.js.map",
     "453.080d68db.chunk.js.map": "/static/js/453.080d68db.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d400a4c4.css",
-    "static/js/main.f41afdf4.js"
+    "static/js/main.e96c1a56.js"
   ]
 }
