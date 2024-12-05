@@ -804,18 +804,25 @@ input[type="number"] {
 }
 
 .cart-title {
-  font-size: 2vw;
+  font-size: 2.5vw; /* Larger font size */
   color: #333;
-  margin-top: 5vh; /* Adds space between the header and the title */
-  margin-bottom: 2.5vh;
+  margin-top: 4rem; /* Add space above the title */
+  margin-bottom: 3rem; /* Add space below the title */
+  font-weight: bold; /* Make the title bold */
 }
 .saved-rooms-section {
   width: 100%;
+  margin-bottom: 3rem; /* Add spacing between sections */
+  padding: 1.5rem; /* Add padding inside each section */
+  background-color: #ffffff; /* Optional: Add a light background for contrast */
+  border-radius: 8px; /* Slightly round the section corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better separation */
 }
+
 .saved-rooms-table {
   width: 100%;
   max-width: 100%;
-  margin: 10vh auto;
+  margin: 2rem auto; /* Add spacing above and below the table */
   border-collapse: collapse;
   background-color: #fff;
 }
@@ -850,13 +857,18 @@ input[type="number"] {
 .trash-button {
   background-color: transparent;
   border: none;
-  font: 1vw;
   cursor: pointer;
   color: #ff4c4c;
+  font-size: 1.5vw; /* Increase the font size to make the icon bigger */
+  line-height: 0; /* Ensure there's no extra spacing around the icon */
 }
 
 .trash-button:hover {
-  color: #ff0000;
+  color: #ff0000; /* Darker red on hover */
+  transform: scale(
+    1.2
+  ); /* Slightly enlarge the icon on hover for better interactivity */
+  transition: transform 0.2s ease, color 0.2s ease; /* Smooth animation */
 }
 
 .clear-drawn-rooms-button {
@@ -956,7 +968,9 @@ input[type="number"] {
 .controls {
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
+  gap: 20px; /* Increase spacing between buttons */
+  margin-bottom: 2rem; /* Add more space below the buttons */
+  margin-top: 2rem; /* Add space above the buttons */
 }
 
 .expand-button,
@@ -964,19 +978,21 @@ input[type="number"] {
   background-color: #4caf50; /* Green background */
   border: none;
   color: white;
-  padding: 10px 20px;
-  margin: 0 5px;
+  padding: 15px 30px; /* Increase padding for larger buttons */
+  margin: 0 10px; /* Add more horizontal space between buttons */
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
-  border-radius: 5px;
+  font-size: 18px; /* Increase font size */
+  font-weight: bold; /* Make the text more prominent */
+  border-radius: 8px; /* Slightly rounder corners */
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Add hover effects */
 }
 
 .expand-button:hover {
-  background-color: #45a049; /* Darker green */
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly increase size on hover */
 }
 
 .collapse-button {
@@ -984,5 +1000,13 @@ input[type="number"] {
 }
 
 .collapse-button:hover {
-  background-color: #d32f2f; /* Darker red */
+  background-color: #d32f2f; /* Darker red on hover */
+  transform: scale(1.05); /* Slightly increase size on hover */
+}
+
+.saved-rooms-title {
+  font-size: 1.8rem; /* Increase font size */
+  font-weight: bold; /* Make the text bold */
+  color: #333;
+  margin: 0; /* Remove default margins */
 }
