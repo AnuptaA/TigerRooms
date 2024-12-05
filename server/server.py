@@ -690,8 +690,8 @@ def create_group():
 
         # Create a new group
         cursor.execute('''
-            INSERT INTO "Groups" DEFAULT VALUES RETURNING "group_id"
-        ''')
+            INSERT INTO "Groups" ("creator_netid") VALUES (%s) RETURNING "group_id"
+        ''', (netid,))
         group_id = cursor.fetchone()[0]
 
         # Add the user as a member of the group
@@ -1044,10 +1044,14 @@ def leave_group():
         ''', (group_id,))
         remaining_members = cursor.fetchone()[0]
 
-        # If no members remain, delete the group (cascading deletions will handle other data)
+        # If no members remain, delete the group
         if remaining_members == 0:
             cursor.execute('''
                 DELETE FROM "Groups" WHERE "group_id" = %s
+            ''', (group_id,))
+            # Clean up any group invites for the deleted group
+            cursor.execute('''
+                DELETE FROM "GroupInvites" WHERE "group_id" = %s
             ''', (group_id,))
 
         conn.commit()
