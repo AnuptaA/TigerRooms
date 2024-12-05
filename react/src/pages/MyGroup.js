@@ -194,7 +194,11 @@ const MyGroup = ({ username, adminStatus }) => {
   };
 
   const handleRemoveInvitation = (inviteeNetID) => {
-    setLoading(true);
+    // Optimistically update the UI by removing the invitee immediately
+    setPendingMembers((prev) =>
+      prev.filter((member) => member !== inviteeNetID)
+    );
+
     fetch("/api/remove_invite", {
       method: "POST",
       headers: {
@@ -204,22 +208,18 @@ const MyGroup = ({ username, adminStatus }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.message) {
-          alert(data.message); // Notify user of success
-
-          // Update the pendingMembers state
-          setPendingMembers((prev) =>
-            prev.filter((member) => member !== inviteeNetID)
-          );
-        } else if (data.error) {
+        if (data.error) {
+          // Revert the optimistic update if there's an error
+          setPendingMembers((prev) => [...prev, inviteeNetID]);
           setError(data.error);
         }
-        setLoading(false);
       })
       .catch((error) => {
         console.error("Error removing invitation:", error);
+
+        // Revert the optimistic update if there's an error
+        setPendingMembers((prev) => [...prev, inviteeNetID]);
         setError("Failed to remove invitation. Please try again later.");
-        setLoading(false);
       });
   };
 
@@ -248,8 +248,8 @@ const MyGroup = ({ username, adminStatus }) => {
   };
 
   const handleAddMember = () => {
-    // Regular expression to match two lowercase letters followed by four digits
-    const netIDRegex = /^[a-z]{2}\d{4}$/;
+    // Regular expression to match 2-8 lowercase letters and numbers
+    const netIDRegex = /^[a-z0-9]{2,8}$/;
 
     if (!newMemberNetID) {
       setError("Please enter a NetID.");
@@ -257,9 +257,7 @@ const MyGroup = ({ username, adminStatus }) => {
     }
 
     if (!netIDRegex.test(newMemberNetID)) {
-      setError(
-        "Invalid NetID format. It must be two lowercase letters followed by four numbers."
-      );
+      setError("Invalid NetID. Please try again.");
       return;
     }
 
