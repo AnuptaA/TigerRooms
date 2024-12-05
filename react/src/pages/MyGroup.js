@@ -248,8 +248,8 @@ const MyGroup = ({ username, adminStatus }) => {
   };
 
   const handleAddMember = () => {
-    // Regular expression to match two lowercase letters followed by four digits
-    const netIDRegex = /^[a-z]{2}\d{4}$/;
+    // Regular expression to match 2-8 lowercase letters and numbers
+    const netIDRegex = /^[a-z0-9]{2,8}$/;
 
     if (!newMemberNetID) {
       setError("Please enter a NetID.");
@@ -257,9 +257,7 @@ const MyGroup = ({ username, adminStatus }) => {
     }
 
     if (!netIDRegex.test(newMemberNetID)) {
-      setError(
-        "Invalid NetID format. It must be two lowercase letters followed by four numbers."
-      );
+      setError("Invalid NetID. Please try again.");
       return;
     }
 
