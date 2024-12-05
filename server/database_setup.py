@@ -120,6 +120,7 @@ def main():
                 CREATE TABLE "GroupMembers" (
                     "group_id" INTEGER REFERENCES "Groups"("group_id") ON DELETE CASCADE,
                     "netid" TEXT UNIQUE NOT NULL,
+                    "invite_count" INTEGER DEFAULT 0 CHECK ("invite_count" >= 0),
                     PRIMARY KEY ("group_id", "netid")
                 )
             ''')
