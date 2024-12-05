@@ -3,70 +3,80 @@ import "../App.css";
 
 const Cart = ({ username }) => {
   const [savedRooms, setSavedRooms] = useState({});
-  const [groupMembers, setGroupMembers] = useState([]);
-  const [collapsedStates, setCollapsedStates] = useState({});
+  const [groupMembers, setGroupMembers] = useState([username]); // Start with the user only
+  const [collapsedStates, setCollapsedStates] = useState({ [username]: false }); // User's section starts expanded
 
-  // Fetch group data and saved rooms for all members
+  // Fetch saved rooms for the user
   useEffect(() => {
-    const fetchGroupData = async () => {
+    const fetchSavedRooms = async () => {
       try {
-        // Fetch group data
+        // Fetch the user's saved rooms
+        const response = await fetch(`/api/saved_rooms?user_id=${username}`);
+        let sortedRooms = []; // Define sortedRooms here
+        if (response.ok) {
+          const data = await response.json();
+          sortedRooms = data.saved_rooms.sort((a, b) => {
+            return b.availability - a.availability;
+          });
+          setSavedRooms({ [username]: sortedRooms });
+        } else {
+          console.error(
+            `Error fetching saved rooms for ${username}: ${response.statusText}`
+          );
+          setSavedRooms({ [username]: [] }); // Show an empty state if there's an error
+        }
+
+        // Optionally, fetch group data if the user is in a group
         const groupResponse = await fetch(`/api/my_group`);
         const groupData = await groupResponse.json();
+        if (groupData.group_id && groupData.members.length > 1) {
+          setGroupMembers(groupData.members);
+          const collapsedStatesInitial = groupData.members.reduce(
+            (states, member) => {
+              states[member] = member !== username; // Collapse others, keep the user expanded
+              return states;
+            },
+            {}
+          );
+          setCollapsedStates(collapsedStatesInitial);
 
-        if (groupData.group_id) {
-          // User is in a group
-          const savedRoomsByUser = {};
-          const collapsedStatesInitial = {};
-
+          // Fetch saved rooms for group members
+          const savedRoomsByUser = { [username]: sortedRooms }; // Use sortedRooms here
           for (const member of groupData.members) {
-            try {
-              const response = await fetch(
-                `/api/saved_rooms?user_id=${member}`
-              );
-              if (response.ok) {
-                const data = await response.json();
-                const sortedRooms = data.saved_rooms.sort((a, b) => {
-                  return b.availability - a.availability;
-                });
-                savedRoomsByUser[member] = sortedRooms;
-              } else {
+            if (member !== username) {
+              try {
+                const memberResponse = await fetch(
+                  `/api/saved_rooms?user_id=${member}`
+                );
+                if (memberResponse.ok) {
+                  const memberData = await memberResponse.json();
+                  const memberSortedRooms = memberData.saved_rooms.sort(
+                    (a, b) => {
+                      return b.availability - a.availability;
+                    }
+                  );
+                  savedRoomsByUser[member] = memberSortedRooms;
+                } else {
+                  console.error(
+                    `Error fetching saved rooms for ${member}: ${memberResponse.statusText}`
+                  );
+                }
+              } catch (error) {
                 console.error(
-                  `Error fetching saved rooms for ${member}: ${response.statusText}`
+                  `Error fetching saved rooms for ${member}:`,
+                  error
                 );
               }
-              collapsedStatesInitial[member] = true; // Initial state collapsed
-            } catch (error) {
-              console.error(`Error fetching saved rooms for ${member}:`, error);
             }
           }
-
           setSavedRooms(savedRoomsByUser);
-          setGroupMembers(groupData.members);
-          setCollapsedStates(collapsedStatesInitial);
-        } else {
-          // User is not in a group
-          const response = await fetch(`/api/saved_rooms?user_id=${username}`);
-          if (response.ok) {
-            const data = await response.json();
-            const sortedRooms = data.saved_rooms.sort((a, b) => {
-              return b.availability - a.availability;
-            });
-            setSavedRooms({ [username]: sortedRooms });
-          } else {
-            console.error(
-              `Error fetching saved rooms for ${username}: ${response.statusText}`
-            );
-          }
-          setGroupMembers([username]);
-          setCollapsedStates({ [username]: false }); // Current user starts expanded
         }
       } catch (error) {
-        console.error("Error fetching group or saved room data:", error);
+        console.error("Error fetching saved room or group data:", error);
       }
     };
 
-    fetchGroupData();
+    fetchSavedRooms();
   }, [username]);
 
   // Toggle collapse/expand state
