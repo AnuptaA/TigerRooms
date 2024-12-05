@@ -491,7 +491,7 @@ const HallFloor = ({ username, adminStatus }) => {
   };
 
   const handleDisplayReview = (room_id, name) => {
-    fetch("/api/reviews/get_all_reviews", {
+    fetch("/api/reviews/get_all_reviews_for_room", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

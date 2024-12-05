@@ -152,3 +152,41 @@ def get_reviews(room_id):
         return {"success": False, "error": message }
             
 #-----------------------------------------------------------------------
+    
+def get_all_db_reviews():
+    '''
+    '''
+    try:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    '''
+                    SELECT "netid", "room_id", "rating", "comments", "review_date"
+                    FROM "RoomReviews"
+                    ORDER BY "review_date" DESC
+                    '''
+                )
+
+                # Fetch the result
+                result = cursor.fetchall()
+                print(f"Query Result: ", result)
+
+                all_reviews = []
+
+                for row in result:
+                    review = {}
+                    review['netid'] = row[0]
+                    review['room_id'] = row[1]
+                    review['rating'] = row[2]
+                    review['comments'] = row[4]
+                    review['review_date'] = row[3]
+                    all_reviews.append(review)
+
+                return {"success": True, "all_reviews": all_reviews}
+    
+    except Exception as ex:
+        message = f"Error occurred while fetching all reviews: {ex}"
+        print(message)
+        return {"success": False, "error": message}
+    
+#-----------------------------------------------------------------------
