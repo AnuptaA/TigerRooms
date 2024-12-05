@@ -370,6 +370,7 @@ def main():
             }
             room_data.append(group_dict)
         
+        #-----------------------------------------------------------------------
     
         # Populate tables with room data
         for data in room_data:
