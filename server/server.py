@@ -789,7 +789,7 @@ def add_member():
         ''', (group_id, invitee))
 
         conn.commit()
-        return jsonify({"message": f"Invitation sent to {invitee}@princeton.edu and added to the database."}), 200
+        return jsonify({"message": f"Invitation sent to {invitee}@princeton.edu"}), 200
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500
