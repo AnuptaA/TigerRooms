@@ -19,20 +19,20 @@ def validate_tables(tables):
     if len(tables.columns) != 5:
         raise ValueError("Number of columns is not 5")
 
-    valid_rescos = ['Upperclass ' 'Butler College ' 'Whitman College ' 'Forbes College '
-    'New College West ' 'Mathey College ' 'New College East '
-    'Rockefeller College ']
+    valid_rescos = ['Upperclass', 'Butler College' 'Whitman College', 'Forbes College',
+    'New College West', 'Mathey College', 'New College East',
+    'Rockefeller College']
     
-    valid_halls = ['1901' '1903' '1967' '1976' '1981' '99ALEXANDER' 'Addy Hall'
-    'Aliya Kanji Hall' 'BAKER' 'BLAIR' 'BLOOMBERG' 'BOGLE' 'Bosque Hall'
-    'BROWN' 'BUYERS' 'CAMPBELL' 'CUYLER' 'DOD' 'EDWARDS' 'FEINBERG' 'FISHER'
-    'FORBES' 'FOULKE' 'Grousbeck Hall' 'H Hall' 'HAMILTON' 'HARGADON' 'HENRY'
-    'HOLDER' 'JOLINE' 'Jose Enrique Feliciano Hall'
-    'Kwanza Marion Jones Hall' 'LAUGHLIN' 'LAURITZEN' 'LITTLE' 'LOCKHART'
-    'Mannion Hall' 'MURLEY' 'PATTON' 'PYNE' 'SCULLY' 'SPELMAN' 'WALKER'
-    'WENDELL' 'WILF' 'WITHERSPOON' 'WRIGHT' 'YOSELOFF']
+    valid_halls = ['1901', '1903', '1967', '1976', '1981', '99ALEXANDER', 'Addy Hall',
+    'Aliya Kanji Hall', 'BAKER', 'BLAIR', 'BLOOMBERG', 'BOGLE', 'Bosque Hall',
+    'BROWN', 'BUYERS', 'CAMPBELL', 'CUYLER', 'DOD', 'EDWARDS', 'FEINBERG', 'FISHER',
+    'FORBES', 'FOULKE', 'Grousbeck Hall', 'H Hall', 'HAMILTON', 'HARGADON', 'HENRY',
+    'HOLDER', 'JOLINE', 'Jose Enrique Feliciano Hall',
+    'Kwanza Marion Jones Hall', 'LAUGHLIN', 'LAURITZEN', 'LITTLE', 'LOCKHART',
+    'Mannion Hall', 'MURLEY', 'PATTON', 'PYNE', 'SCULLY', 'SPELMAN', 'WALKER',
+    'WENDELL', 'WILF', 'WITHERSPOON', 'WRIGHT', 'YOSELOFF']
 
-    valid_occupancy = ['TRIPLE' 'DOUBLE' 'SINGLE' 'QUAD' 'DA' 'QUINT' '6PERSON']
+    valid_occupancy = ['TRIPLE', 'DOUBLE', 'SINGLE', 'QUAD', 'DA', 'QUINT', '6PERSON']
 
     # check that all other columns are correct
     resco_list = tables[0].tolist()
@@ -60,7 +60,6 @@ def validate_tables(tables):
             raise ValueError(f"{value} is invalid. Square footage must be an integer.")
         if len(value) > 4:
             raise ValueError(f"Square footage of {value} exceeds the maxmimum")
-      
 #-----------------------------------------------------------------------
 
 def parse_pdf(filepath):
