@@ -140,8 +140,7 @@ def main():
             cursor.execute('''
                 CREATE TABLE "Users" (
                     "netid" TEXT PRIMARY KEY,
-                    "num_invites" INTEGER DEFAULT 0 CHECK ("num_invites" >= 0),
-                    "num_reviews" INTEGER DEFAULT 0 CHECK ("num_reviews" >= 0)
+                    "num_invites" INTEGER DEFAULT 0 CHECK ("num_invites" >= 0)
                 )
             ''')
             print("Users table created.")
