@@ -146,7 +146,7 @@ def get_unique_halls_and_floors():
 
 
     results = cursor.fetchall()
-    conn.close()
+    cursor.close()
     return_connection(conn)
 
     # Organize results into hall and floor labels
@@ -366,7 +366,7 @@ def api_get_saved_rooms():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -499,7 +499,7 @@ def clear_drawn_rooms():
         return jsonify({"error": "Failed to clear drawn rooms.", "details": str(e)}), 500
     finally:
         print("Closing database connection.")
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -648,7 +648,7 @@ def create_group():
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -734,7 +734,7 @@ def add_member():
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -782,7 +782,7 @@ def accept_invite():
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -816,7 +816,7 @@ def decline_invite():
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -876,7 +876,7 @@ def my_group():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -928,7 +928,7 @@ def group_cart():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -969,7 +969,7 @@ def my_pending_invites():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -1001,7 +1001,7 @@ def group_pending_members():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -1056,7 +1056,7 @@ def leave_group():
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
@@ -1122,7 +1122,7 @@ def remove_invite():
         conn.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        conn.close()
+        cursor.close()
         return_connection(conn)
 
 #-----------------------------------------------------------------------
