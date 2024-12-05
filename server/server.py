@@ -656,25 +656,56 @@ def get_all_reviews_for_room():
 def get_all_reviews():
     # Ensure user is logged in before accessing API
     if require_login():
-        return require_login()
-    
-    print("Endpoint '/api/reviews/get_all_reviews'")
-    data = request.json
-    print(f"Request data received: {data}")
-    netid = data.get('netid')
+        require_login()
+
+    netid = request.args.get('netid')   # Get netid from query params
 
     if not netid:
-        print("Error: Missing netid in request.")
+        print("Error: Missing netid in request for getting all reviews.")
         return jsonify({"error": "Missing netid"}), 400
+
+    # Must be logged in as the user to obtain data
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    # Must be admin to access all reviews
+    if not is_admin(netid):
+        return jsonify({"error": "Unauthorized: Only admins may access this page."}), 403
     
     result = get_all_db_reviews()
 
     if not result["success"]:
-        return jsonify({"error": result["error"]}), 500
+        return jsonify({"error": "Missing netid"}), 400
     
     return jsonify({
         "success": "Successfully fetched user reviews",
         "all_reviews": result["all_reviews"]}), 200
+
+#-----------------------------------------------------------------------
+
+# @app.route('/api/reviews/get_all_reviews', methods=['POST'])
+# def get_all_reviews():
+#     # Ensure user is logged in before accessing API
+#     if require_login():
+#         return require_login()
+    
+#     print("Endpoint '/api/reviews/get_all_reviews'")
+#     data = request.json
+#     print(f"Request data received: {data}")
+#     netid = data.get('netid')
+
+#     if not netid:
+#         print("Error: Missing netid in request.")
+#         return jsonify({"error": "Missing netid"}), 400
+    
+#     result = get_all_db_reviews()
+
+#     if not result["success"]:
+#         return jsonify({"error": result["error"]}), 500
+    
+#     return jsonify({
+#         "success": "Successfully fetched user reviews",
+#         "all_reviews": result["all_reviews"]}), 200
 
 #-----------------------------------------------------------------------
 
