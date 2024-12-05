@@ -19,7 +19,7 @@ def validate_tables(tables):
     if len(tables.columns) != 5:
         raise ValueError("Number of columns is not 5")
 
-    valid_rescos = ['Upperclass', 'Butler College' 'Whitman College', 'Forbes College',
+    valid_rescos = ['Upperclass', 'Butler College', 'Whitman College', 'Forbes College',
     'New College West', 'Mathey College', 'New College East',
     'Rockefeller College']
     
@@ -41,24 +41,24 @@ def validate_tables(tables):
     sqft_list = tables[4].tolist()
 
     for value in resco_list:
-        if value not in valid_rescos:
+        if value.strip() not in valid_rescos:
             raise ValueError(f"Invalid residential college: {value}")
 
     # Check hall_list
     for value in hall_list:
-        if value not in valid_halls:
+        if value.strip() not in valid_halls:
             raise ValueError(f"Invalid hall: {value}")
 
     # Check occupancy_list
     for value in occupancy_list:
-        if value not in valid_occupancy:
+        if value.strip() not in valid_occupancy:
             raise ValueError(f"Invalid occupancy: {value}")
     
     # check that value in sqft is an integer and is a small enough integer
     for value in sqft_list:
-        if not value.isdigit():  # Check if the string contains only digits
+        if not value.strip().isdigit():  # Check if the string contains only digits
             raise ValueError(f"{value} is invalid. Square footage must be an integer.")
-        if len(value) > 4:
+        if len(value.strip()) > 4:
             raise ValueError(f"Square footage of {value} exceeds the maxmimum")
 #-----------------------------------------------------------------------
 

@@ -10,7 +10,7 @@ from update_database import get_connection, return_connection
 #-----------------------------------------------------------------------
 
 # temporary hashset for testing admin
-admin_set = {"ky6374", "aa6328"}
+admin_set = {"ky6374", "aa6328", "ak9157"}
 
 #-----------------------------------------------------------------------
 
