@@ -114,7 +114,7 @@ const Cart = ({ username }) => {
   };
 
   // Handle room unsave
-  const handleUnsaveRoom = (roomNumber, hall) => {
+  const handleUnsaveRoom = (room_id) => {
     const confirmed = window.confirm(
       "Are you sure you want to remove this room from your cart?"
     );
@@ -127,8 +127,7 @@ const Cart = ({ username }) => {
       },
       body: JSON.stringify({
         netid: username,
-        room_number: roomNumber,
-        hall: hall,
+        room_id: room_id,
       }),
     })
       .then((response) => {
@@ -141,7 +140,7 @@ const Cart = ({ username }) => {
         setSavedRooms((prevRooms) => ({
           ...prevRooms,
           [username]: prevRooms[username].filter(
-            (room) => !(room.room_number === roomNumber && room.hall === hall)
+            (room) => !(room.room_id === room_id)
           ),
         }));
       })
@@ -242,9 +241,7 @@ const Cart = ({ username }) => {
                           <td>
                             <button
                               className="trash-button"
-                              onClick={() =>
-                                handleUnsaveRoom(room.room_number, room.hall)
-                              }
+                              onClick={() => handleUnsaveRoom(room.room_id)}
                             >
                               🗑️
                             </button>

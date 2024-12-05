@@ -308,11 +308,14 @@ def api_unsave_room():
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
     
     room_id = data.get('room_id')
+    print(f"Tryna unsave this room id bruh: {room_id}")
 
     if not all([netid, room_id]):
         return jsonify({"error": "Missing netid or room_id"}), 400
 
+    print("Still going")
     unsave_room(netid, room_id)
+    print("shouldn't reach here idt")
     return jsonify({"message": f"Room {room_id} unsaved successfully for {netid}"}), 200
 
 #-----------------------------------------------------------------------

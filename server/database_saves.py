@@ -10,7 +10,7 @@ from update_database import get_connection, return_connection
 #-----------------------------------------------------------------------
 
 # temporary hashset for testing admin
-admin_set = {"aa6328"}
+admin_set = {}
 
 #-----------------------------------------------------------------------
 
@@ -81,6 +81,7 @@ def save_room(netid, room_id):
 def unsave_room(netid, room_id):
     conn = get_connection()
     cursor = conn.cursor()
+    print("YIKERS")
 
     try:
         """Unsave a room for a user identified by netid, using room_number and hall."""
@@ -102,6 +103,7 @@ def unsave_room(netid, room_id):
                 ''',
                 (room_id,)
             )
+        conn.commit()
         print(f"Room {room_id} unsaved successfully for netid {netid}.")
     except Exception as e:
         conn.rollback()
@@ -140,7 +142,7 @@ def get_saved_rooms_with_saves_and_availability(netid):
 
     cursor.execute(
         '''
-        SELECT r."room_number", r."hall", r."floor", d."num_saves", r."isAvailable"
+        SELECT r."room_id", r."room_number", r."hall", r."floor", d."num_saves", r."isAvailable"
         FROM "RoomOverview" r
         JOIN "RoomSaves" s ON r."room_id" = s."room_id"
         JOIN "RoomDetails" d ON r."room_id" = d."room_id"
@@ -156,11 +158,12 @@ def get_saved_rooms_with_saves_and_availability(netid):
     
     return [
         {
-            "room_number": room[0],
-            "hall": room[1],
-            "floor": room[2],
-            "total_saves": room[3],
-            "availability": room[4]
+            "room_id": room[0],
+            "room_number": room[1],
+            "hall": room[2],
+            "floor": room[3],
+            "total_saves": room[4],
+            "availability": room[5]
         }
         for room in rooms
     ]
