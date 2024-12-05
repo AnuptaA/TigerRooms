@@ -16,7 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
-from database_reviews import save_review, get_review, delete_review, get_reviews
+from database_reviews import save_review, get_review, delete_review, get_reviews, get_all_db_reviews
 from update_database import send_email
 
 #-----------------------------------------------------------------------
@@ -280,7 +280,7 @@ def api_save_room():
     # Must be logged in as the user to obtain data
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-
+    
     room_id = data.get('room_id')
 
     if not all([netid, room_id]):
@@ -306,8 +306,8 @@ def api_unsave_room():
     # Must be logged in as the user to obtain data
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-
-    room_id = data.get('room')
+    
+    room_id = data.get('room_id')
 
     if not all([netid, room_id]):
         return jsonify({"error": "Missing netid or room_id"}), 400
@@ -553,10 +553,10 @@ def delete_review_of_user():
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
-
-    if netid != session['username']:
-        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-
+    
+    # if netid != session['username']:
+    #     return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
     room_id = data.get('room_id')
 
     if not all([netid, room_id]):
@@ -608,13 +608,13 @@ def submit_review():
 
 #-----------------------------------------------------------------------
 
-@app.route('/api/reviews/get_all_reviews', methods=['POST'])
-def get_all_reviews():
+@app.route('/api/reviews/get_all_reviews_for_room', methods=['POST'])
+def get_all_reviews_for_room():
     # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
-
-    print("Endpoint '/api/reviews/get_all_reviews'")
+    
+    print("Endpoint '/api/reviews/get_all_reviews_for_room'")
     data = request.json
     print(f"Request data received: {data}")
     netid = data.get('netid')
@@ -643,12 +643,35 @@ def get_all_reviews():
 
 #-----------------------------------------------------------------------
 
-# Create a group or return the existing group for the user
+@app.route('/api/reviews/get_all_reviews', methods=['POST'])
+def get_all_reviews():
+    # Ensure user is logged in before accessing API
+    if require_login():
+        return require_login()
+    
+    print("Endpoint '/api/reviews/get_all_reviews'")
+    data = request.json
+    print(f"Request data received: {data}")
+    netid = data.get('netid')
+
+    if not netid:
+        print("Error: Missing netid in request.")
+        return jsonify({"error": "Missing netid"}), 400
+    
+    result = get_all_db_reviews()
+
+    if not result["success"]:
+        return jsonify({"error": result["error"]}), 500
+    
+    return jsonify({
+        "success": "Successfully fetched user reviews",
+        "all_reviews": result["all_reviews"]}), 200
+
+#-----------------------------------------------------------------------
+
 @app.route('/api/create_group', methods=['POST'])
 def create_group():
-    print("HERE BITCH")
     if require_login():
-        print("PENIS")
         return require_login()
 
     netid = session['username']
@@ -663,17 +686,15 @@ def create_group():
         group = cursor.fetchone()
 
         if group:
-            print("In a group bruh")
             return jsonify({"message": "User already in a group", "group_id": group[0]}), 200
 
         # Create a new group
         cursor.execute('''
-            INSERT INTO "Groups" ("creator_netid") VALUES (%s) RETURNING "group_id"
-        ''', (netid,))
+            INSERT INTO "Groups" DEFAULT VALUES RETURNING "group_id"
+        ''')
         group_id = cursor.fetchone()[0]
-        print(f"Created a group bruh, with group_id {group_id}")
 
-        # Add the creator to the group
+        # Add the user as a member of the group
         cursor.execute('''
             INSERT INTO "GroupMembers" ("group_id", "netid") VALUES (%s, %s)
         ''', (group_id, netid))
@@ -1075,15 +1096,10 @@ def leave_group():
         ''', (group_id,))
         remaining_members = cursor.fetchone()[0]
 
-        # If no members remain, delete the group
+        # If no members remain, delete the group (cascading deletions will handle other data)
         if remaining_members == 0:
             cursor.execute('''
                 DELETE FROM "Groups" WHERE "group_id" = %s
-            ''', (group_id,))
-
-            # Clean up any group invites for the deleted group
-            cursor.execute('''
-                DELETE FROM "GroupInvites" WHERE "group_id" = %s
             ''', (group_id,))
 
         conn.commit()

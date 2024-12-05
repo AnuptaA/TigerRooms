@@ -15,15 +15,22 @@ const NavBar = ({ adminStatus }) => {
             <li>
               <a href="/">Home</a>
             </li>
-            <li>
-              <a href="/mygroup">MyGroup</a>
-            </li>
+            {!adminStatus && (
+              <li>
+                <a href="/mygroup">My Group</a>
+              </li>
+            )}
             <li>
               <a href="/floorplans">Floor Plans</a>
             </li>
             {adminStatus && (
               <li>
                 <a href="/upload-pdfs">Upload PDFs</a>
+              </li>
+            )}
+            {adminStatus && (
+              <li>
+                <a href="/moderate-reviews">Moderate Reviews</a>
               </li>
             )}
           </ul>

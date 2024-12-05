@@ -430,7 +430,7 @@ const HallFloor = ({ username, adminStatus }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-              "Something went wrong while submitting your review. Please try again.",
+            "Something went wrong while submitting your review. Please try again.",
             "error"
           );
         }
@@ -475,7 +475,7 @@ const HallFloor = ({ username, adminStatus }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-              "Something went wrong while removing your review. Please try again.",
+            "Something went wrong while removing your review. Please try again.",
             "error"
           );
         }
@@ -491,7 +491,7 @@ const HallFloor = ({ username, adminStatus }) => {
   };
 
   const handleDisplayReview = (room_id, name) => {
-    fetch("/api/reviews/get_all_reviews", {
+    fetch("/api/reviews/get_all_reviews_for_room", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -514,8 +514,8 @@ const HallFloor = ({ username, adminStatus }) => {
                   <div class="review" style="margin-bottom: 15px;">
                     <p style="margin: 5px 0;"><strong>User:</strong> ${netid}
                     <span style="margin-left: 10px;"><strong>Rating:</strong> ${"★".repeat(
-                      rating
-                    )}${"☆".repeat(5 - rating)}</span></p>
+                  rating
+                )}${"☆".repeat(5 - rating)}</span></p>
                     <p style="margin: 5px 0;"><strong>Date:</strong> ${review_date}</p>
                     <p style="margin: 5px 0;"><strong>Review:</strong> ${comments}</p>
                     <hr style="margin-top: 10px;"/>
@@ -658,13 +658,13 @@ const RoomInfoTable = ({
                           onClick={() =>
                             oneRoomInfo.has_reviewed
                               ? handleModifyReview(
-                                  oneRoomInfo.room_id,
-                                  username
-                                )
+                                oneRoomInfo.room_id,
+                                username
+                              )
                               : handleCreateReview(
-                                  oneRoomInfo.room_id,
-                                  username
-                                )
+                                oneRoomInfo.room_id,
+                                username
+                              )
                           }
                         >
                           {oneRoomInfo.has_reviewed
@@ -687,23 +687,26 @@ const RoomInfoTable = ({
                       )}
                     </div>
                     <div>
-                      <button
-                        onClick={() =>
-                          handleSaveToggle(
-                            oneRoomInfo.room_id,
-                            oneRoomInfo.isSaved
-                          )
-                        }
-                        style={{
-                          width: "20%",
-                          marginTop: "1vh",
-                          padding: "0.25vh",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {oneRoomInfo.isSaved ? "Unsave" : "Save"}
-                      </button>
+                      {oneRoomInfo.isAvailable === "T" && (
+                        <button
+                          onClick={() =>
+                            handleSaveToggle(
+                              oneRoomInfo.room_id,
+                              oneRoomInfo.isSaved
+                            )
+                          }
+                          style={{
+                            width: "20%",
+                            marginTop: "1vh",
+                            padding: "0.25vh",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {oneRoomInfo.isSaved ? "Unsave" : "Save"}
+                        </button>
+                      )}
                     </div>
+
                   </div>
                 </td>
               </tr>
