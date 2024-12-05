@@ -769,7 +769,7 @@ def add_member():
         email = f"{invitee}@princeton.edu"
         send_email(
             to_email=email,
-            subject="TigerRooms Group Invitation",
+            subject="[TigerRooms] - Group Invitation",
             body=(
                 f"Dear {invitee},\n\n"
                 f"You have been invited to join TigerRooms group {group_id}. "
@@ -1102,7 +1102,7 @@ def remove_invite():
 
         # Send an email notification to the invitee
         invitee_email = f"{invitee_netid}@princeton.edu"
-        email_subject = "TigerRooms Invitation Removed"
+        email_subject = "[TigerRooms] - Group Invitation Removed"
         email_body = (
             f"Dear {invitee_netid},\n\n"
             f"Your pending invitation to join TigerRooms group {group_id} has been removed.\n\n"
