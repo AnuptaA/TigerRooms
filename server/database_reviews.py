@@ -152,6 +152,49 @@ def get_reviews(room_id):
         return {"success": False, "error": message }
             
 #-----------------------------------------------------------------------
+
+def get_all_user_reviews(netid):
+    '''
+    Returns dict with key success corresponding to a boolean status of whether
+    the fetching of reviews for user with netid was successful. If true, returns
+    list of review objects containing review data (room_id, rating, comments, and
+    review_date) in descending order of review submission time otherwise returns
+    appropriate error message.
+    '''
+    try:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    '''
+                    SELECT "room_id", "rating", "comments", "review_date"
+                    FROM "RoomReviews"
+                    WHERE "netid" = %s
+                    ORDER BY "review_date" DESC
+                    ''', (netid,)
+                )
+
+                # Fetch the result
+                result = cursor.fetchall()
+                print(f"Queery Result: ", result)
+
+                reviews = []
+
+                for row in result:
+                    review = {}
+                    review['room_id'] = row[0]
+                    review['rating'] = row[1]
+                    review['comments'] = row[2]
+                    review['review_date'] = row[3]
+                    reviews.append(review)
+
+                return {"success": True, "reviews": reviews}
+            
+    except Exception as ex:
+        message = f"Error fetching reviews for User {netid}: {ex}"
+        print(message)
+        return {"success": False, "error": message}
+    
+#-----------------------------------------------------------------------
     
 def get_all_db_reviews():
     '''

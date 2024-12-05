@@ -16,7 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
-from database_reviews import save_review, get_review, delete_review, get_reviews, get_all_db_reviews
+from database_reviews import save_review, get_review, delete_review, get_reviews, get_all_user_reviews, get_all_db_reviews
 from update_database import send_email
 
 #-----------------------------------------------------------------------
@@ -606,6 +606,17 @@ def submit_review():
 
     if not all([room_id, rating, comments, review_date]):
         return jsonify({"error": "Missing required fields"}), 400
+    
+    all_prev_reviews_result = get_all_user_reviews(netid)
+
+    if not all_prev_reviews_result["success"]:
+        return jsonify({"error": all_prev_reviews_result["message"]}), 500
+    
+    prev_reviews = all_prev_reviews_result["reviews"]
+    if len(prev_reviews) >= 5:
+        message = f"You have {len(prev_reviews)} reviews. Please delete one"
+        message += " and then resubmit this review. Thank you." 
+        return jsonify({"error": message}), 400
 
     message = save_review(room_id, netid, rating, comments, review_date)
 
