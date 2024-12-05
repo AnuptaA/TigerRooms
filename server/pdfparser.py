@@ -13,6 +13,55 @@ import tabula
 import re
 
 #-----------------------------------------------------------------------
+# Function to ensure that returned tables are valid
+def validate_tables(tables):
+    # checks that the number of columns is correct
+    if len(tables.columns) != 5:
+        raise ValueError("Number of columns is not 5")
+
+    valid_rescos = ['Upperclass ' 'Butler College ' 'Whitman College ' 'Forbes College '
+    'New College West ' 'Mathey College ' 'New College East '
+    'Rockefeller College ']
+    
+    valid_halls = ['1901' '1903' '1967' '1976' '1981' '99ALEXANDER' 'Addy Hall'
+    'Aliya Kanji Hall' 'BAKER' 'BLAIR' 'BLOOMBERG' 'BOGLE' 'Bosque Hall'
+    'BROWN' 'BUYERS' 'CAMPBELL' 'CUYLER' 'DOD' 'EDWARDS' 'FEINBERG' 'FISHER'
+    'FORBES' 'FOULKE' 'Grousbeck Hall' 'H Hall' 'HAMILTON' 'HARGADON' 'HENRY'
+    'HOLDER' 'JOLINE' 'Jose Enrique Feliciano Hall'
+    'Kwanza Marion Jones Hall' 'LAUGHLIN' 'LAURITZEN' 'LITTLE' 'LOCKHART'
+    'Mannion Hall' 'MURLEY' 'PATTON' 'PYNE' 'SCULLY' 'SPELMAN' 'WALKER'
+    'WENDELL' 'WILF' 'WITHERSPOON' 'WRIGHT' 'YOSELOFF']
+
+    valid_occupancy = ['TRIPLE' 'DOUBLE' 'SINGLE' 'QUAD' 'DA' 'QUINT' '6PERSON']
+
+    # check that all other columns are correct
+    resco_list = tables[0].tolist()
+    hall_list = tables[1].tolist()
+    occupancy_list = tables[3].tolist()
+    sqft_list = tables[4].tolist()
+
+    for value in resco_list:
+        if value not in valid_rescos:
+            raise ValueError(f"Invalid residential college: {value}")
+
+    # Check hall_list
+    for value in hall_list:
+        if value not in valid_halls:
+            raise ValueError(f"Invalid hall: {value}")
+
+    # Check occupancy_list
+    for value in occupancy_list:
+        if value not in valid_occupancy:
+            raise ValueError(f"Invalid occupancy: {value}")
+    
+    # check that value in sqft is an integer and is a small enough integer
+    for value in sqft_list:
+        if not value.isdigit():  # Check if the string contains only digits
+            raise ValueError(f"{value} is invalid. Square footage must be an integer.")
+        if len(value) > 4:
+            raise ValueError(f"Square footage of {value} exceeds the maxmimum")
+      
+#-----------------------------------------------------------------------
 
 def parse_pdf(filepath):
     # Open the PDF file using pdfplumber
@@ -81,6 +130,11 @@ def parse_pdf(filepath):
 
     # Ensure the square footage column is numeric
     processed_table.iloc[:, -1] = pd.to_numeric(processed_table.iloc[:, -1], errors='coerce').fillna(0).astype(int)
+    #---------------------------------------------
+    
+    # before we return the tables, we want to make sure that they are in a valid format
+    validate_tables(processed_table)
+
 
     return last_updated, processed_table
 
