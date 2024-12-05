@@ -308,11 +308,14 @@ def api_unsave_room():
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
     
     room_id = data.get('room_id')
+    print(f"Tryna unsave this room id bruh: {room_id}")
 
     if not all([netid, room_id]):
         return jsonify({"error": "Missing netid or room_id"}), 400
 
+    print("Still going")
     unsave_room(netid, room_id)
+    print("shouldn't reach here idt")
     return jsonify({"message": f"Room {room_id} unsaved successfully for {netid}"}), 200
 
 #-----------------------------------------------------------------------
@@ -690,8 +693,8 @@ def create_group():
 
         # Create a new group
         cursor.execute('''
-            INSERT INTO "Groups" DEFAULT VALUES RETURNING "group_id"
-        ''')
+            INSERT INTO "Groups" ("creator_netid") VALUES (%s) RETURNING "group_id"
+        ''', (netid,))
         group_id = cursor.fetchone()[0]
 
         # Add the user as a member of the group
@@ -769,7 +772,7 @@ def add_member():
         email = f"{invitee}@princeton.edu"
         send_email(
             to_email=email,
-            subject="TigerRooms Group Invitation",
+            subject="[TigerRooms] - Group Invitation",
             body=(
                 f"Dear {invitee},\n\n"
                 f"You have been invited to join TigerRooms group {group_id}. "
@@ -938,58 +941,6 @@ def my_group():
 
 #-----------------------------------------------------------------------
 
-# Get the group's shared cart
-@app.route('/api/group_cart', methods=['GET'])
-def group_cart():
-    if require_login():
-        return require_login()
-
-    netid = session['username']
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-
-        # Get the user's group
-        cursor.execute('''
-            SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
-        ''', (netid,))
-        group = cursor.fetchone()
-
-        if not group:
-            return jsonify({"error": "You are not in a group"}), 400
-
-        group_id = group[0]
-
-        # Get the group's cart
-        cursor.execute('''
-            SELECT "RoomOverview"."room_number", "RoomOverview"."hall", "RoomDetails"."square_footage",
-                   "RoomDetails"."occupancy", "RoomOverview"."isAvailable"
-            FROM "GroupCarts"
-            JOIN "RoomOverview" ON "GroupCarts"."room_id" = "RoomOverview"."room_id"
-            JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
-            WHERE "GroupCarts"."group_id" = %s
-        ''', (group_id,))
-
-        cart = [
-            {
-                "room_number": row[0],
-                "hall": row[1],
-                "square_footage": row[2],
-                "occupancy": row[3],
-                "isAvailable": row[4],
-            }
-            for row in cursor.fetchall()
-        ]
-
-        return jsonify({"group_id": group_id, "cart": cart}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-        return_connection(conn)
-
-#-----------------------------------------------------------------------
-
 # Get pending invitations for the user
 @app.route('/api/my_pending_invites', methods=['GET'])
 def my_pending_invites():
@@ -1096,10 +1047,14 @@ def leave_group():
         ''', (group_id,))
         remaining_members = cursor.fetchone()[0]
 
-        # If no members remain, delete the group (cascading deletions will handle other data)
+        # If no members remain, delete the group
         if remaining_members == 0:
             cursor.execute('''
                 DELETE FROM "Groups" WHERE "group_id" = %s
+            ''', (group_id,))
+            # Clean up any group invites for the deleted group
+            cursor.execute('''
+                DELETE FROM "GroupInvites" WHERE "group_id" = %s
             ''', (group_id,))
 
         conn.commit()
@@ -1150,7 +1105,7 @@ def remove_invite():
 
         # Send an email notification to the invitee
         invitee_email = f"{invitee_netid}@princeton.edu"
-        email_subject = "TigerRooms Invitation Removed"
+        email_subject = "[TigerRooms] - Group Invitation Removed"
         email_body = (
             f"Dear {invitee_netid},\n\n"
             f"Your pending invitation to join TigerRooms group {group_id} has been removed.\n\n"

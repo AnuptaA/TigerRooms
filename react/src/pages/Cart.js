@@ -12,28 +12,34 @@ const Cart = ({ username }) => {
       try {
         // Fetch the user's saved rooms
         const response = await fetch(`/api/saved_rooms?user_id=${username}`);
-        let sortedRooms = []; // Define sortedRooms here
+        let sortedRooms = [];
         if (response.ok) {
           const data = await response.json();
-          sortedRooms = data.saved_rooms.sort((a, b) => {
-            return b.availability - a.availability;
-          });
+          sortedRooms = data.saved_rooms.sort(
+            (a, b) => b.availability - a.availability
+          );
           setSavedRooms({ [username]: sortedRooms });
         } else {
           console.error(
             `Error fetching saved rooms for ${username}: ${response.statusText}`
           );
-          setSavedRooms({ [username]: [] }); // Show an empty state if there's an error
+          setSavedRooms({ [username]: [] });
         }
 
-        // Optionally, fetch group data if the user is in a group
+        // Fetch group data
         const groupResponse = await fetch(`/api/my_group`);
         const groupData = await groupResponse.json();
-        if (groupData.group_id && groupData.members.length > 1) {
+
+        // If no group data or user is the only member
+        if (!groupData.group_id || groupData.members.length <= 1) {
+          setGroupMembers([username]); // Ensure user is the only member
+          setCollapsedStates({ [username]: false }); // Expand user's section
+        } else {
+          // Populate group members and saved rooms
           setGroupMembers(groupData.members);
           const collapsedStatesInitial = groupData.members.reduce(
             (states, member) => {
-              states[member] = member !== username; // Collapse others, keep the user expanded
+              states[member] = member !== username; // Collapse others, expand the user
               return states;
             },
             {}
@@ -41,7 +47,7 @@ const Cart = ({ username }) => {
           setCollapsedStates(collapsedStatesInitial);
 
           // Fetch saved rooms for group members
-          const savedRoomsByUser = { [username]: sortedRooms }; // Use sortedRooms here
+          const savedRoomsByUser = { [username]: sortedRooms };
           for (const member of groupData.members) {
             if (member !== username) {
               try {
@@ -51,21 +57,21 @@ const Cart = ({ username }) => {
                 if (memberResponse.ok) {
                   const memberData = await memberResponse.json();
                   const memberSortedRooms = memberData.saved_rooms.sort(
-                    (a, b) => {
-                      return b.availability - a.availability;
-                    }
+                    (a, b) => b.availability - a.availability
                   );
                   savedRoomsByUser[member] = memberSortedRooms;
                 } else {
                   console.error(
                     `Error fetching saved rooms for ${member}: ${memberResponse.statusText}`
                   );
+                  savedRoomsByUser[member] = []; // Default to empty array
                 }
               } catch (error) {
                 console.error(
                   `Error fetching saved rooms for ${member}:`,
                   error
                 );
+                savedRoomsByUser[member] = []; // Default to empty array
               }
             }
           }
@@ -108,7 +114,7 @@ const Cart = ({ username }) => {
   };
 
   // Handle room unsave
-  const handleUnsaveRoom = (roomNumber, hall) => {
+  const handleUnsaveRoom = (room_id) => {
     const confirmed = window.confirm(
       "Are you sure you want to remove this room from your cart?"
     );
@@ -121,8 +127,7 @@ const Cart = ({ username }) => {
       },
       body: JSON.stringify({
         netid: username,
-        room_number: roomNumber,
-        hall: hall,
+        room_id: room_id,
       }),
     })
       .then((response) => {
@@ -135,7 +140,7 @@ const Cart = ({ username }) => {
         setSavedRooms((prevRooms) => ({
           ...prevRooms,
           [username]: prevRooms[username].filter(
-            (room) => !(room.room_number === roomNumber && room.hall === hall)
+            (room) => !(room.room_id === room_id)
           ),
         }));
       })
@@ -236,9 +241,7 @@ const Cart = ({ username }) => {
                           <td>
                             <button
                               className="trash-button"
-                              onClick={() =>
-                                handleUnsaveRoom(room.room_number, room.hall)
-                              }
+                              onClick={() => handleUnsaveRoom(room.room_id)}
                             >
                               🗑️
                             </button>

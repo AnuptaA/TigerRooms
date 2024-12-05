@@ -156,7 +156,7 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
             f"They will now appear at the bottom of your saved rooms table in your cart.\n"
             f"If you no longer need these drawn rooms for reference, you can remove them at any time.\n\n"
             f"This update reflects the transition from the previous timestamp {past_timestamp} to the current timestamp {current_timestamp}.\n\n"
-            f"View your saved rooms here: https://tigerrooms-l48h.onrender.com/\n\n"
+            f"View your saved rooms here: https://tigerrooms-l48h.onrender.com/cart\n\n"
             f"Best regards,\n"
             f"TigerRooms Team"
         )
