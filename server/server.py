@@ -741,14 +741,25 @@ def add_member():
 
         group_id = group[0]
 
-        # Check if the group has space
+        # Calculate current group size (members + pending invitations)
         cursor.execute('''
-            SELECT COUNT(*) FROM "GroupMembers" WHERE "group_id" = %s
+            SELECT COUNT(*) 
+            FROM "GroupMembers" 
+            WHERE "group_id" = %s
         ''', (group_id,))
-        member_count = cursor.fetchone()[0]
+        current_members = cursor.fetchone()[0]
 
-        if member_count >= 8:
-            return jsonify({"error": "Group size limit reached"}), 400
+        cursor.execute('''
+            SELECT COUNT(*) 
+            FROM "GroupInvites" 
+            WHERE "group_id" = %s
+        ''', (group_id,))
+        pending_invitations = cursor.fetchone()[0]
+
+        total_size = current_members + pending_invitations
+
+        if total_size >= 4:
+            return jsonify({"error": "Maximum group size of 4 reached"}), 400
 
         # Check if the invitee is already in a group
         cursor.execute('''
