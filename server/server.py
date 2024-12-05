@@ -48,7 +48,7 @@ def get_db_connection():
 def require_login():
     # Helper function that forces user to log-in
     if 'username' not in session:
-        return redirect(url_for('index')) 
+        return redirect(url_for('index'))
     return None
 
 #-----------------------------------------------------------------------
@@ -135,8 +135,8 @@ def get_unique_halls_and_floors():
             "RoomOverview"."floor"
         FROM "RoomOverview"
         JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
-        WHERE "RoomOverview"."residential_college" LIKE %s 
-        AND "RoomOverview"."hall" LIKE %s 
+        WHERE "RoomOverview"."residential_college" LIKE %s
+        AND "RoomOverview"."hall" LIKE %s
         AND "RoomOverview"."floor"::TEXT LIKE %s
         AND "RoomDetails"."occupancy"::TEXT LIKE %s
         AND "RoomDetails"."square_footage" >= %s
@@ -188,13 +188,13 @@ def get_hallfloor():
 
     hall = request.args.get('hall')  # Get hall from query parameters
     floor = request.args.get('floor')  # Get hall from query parameters
-    
+
     try:
         desired_occupancy = int(request.args.get('occupancy', -1))  # Get occupancy from query parameters
     except: # handles case where non-integer params are given
         desired_occupancy = -1
 
-    try: 
+    try:
         desired_min_sqft = int(request.args.get('minSquareFootage', -1))  # Get hall from query parameters
     except: # handles case where non-integer params are given
         desired_min_sqft = -1
@@ -208,14 +208,15 @@ def get_hallfloor():
     try:
         # Fetch rooms and details, including room_id
         cursor.execute('''
-            SELECT "RoomOverview"."room_id", "RoomOverview"."room_number", "RoomOverview"."isAvailable", 
+            SELECT "RoomOverview"."room_id", "RoomOverview"."room_number", "RoomOverview"."isAvailable",
                    "RoomDetails"."occupancy", "RoomDetails"."square_footage"
             FROM "RoomOverview"
             JOIN "RoomDetails" ON "RoomOverview"."room_id" = "RoomDetails"."room_id"
-            WHERE "RoomOverview"."hall" = %s 
-            AND "RoomOverview"."floor" = %s 
+            WHERE "RoomOverview"."hall" = %s
+            AND "RoomOverview"."floor" = %s
             AND (%s = -1 OR "RoomDetails"."occupancy" = %s)
             AND "RoomDetails"."square_footage" >= %s
+            ORDER BY "RoomOverview"."room_number"
         ''', (hall, floor, desired_occupancy, desired_occupancy, desired_min_sqft))
 
         rooms = cursor.fetchall()
@@ -279,7 +280,7 @@ def api_save_room():
     # Must be logged in as the user to obtain data
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-    
+
     room_id = data.get('room_id')
 
     if not all([netid, room_id]):
@@ -298,14 +299,14 @@ def api_unsave_room():
     # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
-    
+
     data = request.json
     netid = data.get('netid')
 
     # Must be logged in as the user to obtain data
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-    
+
     room_id = data.get('room')
 
     if not all([netid, room_id]):
@@ -322,7 +323,7 @@ def api_get_saved_rooms():
     # Ensure user is logged in before accessing the API
     if require_login():
         return require_login()
-    
+
     requesting_netid = session['username']
     target_netid = request.args.get('user_id')
 
@@ -426,7 +427,7 @@ def upload_pdf():
             else:
                 return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
 
-        elif request_type == 0:            
+        elif request_type == 0:
             # Reset the database directly by calling setup_database()
             try:
                 print("Resetting the database...")
@@ -459,7 +460,7 @@ def clear_drawn_rooms():
     # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
-    
+
     print("Endpoint '/api/clear_drawn_rooms' was hit.")
     data = request.json
     print(f"Request data received: {data}")
@@ -468,7 +469,7 @@ def clear_drawn_rooms():
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
-    
+
     # Must be logged in as the user to clear draw rooms
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
@@ -486,7 +487,7 @@ def clear_drawn_rooms():
                 SELECT "room_id" FROM "RoomOverview" WHERE "isAvailable" = FALSE
             )
         ''', (netid,))
-        
+
         # Fetch the number of rows deleted
         rows_deleted = cursor.rowcount
         print(f"Rows deleted: {rows_deleted}")
@@ -503,13 +504,13 @@ def clear_drawn_rooms():
         return_connection(conn)
 
 #-----------------------------------------------------------------------
-        
+
 @app.route('/api/reviews/get_review_of_user', methods=['POST'])
 def get_review_of_user():
     # Ensure user is logged in before accessing API
     if require_login():
         require_login
-    
+
     print("Endpoint 'api/reviews/get_review_of_user'")
     data = request.json
     print(f"Request data received: {data}")
@@ -518,24 +519,24 @@ def get_review_of_user():
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
-    
+
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-    
+
     room_id = data.get('room_id')
 
     if not all([netid, room_id]):
         return jsonify({"error": "Missing netid, room_id"}), 400
-    
+
     result = get_review(netid, room_id)
 
     if not result["success"]:
         return jsonify({"error": result["error"]}), 500
-    
+
     return jsonify({
         "success": "Successfully fetched user review",
         "review": result["review"]}), 200
-        
+
 #-----------------------------------------------------------------------
 
 @app.route('/api/reviews/delete_review_of_user', methods=['POST'])
@@ -552,24 +553,24 @@ def delete_review_of_user():
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
-    
+
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-    
+
     room_id = data.get('room_id')
 
     if not all([netid, room_id]):
         return jsonify({"error": "Missing netid, room_id"}), 400
-    
+
     message = delete_review(netid, room_id)
 
     if "Error" in message:
         return jsonify({"error": message}), 500
-    
+
     return jsonify({"success": message}), 200
 
 #-----------------------------------------------------------------------
-        
+
 @app.route('/api/reviews/submit_review', methods=['POST'])
 def submit_review():
     # Ensure user is logged in before accessing API
@@ -584,11 +585,11 @@ def submit_review():
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
-    
+
     # Must be logged in as the user to submit review
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-    
+
     room_id = data.get('room_id')
     rating = data.get('rating')
     comments = data.get('comments')
@@ -596,13 +597,13 @@ def submit_review():
 
     if not all([room_id, rating, comments, review_date]):
         return jsonify({"error": "Missing required fields"}), 400
-    
+
     message = save_review(room_id, netid, rating, comments, review_date)
 
     # Return success or error message
     if "Error" in message:
         return jsonify({"error": message}), 500
-    
+
     return jsonify({"success": message}), 200
 
 #-----------------------------------------------------------------------
@@ -612,7 +613,7 @@ def get_all_reviews():
     # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
-    
+
     print("Endpoint '/api/reviews/get_all_reviews'")
     data = request.json
     print(f"Request data received: {data}")
@@ -621,21 +622,21 @@ def get_all_reviews():
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
-    
+
     # Must be logged in as the user to submit review
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
-    
+
     room_id = data.get('room_id')
 
     if not all([netid, room_id]):
         return jsonify({"error": "Missing required fields"}), 400
-    
+
     result = get_reviews(room_id)
-    
+
     if not result["success"]:
         return jsonify({"error": result["error"]}), 500
-    
+
     return jsonify({
         "success": "Successfully fetched user reviews",
         "review": result["reviews"]}), 200
@@ -940,7 +941,7 @@ def group_cart():
 
         # Get the group's cart
         cursor.execute('''
-            SELECT "RoomOverview"."room_number", "RoomOverview"."hall", "RoomDetails"."square_footage", 
+            SELECT "RoomOverview"."room_number", "RoomOverview"."hall", "RoomDetails"."square_footage",
                    "RoomDetails"."occupancy", "RoomOverview"."isAvailable"
             FROM "GroupCarts"
             JOIN "RoomOverview" ON "GroupCarts"."room_id" = "RoomOverview"."room_id"

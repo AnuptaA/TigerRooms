@@ -199,8 +199,8 @@ footer {
 .room-availability-table {
   width: 100%;
   float: right;
-  margin: 10vh auto 12vh;
-  margin-right: 1vh;
+  margin: 10vh auto;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 
@@ -209,18 +209,15 @@ footer {
   height: auto;
   border-radius: 1.4728vh;
 }
-/* Hides the floorplan for smaller screens*/
-@media (max-width: 768px) {
+
+@media (max-width: 999px) {
   .floor-plan-flexbox {
     flex-direction: column; /* Stack items vertically */
     align-items: stretch; /* Ensure items take full width */
   }
-  /*.floor-plan-map {
-    display: none;
-  } */
   .room-availability-table {
     float: none;
-    margin: 10vh auto 12vh auto;
+    margin: 10vh auto;
     text-align: center;
   }
 
@@ -229,6 +226,18 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+}
+
+@media (min-width: 1000px) {
+  .available-rooms-table {
+    flex-shrink: 0;
+    table-layout: fixed;
+    width: 20vw;
+  }
+
+  .floor-plan-map {
+    width: 70vw;
   }
 }
 
@@ -244,11 +253,23 @@ footer {
 
 .availability-table-td {
   cursor: pointer;
-  padding: 2vh 1vh;
+  padding: 2vh 2vh;
   text-align: left;
   display: flex;
   justify-content: space-between;
   white-space: nowrap; /* Ensures the content stays on one line */
+  width: 100%;
+}
+
+.expanded-row-td {
+  text-align: left;
+  padding: 1vh;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.expanded-content {
   width: 100%;
 }
 
@@ -273,7 +294,7 @@ footer {
 tbody tr td[colspan="3"] {
   background-color: #f9f9f9;
   text-align: left;
-  padding-left: 2.9455vh;
+  padding-left: 1vh;
 }
 
 .floor-plan-title {
@@ -287,8 +308,7 @@ tbody tr td[colspan="3"] {
 .floor-plan-flexbox {
   display: flex;
   width: 100%;
-  justify-content: space-between;
-  /* gap: 15.528vh; Optional spacing between items */
+  justify-content: space-around;
 }
 
 .floor-plan-error-container {
@@ -314,16 +334,17 @@ tbody tr td[colspan="3"] {
   justify-content: center;
   margin-top: 2.9455vh; /* Adds space from the top of the page */
   width: 100%;
+  white-space: nowrap;
 }
 
 /* Table styles */
 .availability-table {
   border-collapse: collapse;
   box-shadow: 0 0.589vh 1.178vh rgba(0, 0, 0, 0.2); /* Optional shadow styling */
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   background-color: #f9f9f9; /* Light background color */
   font: 5vw;
+  table-layout: fixed;
 }
 
 /* Header cell styles */
@@ -338,6 +359,23 @@ tbody tr td[colspan="3"] {
   border-bottom: 0.1473vh solid #ddd;
   padding: 1.1782vh 2.3529vh;
   text-align: center;
+}
+.availability-table tr {
+  display: flex;
+}
+
+.buttons-box {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons-box button {
+  gap: 2vw;
+  font: 0.5vw;
+  margin-top: 1vh;
+  padding: 0.25vh;
+  cursor: pointer;
+  width: 49%;
 }
 
 /* Link styles */
@@ -613,26 +651,34 @@ tbody tr td[colspan="3"] {
 }
 .filter-submit-button,
 .filter-reset-button {
-  background-color: orange;
-  color: white;
   padding: 0.5vw 1vh;
   font-size: 1vw;
-  border: none;
+  border-style: solid;
   border-radius: 1vh;
   cursor: pointer;
   margin-top: 1.5vh;
   margin-left: 1.5vw;
 }
 
+.filter-submit-button {
+  background-color: orange;
+  color: white;
+  border-color: orange;
+}
 .filter-reset-button {
   background-color: white;
   color: orange;
   border-color: orange;
-  border-style: solid;
 }
-.filter-reset-button:hover,
+.filter-reset-button:hover {
+  background-color: orange;
+  color: white;
+}
 .filter-submit-button:hover {
-  background-color: #a09c9c;
+  background-color: white;
+  color: orange;
+  border-color: orange;
+  border-style: solid;
 }
 
 .button-container {
@@ -668,19 +714,18 @@ input[type="number"] {
 /*--------------------------------------------------------------------*/
 .results-page-title {
   margin-top: 12.4vh;
-  font-size: 1em;
+  font-size: 2vw;
   font-weight: bold;
   color: orange;
   text-align: center;
 }
 
 /* Center container */
-.table-container {
+.table-container-results {
   width: 90%; /* Increase width for smaller screens */
   max-width: 100%; /* Allow it to fill the screen on very narrow devices */
-  margin: 2vh auto; /* Reduce vertical margins for better proportions */
-  display: flex;
-  justify-content: center;
+  margin: 0vh auto; /* Reduce vertical margins for better proportions */
+  display: block;
   box-sizing: border-box; /* Include padding in width calculations */
   overflow-x: auto; /* Enable horizontal scrolling */
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
@@ -693,42 +738,50 @@ input[type="number"] {
 }
 
 /* Table styles */
-.availability-table {
+.availability-table-all {
   border-collapse: collapse;
   box-shadow: 0 0.6vh 1.24vh rgba(0, 0, 0, 0.2); /* Optional shadow styling */
-  width: auto;
-  max-width: 100%;
+  max-width: none;
   background-color: #f9f9f9; /* Light background color */
+  table-layout: fixed;
+  white-space: nowrap;
+  margin: 0 auto;
 }
 
 /* Header cell styles */
-.availability-table th {
+.availability-table-all th {
   border-bottom: 0.3vh solid #ddd;
   padding: 1.24vh 2.48vh;
   text-align: center;
+  white-space: normal;
+  font: 1vw;
+  word-wrap: no-wrap;
 }
 
 /* Body cell styles */
-.availability-table td {
+.availability-table-all td {
   border-bottom: 0.15vh solid #ddd;
   padding: 1.24vh 2.48vh;
+  font: 0.5vw;
   text-align: center;
+  white-space: normal;
+  word-wrap: no-wrap;
 }
 
 /* Link styles */
-.availability-table a {
+.availability-table-all a {
   text-decoration: none;
   color: #007bff; /* Link color */
 }
 
-.availability-table thead {
+.availability-table-all thead {
   background-color: orange;
 }
 
 .floorplan-table tr td[colspan="3"] {
   background-color: #f9f9f9;
   text-align: left;
-  padding-left: 3.1vh;
+  padding: 2vh;
 }
 /*--------------------------------------------------------------------*/
 /* This is the styling for Cart page.                                 */
@@ -746,8 +799,8 @@ input[type="number"] {
 .cart-title {
   font-size: 2vw;
   color: #333;
-  margin-top: 10vh; /* Adds space between the header and the title */
-  margin-bottom: 5vh;
+  margin-top: 5vh; /* Adds space between the header and the title */
+  margin-bottom: 2.5vh;
 }
 
 .saved-rooms-table {
@@ -799,15 +852,15 @@ input[type="number"] {
 
 .clear-drawn-rooms-button {
   display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  font-size: 16px;
+  margin: 0.2vh auto;
+  padding: 0.1vh 0.2vw;
+  font-size: 1vw;
   font-weight: bold;
   color: red;
-  border: 2px solid #d9534f; /* Adds a more defined border with a red tone */
-  border-radius: 5px;
+  border: 0.2vh solid #d9534f; /* Adds a more defined border with a red tone */
+  border-radius: 0.2vh;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.1vh 0.3vh rgba(0, 0, 0, 0.1);
   background-color: #f8f9fa; /* Light gray background for a cleaner look */
   transition: background-color 0.3s ease, transform 0.2s ease,
     box-shadow 0.3s ease;
@@ -817,13 +870,13 @@ input[type="number"] {
   background-color: #f5c6cb; /* Softer red background on hover */
   border-color: #c9302c; /* Slightly darker border color on hover */
   transform: scale(1.05);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* More prominent shadow */
+  box-shadow: 0 0.3vh 0.4vh rgba(0, 0, 0, 0.15); /* More prominent shadow */
 }
 
 .clear-drawn-rooms-button:active {
   background-color: #f1b0b7; /* Even softer red background when active */
   transform: scale(1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduced shadow on click */
+  box-shadow: 0 0.05vh 0.1vh rgba(0, 0, 0, 0.1); /* Reduced shadow on click */
 }
 
 /*--------------------------------------------------------------------*/

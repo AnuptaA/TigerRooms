@@ -512,7 +512,7 @@ const HallFloor = ({ username, adminStatus }) => {
 
                 return `
                   <div class="review" style="margin-bottom: 15px;">
-                    <p style="margin: 5px 0;"><strong>User:</strong> ${netid} 
+                    <p style="margin: 5px 0;"><strong>User:</strong> ${netid}
                     <span style="margin-left: 10px;"><strong>Rating:</strong> ${"★".repeat(
                       rating
                     )}${"☆".repeat(5 - rating)}</span></p>
@@ -631,7 +631,7 @@ const RoomInfoTable = ({
                         oneRoomInfo.isAvailable === "T" ? "green" : "red",
                       borderRadius:
                         oneRoomInfo.isAvailable === "T" ? "50%" : "0",
-                      marginRight: "1.4vh",
+                      marginRight: "1vw",
                     }}
                   ></div>
                   <strong>{oneRoomInfo.name}</strong>{" "}
@@ -643,28 +643,16 @@ const RoomInfoTable = ({
             </tr>
             {expandedRows.includes(index) && (
               <tr>
-                <td className="availability-table-td" colSpan="3">
-                  <div style={{ padding: "10px", backgroundColor: "#f9f9f9" }}>
+                <td className="expanded-row-td" colSpan="3">
+                  <div
+                    className="expanded-content"
+                    style={{ backgroundColor: "#f9f9f9" }}
+                  >
                     <strong>{oneRoomInfo.size}</strong> <br />
                     <strong>{oneRoomInfo.occupancy}</strong> <br />
                     <strong>Total Saves: {oneRoomInfo.total_saves}</strong>
                     <br />
-                    <div>
-                      <button
-                        onClick={() =>
-                          handleSaveToggle(
-                            oneRoomInfo.room_id,
-                            oneRoomInfo.isSaved
-                          )
-                        }
-                        style={{
-                          marginTop: "10px",
-                          padding: "5px 10px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {oneRoomInfo.isSaved ? "Unsave" : "Save"}
-                      </button>
+                    <div className="buttons-box">
                       {adminStatus && (
                         <button
                           onClick={() =>
@@ -678,15 +666,10 @@ const RoomInfoTable = ({
                                   username
                                 )
                           }
-                          style={{
-                            marginTop: "10px",
-                            padding: "5px 10px",
-                            cursor: "pointer",
-                          }}
                         >
                           {oneRoomInfo.has_reviewed
                             ? "Modify Review"
-                            : "Create Review"}
+                            : "Write Review"}
                         </button>
                       )}
 
@@ -698,15 +681,28 @@ const RoomInfoTable = ({
                               oneRoomInfo.name
                             )
                           }
-                          style={{
-                            marginTop: "10px",
-                            padding: "5px 10px",
-                            cursor: "pointer",
-                          }}
                         >
                           Display Reviews
                         </button>
                       )}
+                    </div>
+                    <div>
+                      <button
+                        onClick={() =>
+                          handleSaveToggle(
+                            oneRoomInfo.room_id,
+                            oneRoomInfo.isSaved
+                          )
+                        }
+                        style={{
+                          width: "20%",
+                          marginTop: "1vh",
+                          padding: "0.25vh",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {oneRoomInfo.isSaved ? "Unsave" : "Save"}
+                      </button>
                     </div>
                   </div>
                 </td>
@@ -729,11 +725,11 @@ const RoomInfoTable = ({
               >
                 <div
                   style={{
-                    width: "10px",
-                    height: "10px",
+                    width: "1vh",
+                    height: "1vh",
                     backgroundColor: "green",
                     borderRadius: "50%",
-                    marginRight: "5px",
+                    marginRight: "0.5vh",
                   }}
                 ></div>
                 <span>Available</span>
@@ -741,10 +737,10 @@ const RoomInfoTable = ({
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
-                    width: "10px",
-                    height: "10px",
+                    width: "1vh",
+                    height: "1vh",
                     backgroundColor: "red",
-                    marginRight: "5px",
+                    marginRight: "0.5vh",
                   }}
                 ></div>
                 <span>Unavailable</span>

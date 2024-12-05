@@ -29,7 +29,13 @@ const FloorPlans = () => {
     document.cookie = `floor=${floorForCookie}; path=/;`;
     document.cookie = `occupancy=${occupancyForCookie}; path=/;`;
     document.cookie = `minSquareFootage=${minSquareFootageForCookie}; path=/;`;
-  }, [resCollegeForCookie, hallForCookie, floorForCookie, occupancyForCookie, minSquareFootageForCookie]);
+  }, [
+    resCollegeForCookie,
+    hallForCookie,
+    floorForCookie,
+    occupancyForCookie,
+    minSquareFootageForCookie,
+  ]);
 
   // Fetch unique halls and floors from the backend
   useEffect(() => {
@@ -106,8 +112,8 @@ const AvailabilityTable = ({ availabilityInfo, occupancy, minSquareFootage }) =>
   };
 
   return (
-    <div className="table-container">
-      <table className="availability-table">
+    <div className="table-container-results">
+      <table className="availability-table-all">
         <thead>
           <tr>
             {availabilityInfo.map((info, index) => (
@@ -121,7 +127,13 @@ const AvailabilityTable = ({ availabilityInfo, occupancy, minSquareFootage }) =>
               {availabilityInfo.map((info, colIndex) => (
                 <td key={colIndex}>
                   {info.floors[rowIndex] ? (
-                    <a href={generateLink("Whitman", info.hall, info.floors[rowIndex])}>
+                    <a
+                      href={generateLink(
+                        "Whitman",
+                        info.hall,
+                        info.floors[rowIndex]
+                      )}
+                    >
                       {info.floors[rowIndex]}
                     </a>
                   ) : (
