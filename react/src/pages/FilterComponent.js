@@ -253,6 +253,11 @@ const FilterComponent = ({ username }) => {
           <strong>RESET</strong>
         </button>
       </div>
+
+      <h3 className="cookie-recommendation">
+        For the best user experience, we recommend that you activate your browser cookies
+      </h3>
+
     </div>
   );
 };

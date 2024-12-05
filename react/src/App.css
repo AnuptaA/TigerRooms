@@ -598,6 +598,13 @@ tbody tr td[colspan="3"] {
   font-size: 1.8vw;
 }
 
+.cookie-recommendation {
+  color: black;
+  text-align: center;
+  font-size: 0.9vw;
+  margin: 5vh auto;
+}
+
 .dropdown-container {
   display: flex;
   flex-direction: row;
