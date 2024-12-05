@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.fa1f9e12.chunk.css",
+    "main.css": "/static/css/main.85d997ea.chunk.css",
     "main.js": "/static/js/main.24bb64ee.chunk.js",
     "main.js.map": "/static/js/main.24bb64ee.chunk.js.map",
     "runtime~main.js": "/static/js/runtime~main.1abdd818.js",
@@ -10,9 +10,9 @@
     "static/js/3.44ff5753.chunk.js": "/static/js/3.44ff5753.chunk.js",
     "static/js/3.44ff5753.chunk.js.map": "/static/js/3.44ff5753.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.e858e871a140fea6bf2412114c893060.js": "/precache-manifest.e858e871a140fea6bf2412114c893060.js",
+    "precache-manifest.26e098a97a304c4dc594d1b215c68d74.js": "/precache-manifest.26e098a97a304c4dc594d1b215c68d74.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/main.fa1f9e12.chunk.css.map": "/static/css/main.fa1f9e12.chunk.css.map",
+    "static/css/main.85d997ea.chunk.css.map": "/static/css/main.85d997ea.chunk.css.map",
     "static/media/Excel_Sample.xlsx": "/static/media/Excel_Sample.dd0b28f7.xlsx",
     "static/media/PDF_Sample.pdf": "/static/media/PDF_Sample.f462739a.pdf",
     "static/media/Whitman_1981_0.png": "/static/media/Whitman_1981_0.bd6de58b.png",

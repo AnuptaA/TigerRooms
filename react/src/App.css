@@ -802,10 +802,12 @@ input[type="number"] {
   margin-top: 5vh; /* Adds space between the header and the title */
   margin-bottom: 2.5vh;
 }
-
+.saved-rooms-section {
+  width: 100%;
+}
 .saved-rooms-table {
-  width: 80%;
-  max-width: 80%;
+  width: 100%;
+  max-width: 100%;
   margin: 10vh auto;
   border-collapse: collapse;
   background-color: #fff;
