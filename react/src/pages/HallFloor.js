@@ -490,7 +490,74 @@ const HallFloor = ({ username, adminStatus }) => {
       });
   };
 
-  const handleDisplayReview = () => {};
+  const handleDisplayReview = (room_id, name) => {
+    fetch("/api/reviews/get_all_reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        netid: username,
+        room_id: room_id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          if (data.review && data.review.length > 0) {
+            // Construct the reviews HTML
+            const reviewsHTML = data.review
+              .map((review) => {
+                const { netid, rating, comments, review_date } = review;
+
+                return `
+                  <div class="review" style="margin-bottom: 15px;">
+                    <p style="margin: 5px 0;"><strong>User:</strong> ${netid} 
+                    <span style="margin-left: 10px;"><strong>Rating:</strong> ${"★".repeat(
+                      rating
+                    )}${"☆".repeat(5 - rating)}</span></p>
+                    <p style="margin: 5px 0;"><strong>Date:</strong> ${review_date}</p>
+                    <p style="margin: 5px 0;"><strong>Review:</strong> ${comments}</p>
+                    <hr style="margin-top: 10px;"/>
+                  </div>
+                `;
+              })
+              .join("");
+
+            // Display reviews in a larger modal
+            MySwal.fire({
+              title: `Room ${name} Reviews`,
+              html: `<div style="max-height: 500px; width: 600px; overflow-y: auto; padding: 20px; text-align: left;">${reviewsHTML}</div>`,
+              width: "800px",
+              showCancelButton: true,
+              cancelButtonText: "Close",
+              confirmButtonText: "Okay",
+              customClass: {
+                popup: "larger-modal",
+              },
+            });
+          } else {
+            // If no reviews are found
+            MySwal.fire({
+              title: "No Reviews Found",
+              text: `There are no reviews for Room ${name} yet.`,
+              icon: "info",
+              confirmButtonText: "Okay",
+            });
+          }
+        } else {
+          MySwal.fire("Error", "Failed to fetch reviews.", "error");
+        }
+      })
+      .catch((err) => {
+        MySwal.fire(
+          "Error",
+          "Something went wrong while fetching the reviews.",
+          "error"
+        );
+        console.error(err);
+      });
+  };
 
   const returnLink = `/floorplans?resco=${rescoFromCookie}&hall=${hallFromCookie}&floor=${floorFromCookie}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`;
 
@@ -517,6 +584,7 @@ const HallFloor = ({ username, adminStatus }) => {
           handleSaveToggle={handleSaveToggle}
           handleCreateReview={handleCreateReview}
           handleModifyReview={handleModifyReview}
+          handleDisplayReview={handleDisplayReview}
           hallName={hall}
           adminStatus={!adminStatus}
           username={username}
@@ -534,6 +602,7 @@ const RoomInfoTable = ({
   handleSaveToggle,
   handleCreateReview,
   handleModifyReview,
+  handleDisplayReview,
   hallName,
   adminStatus,
   username,
@@ -623,6 +692,12 @@ const RoomInfoTable = ({
 
                       {adminStatus && (
                         <button
+                          onClick={() =>
+                            handleDisplayReview(
+                              oneRoomInfo.room_id,
+                              oneRoomInfo.name
+                            )
+                          }
                           style={{
                             marginTop: "10px",
                             padding: "5px 10px",

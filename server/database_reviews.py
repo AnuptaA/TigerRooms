@@ -4,7 +4,6 @@
 #-----------------------------------------------------------------------
 
 import psycopg2
-from database_saves import get_room_id
 from db_config import DATABASE_URL
 
 #-----------------------------------------------------------------------
@@ -12,7 +11,7 @@ from db_config import DATABASE_URL
 def get_review(netid, room_id):
     '''
     Returns a dict with key success corresponding to boolean status of whether
-    the fetching of review data (rating, comments, review_data), for room  with
+    the fetching of review data (rating, comments, review_date), for room  with
     room_id by user with netid was a success. If true, returns object 
     containing review data otherwise returns appropriate error message.
     '''
@@ -24,13 +23,11 @@ def get_review(netid, room_id):
                     SELECT "rating", "comments", "review_date"
                     FROM "RoomReviews"
                     WHERE "netid" = %s AND "room_id" = %s
-                    ''',
-                    (netid, room_id)
+                    ''', (netid, room_id)
                 )
 
                 # Fetch the result
                 result = cursor.fetchone()
-                print(f"Query result: {result}")
 
                 # Check if the review exists
                 if result:
@@ -79,6 +76,10 @@ def delete_review(netid, room_id):
 #-----------------------------------------------------------------------
 
 def save_review(room_id, netid, rating, comments, review_date):
+    '''
+    Returns a string corresponding to whether the saving of a review for 
+    a room with room_id by user with netid was a success or failure.
+    '''
     with psycopg2.connect(DATABASE_URL) as conn:
         with conn.cursor() as cursor:
             try:
@@ -106,4 +107,48 @@ def save_review(room_id, netid, rating, comments, review_date):
                 print(message)
                 return message
 
+#-----------------------------------------------------------------------
+            
+def get_reviews(room_id):
+    '''
+    Returns dict with key success corresponding to a boolean status of whether
+    the fetching of reviews for room with room_id by all users was a success.
+    If true, returns list of review objects containing review data (netid,
+    rating, comments, and review_date) in descending order of review 
+    submission time otherwise returns appropriate error message.
+    '''
+    try:
+        with psycopg2.connect(DATABASE_URL) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    '''
+                    SELECT "netid", "rating", "comments", "review_date"
+                    FROM "RoomReviews"
+                    WHERE "room_id" = %s
+                    ORDER BY "review_date" DESC
+                    ''', (room_id,)
+                )
+
+                # Fetch the result
+                result = cursor.fetchall()
+                print(f"Query Result: ", result)
+
+                reviews = []
+
+                for row in result:
+                    review = {}
+                    review['netid'] = row[0]
+                    review['rating'] = row[1]
+                    review['comments'] = row[2]
+                    review['review_date'] = row[3]
+                    reviews.append(review)
+
+                return {"success": True, "reviews": reviews}
+
+    
+    except Exception as ex:
+        message = f"Error fetching reviews for Room {room_id}: {ex}"
+        print(message)
+        return {"success": False, "error": message }
+            
 #-----------------------------------------------------------------------

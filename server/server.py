@@ -16,7 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
-from database_reviews import save_review, get_review, delete_review
+from database_reviews import save_review, get_review, delete_review, get_reviews
 from update_database import send_email
 
 #-----------------------------------------------------------------------
@@ -533,7 +533,7 @@ def get_review_of_user():
         return jsonify({"error": result["error"]}), 500
     
     return jsonify({
-        "success": "Successfully fetched user reviews",
+        "success": "Successfully fetched user review",
         "review": result["review"]}), 200
         
 #-----------------------------------------------------------------------
@@ -604,6 +604,41 @@ def submit_review():
         return jsonify({"error": message}), 500
     
     return jsonify({"success": message}), 200
+
+#-----------------------------------------------------------------------
+
+@app.route('/api/reviews/get_all_reviews', methods=['POST'])
+def get_all_reviews():
+    # Ensure user is logged in before accessing API
+    if require_login():
+        return require_login()
+    
+    print("Endpoint '/api/reviews/get_all_reviews'")
+    data = request.json
+    print(f"Request data received: {data}")
+    netid = data.get('netid')
+
+    if not netid:
+        print("Error: Missing netid in request.")
+        return jsonify({"error": "Missing netid"}), 400
+    
+    # Must be logged in as the user to submit review
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    room_id = data.get('room_id')
+
+    if not all([netid, room_id]):
+        return jsonify({"error": "Missing required fields"}), 400
+    
+    result = get_reviews(room_id)
+    
+    if not result["success"]:
+        return jsonify({"error": result["error"]}), 500
+    
+    return jsonify({
+        "success": "Successfully fetched user reviews",
+        "review": result["reviews"]}), 200
 
 #-----------------------------------------------------------------------
 
