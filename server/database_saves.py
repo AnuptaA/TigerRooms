@@ -66,6 +66,7 @@ def save_room(netid, room_id):
             ''',
             (room_id,)
         )
+        conn.commit()
         print(f"Room {room_id} saved successfully for netid {netid}.")
     except Exception as e:
         conn.rollback()

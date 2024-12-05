@@ -280,7 +280,7 @@ def api_save_room():
     if netid != session['username']:
         return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
     
-    room_id = data.get('room')
+    room_id = data.get('room_id')
 
     if not all([netid, room_id]):
         return jsonify({"error": "Missing netid or room_id"}), 400
