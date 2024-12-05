@@ -87,6 +87,26 @@ const Cart = ({ username }) => {
     }));
   };
 
+  // Expand all tables
+  const expandAll = () => {
+    setCollapsedStates((prevStates) =>
+      Object.keys(prevStates).reduce((acc, key) => {
+        acc[key] = false; // Set all states to expanded
+        return acc;
+      }, {})
+    );
+  };
+
+  // Collapse all tables
+  const collapseAll = () => {
+    setCollapsedStates((prevStates) =>
+      Object.keys(prevStates).reduce((acc, key) => {
+        acc[key] = true; // Set all states to collapsed
+        return acc;
+      }, {})
+    );
+  };
+
   // Handle room unsave
   const handleUnsaveRoom = (roomNumber, hall) => {
     const confirmed = window.confirm(
@@ -158,6 +178,14 @@ const Cart = ({ username }) => {
   return (
     <div className="cart-page">
       <h1 className="cart-title">Saved Rooms</h1>
+      <div className="controls">
+        <button onClick={expandAll} className="expand-button">
+          Expand All
+        </button>
+        <button onClick={collapseAll} className="collapse-button">
+          Collapse All
+        </button>
+      </div>
       {groupMembers.map((member) => (
         <div key={member} className="saved-rooms-section">
           <h2
