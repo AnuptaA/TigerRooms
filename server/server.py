@@ -16,7 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
-from database_reviews import save_review, get_review_of_user
+from database_reviews import save_review, get_review, delete_review
 from update_database import send_email
 
 #-----------------------------------------------------------------------
@@ -510,7 +510,7 @@ def get_review_of_user():
     if require_login():
         require_login
     
-    print("Endpoint 'api/reviews/get_review_of_user")
+    print("Endpoint 'api/reviews/get_review_of_user'")
     data = request.json
     print(f"Request data received: {data}")
     netid = data.get('netid')
@@ -527,15 +527,47 @@ def get_review_of_user():
     if not all([netid, room_id]):
         return jsonify({"error": "Missing netid, room_id"}), 400
     
-    result = get_review_of_user(netid, room_id)
+    result = get_review(netid, room_id)
 
     if not result["success"]:
         return jsonify({"error": result["error"]}), 500
     
     return jsonify({
         "success": "Successfully fetched user reviews",
-        "reviews": result["reviews"]}), 200
+        "review": result["review"]}), 200
         
+#-----------------------------------------------------------------------
+
+@app.route('/api/reviews/delete_review_of_user', methods=['POST'])
+def delete_review_of_user():
+    # Ensure user is logged in before accessing API
+    if require_login():
+        require_login
+
+    print("Endpoint 'api/reviews/delete_review_of_user'")
+    data = request.json
+    print(f"Request data received: {data}")
+    netid = data.get('netid')
+
+    if not netid:
+        print("Error: Missing netid in request.")
+        return jsonify({"error": "Missing netid"}), 400
+    
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    room_id = data.get('room_id')
+
+    if not all([netid, room_id]):
+        return jsonify({"error": "Missing netid, room_id"}), 400
+    
+    message = delete_review(netid, room_id)
+
+    if "Error" in message:
+        return jsonify({"error": message}), 500
+    
+    return jsonify({"success": message}), 200
+
 #-----------------------------------------------------------------------
         
 @app.route('/api/reviews/submit_review', methods=['POST'])

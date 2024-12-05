@@ -250,7 +250,7 @@ const HallFloor = ({ username, adminStatus }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success && data.comments) {
+        if (data.success && data.review.comments) {
           // Open SweetAlert to modify the review
           MySwal.fire({
             title: "Modify your review.",
@@ -270,7 +270,9 @@ const HallFloor = ({ username, adminStatus }) => {
                   <span class="star-icon" data-value="5">★</span>
                 </div>
               </div>
-              <textarea id="review-comments" class="swal2-input" placeholder="Write your review here..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;">${data.comments}</textarea>
+              <textarea id="review-comments" class="swal2-input" placeholder="Write your review here..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;">${data.review.comments}</textarea>
+              <br />
+              <button id="remove-review" class="swal2-confirm swal2-styled" style="background-color: red; color: white; margin-top: 15px;">Remove Review</button>
             `,
             focusConfirm: false,
             showCancelButton: true,
@@ -331,7 +333,7 @@ const HallFloor = ({ username, adminStatus }) => {
             }
           });
 
-          // Set the star rating based on the existing rating
+          // Handle star rating click interaction
           const ratingStars = document.querySelectorAll(".star-icon");
           ratingStars.forEach((star) => {
             star.addEventListener("click", (e) => {
@@ -356,14 +358,33 @@ const HallFloor = ({ username, adminStatus }) => {
           document.querySelector(
             `input[name="star"][value="${selectedStar}"]`
           ).checked = true;
+
+          // Add the event listener for removing the review
+          document
+            .getElementById("remove-review")
+            .addEventListener("click", () => {
+              MySwal.fire({
+                title: "Are you sure?",
+                text: "Do you really want to remove your review?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, remove it!",
+                cancelButtonText: "No, keep it",
+              }).then((removeResult) => {
+                if (removeResult.isConfirmed) {
+                  // Call the function to delete the review
+                  removeReviewFromDatabase(room_id, username);
+                }
+              });
+            });
         } else {
-          MySwal.fire("Error", "No review found for this room", "error");
+          MySwal.fire("Error", "No review found for this room.", "error");
         }
       })
       .catch((err) => {
         MySwal.fire(
           "Error",
-          "Something went wrong while fetching your review",
+          "Something went wrong while fetching your review.",
           "error"
         );
         console.error(err);
@@ -418,6 +439,51 @@ const HallFloor = ({ username, adminStatus }) => {
         MySwal.fire(
           "Error.",
           "Something went wrong while submitting your review. Please try again.",
+          "error"
+        );
+        console.error(err);
+      });
+  };
+
+  const removeReviewFromDatabase = (room_id, username) => {
+    fetch("/api/reviews/delete_review_of_user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        netid: username,
+        room_id: room_id,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          MySwal.fire(
+            "Review Removed!",
+            "Your review has been successfully removed.",
+            "success"
+          );
+
+          // Update the roomInfo state to reflect that the room has no review
+          setRoomInfo((prevRoomInfo) =>
+            prevRoomInfo.map((room) =>
+              room.room_id === room_id ? { ...room, has_reviewed: false } : room
+            )
+          );
+        } else if (data.error) {
+          MySwal.fire(
+            "Error.",
+            data.error ||
+              "Something went wrong while removing your review. Please try again.",
+            "error"
+          );
+        }
+      })
+      .catch((err) => {
+        MySwal.fire(
+          "Error.",
+          "Something went wrong while removing your review. Please try again.",
           "error"
         );
         console.error(err);
