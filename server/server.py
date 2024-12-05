@@ -68,6 +68,12 @@ def index():
 
 @app.route('/<path:path>')
 def catch_all(path):
+    username = CASauth.authenticate()
+    print(f"CAS username returned: {username}")
+
+    if username:
+        session['username'] = username
+
     # Exclude API and static routes
     if path.startswith("api") or path.startswith("static"):
         return None  # Flask will process these routes normally
