@@ -4,6 +4,7 @@
 #-----------------------------------------------------------------------
 
 import psycopg2
+import pandas as pd
 from db_config import DATABASE_URL
 
 def main():
@@ -284,8 +285,8 @@ def main():
             # Baker-E Floors --------------------------------------------------
             {
                 "residential_college": "Whitman", "hall": "Baker-E", "floor": 0, 
-                "room_numbers": ['E002', 'E006', 'E008'],
-                "occupancies": [2, 2, 2], "square_footages": [201, 142, 141]
+                "room_numbers": ['E002', 'E006', 'E008', 'E010', 'E012', 'E014', 'E016', 'E018', 'E024'],
+                "occupancies": [2, 2, 2, 2, 2, 2, 2, 2], "square_footages": [201, 142, 141, 141, 141, 141, 141, 141, 141]
             },
             {
                 "residential_college": "Whitman", "hall": "Baker-E", "floor": 1, 
@@ -354,6 +355,22 @@ def main():
             }
         ]
 
+        # Overrides room data to populate database from excel file rather than hard-coding
+        room_data = []
+        df = pd.read_excel('revised_Whitman.xlsx')
+        grouped = df.groupby(['hall', 'floor'])
+        for (hall, floor), group in grouped:
+            group_dict = {
+                'residential_college': 'Whitman',
+                "hall": hall,
+                "floor": int(floor),  # Convert floor to native Python int
+                "room_numbers": group['room_number'].tolist(),
+                "occupancies": [int(o) for o in group['occupancy']],  # Convert occupancies to native Python int
+                "square_footages": [float(sf) for sf in group['square_footage']]  # Convert square footage to Python float
+            }
+            room_data.append(group_dict)
+        
+    
         # Populate tables with room data
         for data in room_data:
             residential_college = data["residential_college"]
