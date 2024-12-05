@@ -643,12 +643,9 @@ def get_all_reviews():
 
 #-----------------------------------------------------------------------
 
-# Create a group or return the existing group for the user
 @app.route('/api/create_group', methods=['POST'])
 def create_group():
-    print("HERE BITCH")
     if require_login():
-        print("PENIS")
         return require_login()
 
     netid = session['username']
@@ -663,17 +660,15 @@ def create_group():
         group = cursor.fetchone()
 
         if group:
-            print("In a group bruh")
             return jsonify({"message": "User already in a group", "group_id": group[0]}), 200
 
         # Create a new group
         cursor.execute('''
-            INSERT INTO "Groups" ("creator_netid") VALUES (%s) RETURNING "group_id"
-        ''', (netid,))
+            INSERT INTO "Groups" DEFAULT VALUES RETURNING "group_id"
+        ''')
         group_id = cursor.fetchone()[0]
-        print(f"Created a group bruh, with group_id {group_id}")
 
-        # Add the creator to the group
+        # Add the user as a member of the group
         cursor.execute('''
             INSERT INTO "GroupMembers" ("group_id", "netid") VALUES (%s, %s)
         ''', (group_id, netid))
@@ -1075,15 +1070,10 @@ def leave_group():
         ''', (group_id,))
         remaining_members = cursor.fetchone()[0]
 
-        # If no members remain, delete the group
+        # If no members remain, delete the group (cascading deletions will handle other data)
         if remaining_members == 0:
             cursor.execute('''
                 DELETE FROM "Groups" WHERE "group_id" = %s
-            ''', (group_id,))
-
-            # Clean up any group invites for the deleted group
-            cursor.execute('''
-                DELETE FROM "GroupInvites" WHERE "group_id" = %s
             ''', (group_id,))
 
         conn.commit()
