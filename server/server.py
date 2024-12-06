@@ -883,7 +883,7 @@ def accept_invite():
 
     invitee = session['username']
     data = request.json
-    group_id = data.get('group_id')  # Use group_id instead of inviter
+    group_id = data.get('group_id')  # Use group_id from the request
 
     if not group_id:
         return jsonify({"error": "Missing group_id parameter"}), 400
@@ -891,6 +891,16 @@ def accept_invite():
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
+
+        # Check if the invite is valid
+        cursor.execute('''
+            SELECT 1 FROM "GroupInvites" 
+            WHERE "group_id" = %s AND "invitee_netid" = %s
+        ''', (group_id, invitee))
+        invite_exists = cursor.fetchone()
+
+        if not invite_exists:
+            return jsonify({"error": "Invalid or expired invitation"}), 400
 
         # Check if the invitee is already in a group
         cursor.execute('''
