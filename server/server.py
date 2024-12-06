@@ -16,6 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
+from database_groups import get_groups_and_members
 from database_reviews import save_review, get_review, delete_review, get_reviews, get_all_user_reviews, get_all_db_reviews
 from update_database import send_email
 
@@ -677,6 +678,39 @@ def get_all_reviews_for_room():
         "success": "Successfully fetched user reviews",
         "review": result["reviews"]}), 200
 
+#-----------------------------------------------------------------------
+
+@app.route('/api/get_all_groups', methods=['GET'])
+def get_all_groups():
+    # Ensure user is logged in before accessing API
+    if require_login():
+        return require_login()
+    
+    print("Endpoint '/api/get_all_groups'")
+    netid = request.args.get('netid')   # Get netid from query params
+    print(f"Netid of caller: {netid}")
+
+    if not netid:
+        print("Error: Missing netid in request for getting all groups.")
+        return jsonify({"error": "Missing netid"}), 400
+
+    # Must be logged in as the user to check all groups
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    # Must be admin to access all groups
+    if not is_admin(netid):
+        return jsonify({"error": "Unauthorized: Only admins may access this page."}), 403
+    
+    result = get_groups_and_members()
+
+    if not result["success"]:
+        return jsonify({"error": "Missing netid"}), 400
+    
+    return jsonify({
+        "success": "Successfully fetched all groups",
+        "all_groups": result["all_groups"]}), 200
+    
 #-----------------------------------------------------------------------
 
 @app.route('/api/reviews/get_all_reviews', methods=['POST'])

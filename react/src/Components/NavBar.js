@@ -40,6 +40,11 @@ const NavBar = ({ adminStatus, adminToggle, setAdminToggle }) => {
                 <a href="/moderate-reviews">Moderate Reviews</a>
               </li>
             )}
+            {adminStatus && !adminToggle && (
+              <li>
+                <a href="/all-groups">All Groups</a>
+              </li>
+            )}
           </ul>
         </li>
         <li>

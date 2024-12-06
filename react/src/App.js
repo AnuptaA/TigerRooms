@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import InvalidRoute from "./pages/InvalidRoute";
 import MyGroup from "./pages/MyGroup";
 import ModerateReviews from "./pages/ModerateReviews";
+import AllGroups from "./pages/AllGroups";
 import "./App.css";
 
 const App = () => {
@@ -116,6 +117,16 @@ const App = () => {
           path="/moderate-reviews"
           element={
             <ModerateReviews
+              username={username}
+              adminStatus={adminStatus}
+              adminToggle={adminToggle}
+            />
+          }
+        />
+        <Route
+          path="/all-groups"
+          element={
+            <AllGroups
               username={username}
               adminStatus={adminStatus}
               adminToggle={adminToggle}
