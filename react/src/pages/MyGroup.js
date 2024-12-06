@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import StudentAccessOnly from "../Components/StudentAccessOnly";
 import "../App.css";
 
-const MyGroup = ({ username, adminStatus }) => {
+const MyGroup = ({ username, adminStatus, adminToggle }) => {
   const [group, setGroup] = useState(null); // Group details
   const [members, setMembers] = useState([]); // Group members
   const [pendingMembers, setPendingMembers] = useState([]); // Pending members in the group
@@ -57,49 +58,6 @@ const MyGroup = ({ username, adminStatus }) => {
         console.error("Error fetching pending invites:", error);
       });
   }, []);
-
-  if (adminStatus) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "90vh",
-          backgroundColor: "#f4f4f4",
-          padding: "0 5vw",
-        }}
-      >
-        <h1
-          style={{
-            color: "red",
-            fontSize: "8vw",
-            fontWeight: "bold",
-            textAlign: "center",
-            marginBottom: "2vh",
-            textTransform: "uppercase",
-            letterSpacing: "2px",
-            wordWrap: "break-word",
-          }}
-        >
-          Not a student.
-        </h1>
-        <p
-          style={{
-            color: "darkred",
-            fontSize: "4vw",
-            fontWeight: "bold",
-            textAlign: "center",
-            marginTop: "1vh",
-            wordWrap: "break-word",
-          }}
-        >
-          You cannot participate in room draw.
-        </p>
-      </div>
-    );
-  }
 
   const handleAcceptInvite = (groupId) => {
     setLoading(true);
@@ -370,11 +328,13 @@ const MyGroup = ({ username, adminStatus }) => {
             <li key={index}>{member}</li>
           ))}
         </ul>
-        <button onClick={() => handleAcceptInvite(currentInvite.group_id)}>
-          Accept
-        </button>
-        <button onClick={handleDeclineInvite}>Decline</button>
-        {error && <p className="error">{error}</p>}
+        <div>
+          <button onClick={() => handleAcceptInvite(currentInvite.group_id)}>
+            Accept
+          </button>
+          <button onClick={handleDeclineInvite}>Decline</button>
+          {error && <p className="error">{error}</p>}
+        </div>
       </div>
     );
   }
@@ -385,14 +345,16 @@ const MyGroup = ({ username, adminStatus }) => {
       <div className="my-group">
         <h1>My Group</h1>
         <p>You are not currently in a group.</p>
-        <button onClick={handleCreateGroup}>Create Group</button>
+        <button className="create-group-button" onClick={handleCreateGroup}>
+          Create Group
+        </button>
         {error && <p className="error">{error}</p>}
       </div>
     );
   }
 
   // Show group details
-  return (
+  return !adminStatus || adminToggle ? (
     <div className="my-group">
       <h1>My Group</h1>
       <p>
@@ -436,9 +398,13 @@ const MyGroup = ({ username, adminStatus }) => {
         />
         <button onClick={handleAddMember}>Send Invitation</button>
       </div>
-      <button onClick={handleLeaveGroup}>Leave Group</button>
+      <button className="leave-button" onClick={handleLeaveGroup}>
+        Leave Group
+      </button>
       {error && <p className="error">{error}</p>}
     </div>
+  ) : (
+    <StudentAccessOnly />
   );
 };
 

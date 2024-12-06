@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import StudentAccessOnly from "../Components/StudentAccessOnly";
 import "../App.css";
 
-const Cart = ({ username }) => {
+const Cart = ({ username, adminStatus, adminToggle }) => {
   const [savedRooms, setSavedRooms] = useState({});
   const [groupMembers, setGroupMembers] = useState([username]); // Start with the user only
   const [collapsedStates, setCollapsedStates] = useState({ [username]: false }); // User's section starts expanded
@@ -180,7 +181,7 @@ const Cart = ({ username }) => {
       .catch((error) => console.error("Error clearing drawn rooms:", error));
   };
 
-  return (
+  return !adminStatus || adminToggle ? (
     <div className="cart-page">
       <h1 className="cart-title">Saved Rooms</h1>
       <div className="controls">
@@ -271,6 +272,8 @@ const Cart = ({ username }) => {
         </div>
       ))}
     </div>
+  ) : (
+    <StudentAccessOnly />
   );
 };
 

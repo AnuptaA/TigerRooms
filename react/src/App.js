@@ -16,7 +16,12 @@ import "./App.css";
 const App = () => {
   const [username, setUsername] = React.useState("");
   const [adminStatus, setAdminStatus] = React.useState(false);
-
+  // initial status of the admin toggle is false
+  const [adminToggle, setAdminToggle] = React.useState(() => {
+    const savedToggle = localStorage.getItem("adminToggle");
+    console.log(savedToggle);
+    return savedToggle === "true";
+  });
   React.useEffect(() => {
     const auth = async () => {
       try {
@@ -39,37 +44,82 @@ const App = () => {
     auth();
   }, []);
 
+  React.useEffect(() => {
+    localStorage.setItem("adminToggle", adminToggle);
+  }, [adminToggle]);
+
   return (
     <BrowserRouter>
-      <NavBar adminStatus={adminStatus} />
+      <NavBar
+        adminStatus={adminStatus}
+        adminToggle={adminToggle}
+        setAdminToggle={setAdminToggle}
+      />
 
       <Routes>
-        <Route path="/floorplans" element={<FloorPlans />} />
+        <Route
+          path="/floorplans"
+          element={
+            <FloorPlans adminStatus={adminStatus} adminToggle={adminToggle} />
+          }
+        />
         <Route
           path="/"
           element={
-            <FilterComponent username={username} adminStatus={adminStatus} />
+            <FilterComponent
+              username={username}
+              adminStatus={adminStatus}
+              adminToggle={adminToggle}
+            />
           }
         />
         <Route
           path="/floorplans/hallfloor"
-          element={<HallFloor username={username} adminStatus={adminStatus} />}
+          element={
+            <HallFloor
+              username={username}
+              adminStatus={adminStatus}
+              adminToggle={adminToggle}
+            />
+          }
         />
         {<Route path="/logout" element={<Logout />}></Route>}
         <Route
           path="/upload-pdfs"
-          element={<UploadPDFs adminStatus={adminStatus} />}
+          element={
+            <UploadPDFs adminStatus={adminStatus} adminToggle={adminToggle} />
+          }
         />
-        <Route path="/cart" element={<Cart username={username} />} />
+        <Route
+          path="/cart"
+          element={
+            <Cart
+              username={username}
+              adminStatus={adminStatus}
+              adminToggle={adminToggle}
+            />
+          }
+        />
         <Route path="*" element={<InvalidRoute />} />
+        {/* TODO: this should be unavailable to admins */}
         <Route
           path="/mygroup"
-          element={<MyGroup username={username} adminStatus={adminStatus} />}
+          element={
+            <MyGroup
+              username={username}
+              adminStatus={adminStatus}
+              adminToggle={adminToggle}
+            />
+          }
         />
         <Route
           path="/moderate-reviews"
           element={
-            <ModerateReviews username={username} adminStatus={adminStatus} />
+            <ModerateReviews
+              username={username}
+              adminStatus={adminStatus}
+              adminToggle={adminToggle}
+            />
           }
         />
       </Routes>

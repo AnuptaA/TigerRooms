@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import StudentAccessOnly from "../Components/StudentAccessOnly";
 import "../App.css";
 
-const FloorPlans = () => {
+const FloorPlans = ({ adminStatus, adminToggle }) => {
   // Retrieve query params from URL using useLocation
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -66,8 +67,7 @@ const FloorPlans = () => {
       })
       .catch((error) => console.error("Error fetching floor plans:", error));
   }, [resCollege, hall, floor, occupancy, minSquareFootage]);
-
-  return (
+  return !adminStatus || adminToggle ? (
     <div>
       <h1 className="results-page-title">
         Showing results for all floor plans
@@ -76,12 +76,22 @@ const FloorPlans = () => {
         {/* Adding ternary comparator to handle case where resco isn't provided */}
         {resCollege === null ? "All Residential Colleges" : resCollege}
       </h1>
-      <AvailabilityTable availabilityInfo={availabilityInfo} occupancy={occupancy || ""} minSquareFootage={minSquareFootage || 0} />
+      <AvailabilityTable
+        availabilityInfo={availabilityInfo}
+        occupancy={occupancy || ""}
+        minSquareFootage={minSquareFootage || 0}
+      />
     </div>
+  ) : (
+    <StudentAccessOnly />
   );
 };
 
-const AvailabilityTable = ({ availabilityInfo, occupancy, minSquareFootage }) => {
+const AvailabilityTable = ({
+  availabilityInfo,
+  occupancy,
+  minSquareFootage,
+}) => {
   // Determine the maximum number of floors to set the number of rows
   const maxFloors =
     availabilityInfo.length > 0

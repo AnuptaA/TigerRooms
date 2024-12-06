@@ -2,59 +2,15 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import image from "../img/misc/upload-file-svgrepo-com.svg";
+import AdminAccessOnly from "../Components/AdminAccessOnly";
 import "../App.css";
 
-const UploadPDFs = ({ adminStatus }) => {
+const UploadPDFs = ({ adminStatus, adminToggle }) => {
   // displayed pdf filename and file itself
   const [fileName, setFileName] = useState("No file selected");
   const [file, setFile] = useState(null);
   const [canSubmit, setCanSubmit] = useState(true);
   const MySwal = withReactContent(Swal);
-
-  // Check if the user is unauthorized
-  if (!adminStatus) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "90vh",
-          backgroundColor: "#f4f4f4",
-          padding: "0 5vw",
-        }}
-      >
-        <h1
-          style={{
-            color: "red",
-            fontSize: "8vw",
-            fontWeight: "bold",
-            textAlign: "center",
-            marginBottom: "2vh",
-            textTransform: "uppercase",
-            letterSpacing: "2px",
-            wordWrap: "break-word",
-          }}
-        >
-          Unauthorized Access
-        </h1>
-        <p
-          style={{
-            color: "darkred",
-            fontSize: "4vw",
-            fontWeight: "bold",
-            textAlign: "center",
-            marginTop: "1vh",
-            wordWrap: "break-word",
-          }}
-        >
-          You do not have permission to access this page. Please contact an
-          admin.
-        </p>
-      </div>
-    );
-  }
 
   // get uploaded file, set filename and file
   const handleFileChange = (event) => {
@@ -195,7 +151,7 @@ const UploadPDFs = ({ adminStatus }) => {
     setCanSubmit(true);
   };
 
-  return (
+  return adminStatus && !adminToggle ? (
     <div className="pdf-upload-page-cont">
       <h1 id="pdf-upload-text">
         Upload the latest PDF here! Our students will thank you!
@@ -267,6 +223,8 @@ const UploadPDFs = ({ adminStatus }) => {
         </button>
       </div>
     </div>
+  ) : (
+    <AdminAccessOnly />
   );
 };
 

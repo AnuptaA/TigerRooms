@@ -3,8 +3,9 @@ import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "../App.css";
+import StudentAccessOnly from "../Components/StudentAccessOnly";
 
-const HallFloor = ({ username, adminStatus }) => {
+const HallFloor = ({ username, adminStatus, adminToggle }) => {
   console.log("hallfloor route hit");
   // Retrieve query params from URL using useLocation
   const location = useLocation();
@@ -561,7 +562,7 @@ const HallFloor = ({ username, adminStatus }) => {
 
   const returnLink = `/floorplans?resco=${rescoFromCookie}&hall=${hallFromCookie}&floor=${floorFromCookie}&occupancy=${occupancyFromCookie}&minSquareFootage=${minSquareFootageFromCookie}`;
 
-  return (
+  return !adminStatus || adminToggle ? (
     <div className="floor-plan-flexbox">
       <div className="floor-plan-map">
         <h1 className="floor-plan-title">
@@ -591,6 +592,8 @@ const HallFloor = ({ username, adminStatus }) => {
         />
       </div>
     </div>
+  ) : (
+    <StudentAccessOnly />
   );
 };
 

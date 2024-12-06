@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import StudentAccessOnly from "../Components/StudentAccessOnly";
 import "../App.css";
 
-const FilterComponent = ({ username, adminStatus }) => {
+const FilterComponent = ({ username, adminStatus, adminToggle }) => {
   const [residentialCollege, setResidentialCollege] = useState("");
   const [hall, setHall] = useState("");
   const [floor, setFloor] = useState("");
@@ -112,7 +113,7 @@ const FilterComponent = ({ username, adminStatus }) => {
     setSquareFootageError(""); // Reset square footage error
   };
 
-  return (
+  return !adminStatus || adminToggle ? (
     <div className="filter-container">
       <h1 className="filter-container-title">
         {adminStatus
@@ -263,6 +264,8 @@ const FilterComponent = ({ username, adminStatus }) => {
         browser cookies.
       </h3>
     </div>
+  ) : (
+    navigate("/upload-pdfs")
   );
 };
 
