@@ -114,9 +114,11 @@ const FilterComponent = ({ username, adminStatus }) => {
 
   return (
     <div className="filter-container">
-      {adminStatus
-        ? `Welcome admin, ${username}.` // If adminStatus is true
-        : `Welcome to TigerRooms, ${username}!`}
+      <h1 className="filter-container-title">
+        {adminStatus
+          ? `Welcome admin, ${username}.` // If adminStatus is true
+          : `Welcome to TigerRooms, ${username}!`}
+      </h1>
       <br></br>
       <h3 className="filter-container-subtitle">
         Looking for an available room?
