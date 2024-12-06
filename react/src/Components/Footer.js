@@ -3,13 +3,12 @@ import "../App.css";
 
 const Footer = () => {
   const [date, setDate] = useState(""); // State to store the updated time
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     // Fetch the updated time when the component mounts
     const fetchDate = async () => {
       try {
-        const response = await fetch(`${apiUrl}/api/getupdatedtime`, {
+        const response = await fetch(`/api/getupdatedtime`, {
           method: "GET",
         });
         if (response.ok) {
@@ -24,7 +23,7 @@ const Footer = () => {
     };
 
     fetchDate();
-  }, [apiUrl]); // Run effect when the component mounts or when apiUrl changes
+  }, []); // Run effect when the component mounts or when apiUrl changes
 
   return (
     <footer>

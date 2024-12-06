@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 
 const Logout = () => {
-  const apiUrl = process.env.REACT_APP_API_URL;
   const [message, setMessage] = useState("Error, please try again");
 
   useEffect(() => {
@@ -24,7 +23,7 @@ const Logout = () => {
         console.error("Error during logout:", err);
         alert("Something went wrong. Please try again.");
       });
-  }, [apiUrl]);
+  }, []);
 
   return (
     <div>

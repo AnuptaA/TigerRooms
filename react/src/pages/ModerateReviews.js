@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import AdminAccessOnly from "../Components/AdminAccessOnly";
 import "../App.css";
 
-const ModerateReviews = ({ username, adminStatus }) => {
+const ModerateReviews = ({ username, adminStatus, adminToggle }) => {
   const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
   const MySwal = withReactContent(Swal);
@@ -121,7 +122,7 @@ const ModerateReviews = ({ username, adminStatus }) => {
     });
   };
 
-  return (
+  return adminStatus && !adminToggle ? (
     <div
       style={{
         marginTop: "5vh",
@@ -247,6 +248,8 @@ const ModerateReviews = ({ username, adminStatus }) => {
         </table>
       )}
     </div>
+  ) : (
+    <AdminAccessOnly />
   );
 };
 
