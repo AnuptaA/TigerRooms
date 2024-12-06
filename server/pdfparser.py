@@ -133,7 +133,8 @@ def parse_pdf(filepath):
     #---------------------------------------------
     
     # before we return the tables, we want to make sure that they are in a valid format
-    validate_tables(processed_table)    
+    validate_tables(processed_table)
+
 
     return last_updated, processed_table
 
@@ -158,7 +159,6 @@ def main():
         # Output the last updated time and the parsed data
         print(f"Timestamp: {last_updated}")
         print(tables.to_string(index=False))
-        print(type(tables.iloc[0][4]))
     except Exception as e:
         # Handle exceptions gracefully
         print(f"Error: {e}")
