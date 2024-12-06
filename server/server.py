@@ -916,11 +916,11 @@ def accept_invite():
             INSERT INTO "GroupMembers" ("group_id", "netid") VALUES (%s, %s)
         ''', (group_id, invitee))
 
-        # Remove the invitation
+        # Remove all other pending invitations for the user
         cursor.execute('''
             DELETE FROM "GroupInvites"
-            WHERE "invitee_netid" = %s AND "group_id" = %s
-        ''', (invitee, group_id))
+            WHERE "invitee_netid" = %s
+        ''', (invitee,))
 
         conn.commit()
         return jsonify({"message": "You have joined the group", "group_id": group_id}), 200
