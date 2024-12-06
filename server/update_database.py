@@ -14,8 +14,6 @@ import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 
 #-----------------------------------------------------------------------
 # Load environment variables from .env file
@@ -147,42 +145,27 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
     # Commit to ensure changes, even though we don't delete rows now
     conn.commit()
 
-    # Notify users about their affected rooms
+    # Send one email per user with all their affected rooms
     for netid, rooms in user_rooms.items():
-        try:
-            # Logging the notification process
-            print(f"Notifying user {netid} about {len(rooms)} rooms.")
+        print(f"Notifying user {netid} about {len(rooms)} rooms.")
+        room_list = "\n".join([f"{room['hall']} {room['room_number']}" for room in rooms])
+        email_body = (
+            f"Dear {netid},\n\n"
+            f"The following rooms you saved have been drawn and are no longer available:\n"
+            f"{room_list}\n\n"
+            f"They will now appear at the bottom of your saved rooms table in your cart.\n"
+            f"If you no longer need these drawn rooms for reference, you can remove them at any time.\n\n"
+            f"This update reflects the transition from the previous timestamp {past_timestamp} to the current timestamp {current_timestamp}.\n\n"
+            f"View your saved rooms here: https://tigerrooms-backend.onrender.com/cart\n\n"
+            f"Best regards,\n"
+            f"TigerRooms Team"
+        )
 
-            # Format the list of affected rooms
-            room_list = "".join(
-                [f"<li>{room['hall']} {room['room_number']}</li>" for room in rooms]
-            )
-            email_body = (
-                f"Dear {netid},<br><br>"
-                f"The following rooms you saved have been drawn and are no longer available:<br>"
-                f"<ul>{room_list}</ul><br>"
-                f"They will now appear at the bottom of your saved rooms table in your cart.<br>"
-                f"If you no longer need these drawn rooms for reference, you can remove them at any time.<br><br>"
-                f"This update reflects the transition from the previous timestamp <b>{past_timestamp}</b> "
-                f"to the current timestamp <b>{current_timestamp}</b>.<br><br>"
-                f"View your saved rooms here: <a href='https://tigerrooms-backend.onrender.com/cart'>Your Cart</a><br><br>"
-                f"Best regards,<br>"
-                f"TigerRooms Team"
-            )
-
-            # Use SendGrid's send_email function
-            email_sent = send_email(
-                to_email=f"{netid}@princeton.edu",
-                subject="[TigerRooms] - Saved Rooms Drawn",
-                body=email_body  # HTML email content
-            )
-
-            # Check if the email was sent successfully
-            if not email_sent:
-                print(f"Failed to notify user {netid}. Email sending failed.")
-        except Exception as e:
-            # Log any exception that occurs
-            print(f"Error notifying user {netid}: {e}")
+        send_email(
+            to_email=f"{netid}@princeton.edu",
+            subject="[TigerRooms] - Saved Rooms Drawn",
+            body=email_body
+        )
 
     print("Notifications sent to users about drawn rooms.")
     cursor.close()
@@ -190,26 +173,33 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
 
 #-----------------------------------------------------------------------
 
+# Function to send email notifications
 def send_email(to_email, subject, body):
     print(f"Sending email to {to_email} with subject '{subject}'.")
     try:
-        # Create the email message
-        message = Mail(
-            from_email='tigerroomsteam@gmail.com',
-            to_emails=to_email,
-            subject=subject,
-            html_content=body
-        )
-        
-        # Send the email using the SendGrid API key
-        sg = SendGridAPIClient(os.getenv("SENDGRID_API_KEY"))
-        response = sg.send(message)
-        
-        print(f"Email sent to {to_email} - Status Code: {response.status_code}")
-        return True  # Return True if the email was sent successfully
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+
+        # Load credentials from environment variables
+        from_email = os.getenv("EMAIL_ADDRESS")
+        app_password = os.getenv("EMAIL_APP_PASSWORD")
+
+        if not from_email or not app_password:
+            raise ValueError("Email credentials are not set in environment variables.")
+
+        msg = MIMEText(body)
+        msg["Subject"] = subject
+        msg["From"] = from_email
+        msg["To"] = to_email
+
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(from_email, app_password)
+            server.sendmail(from_email, to_email, msg.as_string())
+
+        print(f"Email sent to {to_email}")
     except Exception as e:
         print(f"Failed to send email to {to_email}: {e}")
-        return False  # Return False if the email was not sent
 
 #-----------------------------------------------------------------------
 
