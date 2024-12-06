@@ -10,7 +10,7 @@ from update_database import get_connection, return_connection
 #-----------------------------------------------------------------------
 
 # temporary hashset for testing admin
-admin_set = {}
+admin_set = {'jipeng.sun', 'js2694'}
 
 #-----------------------------------------------------------------------
 
