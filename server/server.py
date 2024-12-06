@@ -694,32 +694,6 @@ def get_all_reviews():
 
 #-----------------------------------------------------------------------
 
-# @app.route('/api/reviews/get_all_reviews', methods=['POST'])
-# def get_all_reviews():
-#     # Ensure user is logged in before accessing API
-#     if require_login():
-#         return require_login()
-    
-#     print("Endpoint '/api/reviews/get_all_reviews'")
-#     data = request.json
-#     print(f"Request data received: {data}")
-#     netid = data.get('netid')
-
-#     if not netid:
-#         print("Error: Missing netid in request.")
-#         return jsonify({"error": "Missing netid"}), 400
-    
-#     result = get_all_db_reviews()
-
-#     if not result["success"]:
-#         return jsonify({"error": result["error"]}), 500
-    
-#     return jsonify({
-#         "success": "Successfully fetched user reviews",
-#         "all_reviews": result["all_reviews"]}), 200
-
-#-----------------------------------------------------------------------
-
 @app.route('/api/create_group', methods=['POST'])
 def create_group():
     if require_login():
