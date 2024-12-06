@@ -45,7 +45,7 @@ const ModerateReviews = ({ username, adminStatus, adminToggle }) => {
       });
   }, [username]);
 
-  if (error) {
+  if (error && adminStatus && !adminToggle) {
     return <div>Error: {error}</div>;
   }
 
