@@ -157,10 +157,8 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
   };
 
   const handleRemoveInvitation = (inviteeNetID) => {
-    // Optimistically update the UI by removing the invitee immediately
-    setPendingMembers((prev) =>
-      prev.filter((member) => member !== inviteeNetID)
-    );
+    setLoading(true);
+    setError(""); // Clear any existing error
 
     fetch("/api/remove_invite", {
       method: "POST",
@@ -172,17 +170,42 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.error) {
-          // Revert the optimistic update if there's an error
-          setPendingMembers((prev) => [...prev, inviteeNetID]);
           setError(data.error);
+          setLoading(false);
+          return;
         }
+        alert(data.message);
+        // Fetch updated pending members
+        fetch(`/api/group_pending_members?group_id=${group}`)
+          .then((response) => response.json())
+          .then((pendingData) => {
+            if (pendingData.pending_members) {
+              setPendingMembers(pendingData.pending_members);
+            }
+          })
+          .catch((error) =>
+            console.error("Error fetching updated pending members:", error)
+          );
+
+        // Fetch updated current members
+        fetch(`/api/my_group`)
+          .then((response) => response.json())
+          .then((groupData) => {
+            if (groupData.group_id) {
+              setMembers(groupData.members);
+              setRemainingInvites(groupData.remaining_invites);
+            }
+          })
+          .catch((error) =>
+            console.error("Error fetching updated group members:", error)
+          );
+
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error removing invitation:", error);
-
-        // Revert the optimistic update if there's an error
-        setPendingMembers((prev) => [...prev, inviteeNetID]);
         setError("Failed to remove invitation. Please try again later.");
+        setLoading(false);
       });
   };
 
@@ -243,13 +266,32 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.message) {
-          alert(data.message); // Notify user of success or failure
+          alert(data.message); // Notify user of success
 
-          // Update the pendingMembers state immediately
-          setPendingMembers((prev) => [...prev, newMemberNetID]);
+          // Fetch updated pending members
+          fetch(`/api/group_pending_members?group_id=${group}`)
+            .then((response) => response.json())
+            .then((pendingData) => {
+              if (pendingData.pending_members) {
+                setPendingMembers(pendingData.pending_members);
+              }
+            })
+            .catch((error) =>
+              console.error("Error fetching updated pending members:", error)
+            );
 
-          // Decrement the remaining invites immediately
-          setRemainingInvites((prev) => Math.max(prev - 1, 0));
+          // Fetch updated current members
+          fetch(`/api/my_group`)
+            .then((response) => response.json())
+            .then((groupData) => {
+              if (groupData.group_id) {
+                setMembers(groupData.members);
+                setRemainingInvites(groupData.remaining_invites);
+              }
+            })
+            .catch((error) =>
+              console.error("Error fetching updated group members:", error)
+            );
 
           // Clear the input field
           setNewMemberNetID("");
