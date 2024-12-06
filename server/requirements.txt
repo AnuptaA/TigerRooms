@@ -10,3 +10,4 @@ jpype1
 pdfplumber
 psycopg2-binary
 openpyxl
+sendgrid

@@ -846,23 +846,28 @@ def add_member():
 
         # Send an invitation email
         email = f"{invitee}@princeton.edu"
-        send_email(
+        email_body = (
+            f"Dear {invitee},<br><br>"
+            f"You have been invited to join TigerRooms group {group_id}. "
+            "To accept or decline this invitation, please log in to TigerRooms and navigate to the 'My Group' page at the following link:<br>"
+            "<a href='https://tigerrooms-backend.onrender.com/mygroup'>My Group</a><br><br>"
+            "Best regards,<br>"
+            "The TigerRooms Team"
+        )
+
+        email_sent = send_email(
             to_email=email,
             subject="[TigerRooms] - Group Invitation",
-            body=(
-                f"Dear {invitee},\n\n"
-                f"You have been invited to join TigerRooms group {group_id}. "
-                "To accept or decline this invitation, please log in to TigerRooms and navigate to the 'My Group' page at the following link:\n"
-                "https://tigerrooms-backend.onrender.com/mygroup\n\n"
-                "Best regards,\n"
-                "The TigerRooms Team"
-            )
+            body=email_body  # Pass the HTML body
         )
 
         # Add the invitation to the GroupInvites table only if the email was successfully sent
-        cursor.execute('''
-            INSERT INTO "GroupInvites" ("group_id", "invitee_netid") VALUES (%s, %s)
-        ''', (group_id, invitee))
+        if email_sent:
+            cursor.execute('''
+                INSERT INTO "GroupInvites" ("group_id", "invitee_netid") VALUES (%s, %s)
+            ''', (group_id, invitee))
+        else:
+            return jsonify({"error": f"Failed to send invitation email to {email}."}), 500
 
         conn.commit()
         return jsonify({"message": f"Invitation sent to {invitee}@princeton.edu"}), 200
@@ -1213,27 +1218,27 @@ def remove_invite():
             WHERE "group_id" = %s AND "invitee_netid" = %s
         ''', (group_id, invitee_netid))
 
-        # Send an email notification to the invitee
+        # Send an email notification to the invitee using SendGrid
         invitee_email = f"{invitee_netid}@princeton.edu"
         email_subject = "[TigerRooms] - Group Invitation Removed"
         email_body = (
-            f"Dear {invitee_netid},\n\n"
-            f"Your pending invitation to join TigerRooms group {group_id} has been removed.\n\n"
-            "Best regards,\n"
+            f"Dear {invitee_netid},<br><br>"
+            f"Your pending invitation to join TigerRooms group {group_id} has been removed.<br><br>"
+            "Best regards,<br>"
             "The TigerRooms Team"
         )
 
-        try:
-            send_email(
-                to_email=invitee_email,
-                subject=email_subject,
-                body=email_body
-            )
-        except Exception as e:
-            return jsonify({"error": "Failed to send email notification", "details": str(e)}), 500
+        # Use the updated SendGrid-based send_email function
+        email_sent = send_email(
+            to_email=invitee_email,
+            subject=email_subject,
+            body=email_body
+        )
+
+        if not email_sent:
+            return jsonify({"error": "Failed to send email notification to the invitee."}), 500
 
         conn.commit()
-
         return jsonify({"message": f"Invitation for {invitee_netid} has been removed, and an email notification has been sent."}), 200
     except Exception as e:
         conn.rollback()
