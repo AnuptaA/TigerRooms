@@ -295,6 +295,11 @@ def main():
 
         print_room_availability()
 
+    # catches ValueError raised by pdfparser.py
+    except ValueError as e:
+        print(f"ValueError: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
     finally:
