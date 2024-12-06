@@ -91,107 +91,48 @@ const AllGroups = ({ username, adminStatus, adminToggle }) => {
     return adminStatus && !adminToggle ? (
         <div className="all-groups-page">
             <h1 className="all-groups-title">All Groups</h1>
-            <div className="controls">
-                <button onClick={expandAll} className="expand-button">
-                    Expand All
-                </button>
-                <button onClick={collapseAll} className="collapse-button">
-                    Collapse All
-                </button>
-            </div>
-            {Object.entries(groups).map(([groupNumber, members]) => (
-                <div key={groupNumber} className="saved-rooms-section">
-                    <h2
-                        className="saved-rooms-title"
-                        onClick={() => toggleCollapse(groupNumber)}
-                        style={{ cursor: "pointer" }}
-                    >
-                        {`Group ${groupNumber}`}{" "}
-                        {collapsedStates[groupNumber] ? "➕" : "➖"}
-                    </h2>
-                    {!collapsedStates[groupNumber] && (
-                        <table className="group-members-table">
-                            <thead>
-                                <tr>
-                                    <th>Members</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {members.map((member, index) => (
-                                    <tr key={index}>
-                                        <td>{member}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
-                    {/* {!collapsedStates[group] && (
-                        <>
-                            {savedRooms[member] && savedRooms[member].length > 0 ? (
-                                <table className="saved-rooms-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Room</th>
-                                            <th>Total Saves</th>
-                                            <th>Availability</th>
-                                            {member === username && <th></th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {savedRooms[member].map((room, index) => (
-                                            <tr key={index}>
-                                                <td>{`${room.hall} ${room.room_number}`}</td>
-                                                <td>
-                                                    {room.total_saves !== undefined
-                                                        ? room.total_saves
-                                                        : "N/A"}
-                                                </td>
-                                                <td>
-                                                    <div
-                                                        style={{
-                                                            width: "1vw",
-                                                            height: "1vw",
-                                                            borderRadius: "0.2vw",
-                                                            backgroundColor: room.availability
-                                                                ? "green"
-                                                                : "red",
-                                                            margin: "0 auto",
-                                                        }}
-                                                    ></div>
-                                                </td>
-                                                {member === username && (
-                                                    <td>
-                                                        <button
-                                                            className="trash-button"
-                                                            onClick={() => handleUnsaveRoom(room.room_id)}
-                                                        >
-                                                            🗑️
-                                                        </button>
-                                                    </td>
-                                                )}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            ) : (
-                                <p className="no-saved-rooms">
-                                    {member === username
-                                        ? "You haven't saved any rooms yet."
-                                        : `${member} has no saved rooms.`}
-                                </p>
-                            )}
-                            {member === username && (
-                                <button
-                                    className="clear-drawn-rooms-button"
-                                    onClick={handleClearDrawnRooms}
-                                >
-                                    Clear All Unavailable (Drawn) Rooms From Cart
-                                </button>
-                            )}
-                        </>
-                    )} */}
+            {Object.keys(groups).length > 0 && ( // Render controls only if there are groups
+                <div className="controls">
+                    <button onClick={expandAll} className="expand-button">
+                        Expand All
+                    </button>
+                    <button onClick={collapseAll} className="collapse-button">
+                        Collapse All
+                    </button>
                 </div>
-            ))}
+            )}
+            {Object.keys(groups).length === 0 ? ( // Check if there are no groups
+                <p className="no-groups-message">No groups formed yet</p>
+            ) : (
+                Object.entries(groups).map(([groupNumber, members]) => (
+                    <div key={groupNumber} className="saved-rooms-section">
+                        <h2
+                            className="saved-rooms-title"
+                            onClick={() => toggleCollapse(groupNumber)}
+                            style={{ cursor: "pointer" }}
+                        >
+                            {`Group ${groupNumber}`}{" "}
+                            {collapsedStates[groupNumber] ? "➕" : "➖"}
+                        </h2>
+                        {!collapsedStates[groupNumber] && (
+                            <table className="group-members-table">
+                                <thead>
+                                    <tr>
+                                        <th>Members</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {members.map((member, index) => (
+                                        <tr key={index}>
+                                            <td>{member}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                ))
+            )}
         </div>
     ) : (
         <AdminAccessOnly />

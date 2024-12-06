@@ -876,6 +876,15 @@ input[type="number"] {
   font-weight: bold; /* Make the title bold */
 }
 
+.no-groups-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1 vw;
+  color: #777;
+}
+
 /*--------------------------------------------------------------------*/
 /* This is the styling for Cart page.                                 */
 /*--------------------------------------------------------------------*/
