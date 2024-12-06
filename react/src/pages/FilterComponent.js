@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
-const FilterComponent = ({ username }) => {
+const FilterComponent = ({ username, adminStatus }) => {
   const [residentialCollege, setResidentialCollege] = useState("");
   const [hall, setHall] = useState("");
   const [floor, setFloor] = useState("");
@@ -114,7 +114,9 @@ const FilterComponent = ({ username }) => {
 
   return (
     <div className="filter-container">
-      <h1 className="filter-container-title">Welcome to TigerRooms, {username}!</h1>
+      {adminStatus
+        ? `Welcome admin, ${username}.` // If adminStatus is true
+        : `Welcome to TigerRooms, ${username}!`}
       <br></br>
       <h3 className="filter-container-subtitle">
         Looking for an available room?
@@ -255,9 +257,9 @@ const FilterComponent = ({ username }) => {
       </div>
 
       <h3 className="cookie-recommendation">
-        For the best user experience, we recommend that you activate your browser cookies
+        For the best user experience, we recommend that you activate your
+        browser cookies.
       </h3>
-
     </div>
   );
 };

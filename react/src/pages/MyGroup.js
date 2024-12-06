@@ -10,6 +10,7 @@ const MyGroup = ({ username, adminStatus }) => {
   const [newMemberNetID, setNewMemberNetID] = useState(""); // Input for adding a new member
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(""); // Error message
+  const [remainingInvites, setRemainingInvites] = useState(0); // Track remaining invites
 
   useEffect(() => {
     // Fetch user's group information and pending invites when the component mounts
@@ -19,6 +20,9 @@ const MyGroup = ({ username, adminStatus }) => {
         if (data.group_id) {
           setGroup(data.group_id);
           setMembers(data.members);
+
+          // Set remaining invites from the API response
+          setRemainingInvites(data.remaining_invites);
 
           // Fetch pending members for the group
           fetch(`/api/group_pending_members?group_id=${data.group_id}`)
@@ -119,6 +123,7 @@ const MyGroup = ({ username, adminStatus }) => {
               if (groupData.group_id) {
                 setGroup(groupData.group_id);
                 setMembers(groupData.members);
+                setRemainingInvites(groupData.remaining_invites);
 
                 // Fetch updated pending members for the group
                 fetch(
@@ -237,6 +242,7 @@ const MyGroup = ({ username, adminStatus }) => {
         if (data.group_id) {
           setGroup(data.group_id);
           setMembers([username]); // Initialize the group with the creator
+          setRemainingInvites(data.remaining_invites);
         }
         setLoading(false);
       })
@@ -250,6 +256,11 @@ const MyGroup = ({ username, adminStatus }) => {
   const handleAddMember = () => {
     // Regular expression to match 2-8 lowercase letters and numbers
     const netIDRegex = /^[a-z0-9]{2,8}$/;
+
+    if (remainingInvites === 0) {
+      setError("No remaining invites available.");
+      return;
+    }
 
     if (!newMemberNetID) {
       setError("Please enter a NetID.");
@@ -278,6 +289,9 @@ const MyGroup = ({ username, adminStatus }) => {
 
           // Update the pendingMembers state immediately
           setPendingMembers((prev) => [...prev, newMemberNetID]);
+
+          // Decrement the remaining invites immediately
+          setRemainingInvites((prev) => Math.max(prev - 1, 0));
 
           // Clear the input field
           setNewMemberNetID("");
@@ -317,6 +331,7 @@ const MyGroup = ({ username, adminStatus }) => {
           setPendingMembers([]);
           setPendingInvites([]);
           setCurrentInviteIndex(0);
+          setError(""); // Clear error state
         } else if (data.error) {
           setError(data.error);
         }
@@ -409,6 +424,10 @@ const MyGroup = ({ username, adminStatus }) => {
       </ul>
       <div className="add-member">
         <h2>Add Member</h2>
+        <p>
+          <strong>Remaining Invites:</strong> {remainingInvites}
+        </p>{" "}
+        {/* New line */}
         <input
           type="text"
           placeholder="Enter NetID"

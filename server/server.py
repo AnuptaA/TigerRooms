@@ -16,7 +16,7 @@ from update_database import get_last_update_time, get_connection, return_connect
 import CASauth as CASauth
 from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
 from database_setup import main as setup_database
-from database_reviews import save_review, get_review, delete_review, get_reviews, get_all_db_reviews
+from database_reviews import save_review, get_review, delete_review, get_reviews, get_all_user_reviews, get_all_db_reviews
 from update_database import send_email
 
 #-----------------------------------------------------------------------
@@ -36,6 +36,7 @@ PORT = os.getenv('SERVER_PORT')
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_INVITES = 4 # change to 10 later
 
 #-----------------------------------------------------------------------
 
@@ -73,6 +74,21 @@ def catch_all(path):
 
     if username:
         session['username'] = username
+        if not is_admin(username):
+            # Add the user to the Users table if not already present
+            conn = get_db_connection()
+            try:
+                cursor = conn.cursor()
+                cursor.execute('''
+                    INSERT INTO "Users" ("netid") VALUES (%s)
+                    ON CONFLICT ("netid") DO NOTHING
+                ''', (username,))
+                conn.commit()
+            except Exception as e:
+                print(f"Error adding user to the database: {e}")
+            finally:
+                cursor.close()
+                return_connection(conn)
 
     # Exclude API and static routes
     if path.startswith("api") or path.startswith("static"):
@@ -606,6 +622,17 @@ def submit_review():
 
     if not all([room_id, rating, comments, review_date]):
         return jsonify({"error": "Missing required fields"}), 400
+    
+    all_prev_reviews_result = get_all_user_reviews(netid)
+
+    if not all_prev_reviews_result["success"]:
+        return jsonify({"error": all_prev_reviews_result["message"]}), 500
+    
+    prev_reviews = all_prev_reviews_result["reviews"]
+    if len(prev_reviews) >= 5:
+        message = f"You have {len(prev_reviews)} reviews. Please delete one"
+        message += " and then resubmit this review. Thank you." 
+        return jsonify({"error": message}), 400
 
     message = save_review(room_id, netid, rating, comments, review_date)
 
@@ -656,21 +683,26 @@ def get_all_reviews_for_room():
 def get_all_reviews():
     # Ensure user is logged in before accessing API
     if require_login():
-        return require_login()
-    
-    print("Endpoint '/api/reviews/get_all_reviews'")
-    data = request.json
-    print(f"Request data received: {data}")
-    netid = data.get('netid')
+        require_login()
+
+    netid = request.args.get('netid')   # Get netid from query params
 
     if not netid:
-        print("Error: Missing netid in request.")
+        print("Error: Missing netid in request for getting all reviews.")
         return jsonify({"error": "Missing netid"}), 400
+
+    # Must be logged in as the user to obtain data
+    if netid != session['username']:
+        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    
+    # Must be admin to access all reviews
+    if not is_admin(netid):
+        return jsonify({"error": "Unauthorized: Only admins may access this page."}), 403
     
     result = get_all_db_reviews()
 
     if not result["success"]:
-        return jsonify({"error": result["error"]}), 500
+        return jsonify({"error": "Missing netid"}), 400
     
     return jsonify({
         "success": "Successfully fetched user reviews",
@@ -695,7 +727,17 @@ def create_group():
         group = cursor.fetchone()
 
         if group:
-            return jsonify({"message": "User already in a group", "group_id": group[0]}), 200
+            # Fetch remaining invites for the user
+            cursor.execute('''
+                SELECT "num_invites" FROM "Users" WHERE "netid" = %s
+            ''', (netid,))
+            remaining_invites = max(ALLOWED_INVITES - cursor.fetchone()[0], 0)
+
+            return jsonify({
+                "message": "User already in a group",
+                "group_id": group[0],
+                "remaining_invites": remaining_invites
+            }), 200
 
         # Create a new group
         cursor.execute('''
@@ -708,8 +750,18 @@ def create_group():
             INSERT INTO "GroupMembers" ("group_id", "netid") VALUES (%s, %s)
         ''', (group_id, netid))
 
+        # Fetch remaining invites for the user
+        cursor.execute('''
+            SELECT "num_invites" FROM "Users" WHERE "netid" = %s
+        ''', (netid,))
+        remaining_invites = max(ALLOWED_INVITES - cursor.fetchone()[0], 0)
+
         conn.commit()
-        return jsonify({"message": "Group created successfully", "group_id": group_id}), 201
+        return jsonify({
+            "message": "Group created successfully",
+            "group_id": group_id,
+            "remaining_invites": remaining_invites
+        }), 201
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500
@@ -784,6 +836,13 @@ def add_member():
 
         if existing_invite:
             return jsonify({"error": f"{invitee} already has a pending invitation to this group."}), 400
+
+        # Step 6: Increment the inviter's num_invites in the Users table
+        cursor.execute('''
+            UPDATE "Users"
+            SET "num_invites" = "num_invites" + 1
+            WHERE "netid" = %s
+        ''', (inviter,))
 
         # Send an invitation email
         email = f"{invitee}@princeton.edu"
@@ -925,10 +984,18 @@ def my_group():
                 SELECT "netid" FROM "GroupMembers" WHERE "group_id" = %s
             ''', (group_id,))
             members = [row[0] for row in cursor.fetchall()]
+
+            # Fetch remaining invites for the user
+            cursor.execute('''
+                SELECT "num_invites" FROM "Users" WHERE "netid" = %s
+            ''', (netid,))
+            remaining_invites = max(ALLOWED_INVITES - cursor.fetchone()[0], 0)
+
             return jsonify({
                 "invitation": {
                     "group_id": group_id,
-                    "members": members
+                    "members": members,
+                    "remaining_invites": remaining_invites
                 }
             }), 200
 
@@ -939,7 +1006,13 @@ def my_group():
         group = cursor.fetchone()
 
         if not group:
-            return jsonify({"message": "You are not in a group"}), 200
+            # Fetch remaining invites for the user
+            cursor.execute('''
+                SELECT "num_invites" FROM "Users" WHERE "netid" = %s
+            ''', (netid,))
+            remaining_invites = max(ALLOWED_INVITES - cursor.fetchone()[0], 0)
+
+            return jsonify({"message": "You are not in a group", "remaining_invites": remaining_invites}), 200
 
         group_id = group[0]
 
@@ -949,7 +1022,17 @@ def my_group():
         ''', (group_id,))
         members = [row[0] for row in cursor.fetchall()]
 
-        return jsonify({"group_id": group_id, "members": members}), 200
+        # Fetch remaining invites for the user
+        cursor.execute('''
+            SELECT "num_invites" FROM "Users" WHERE "netid" = %s
+        ''', (netid,))
+        remaining_invites = max(ALLOWED_INVITES - cursor.fetchone()[0], 0)
+
+        return jsonify({
+            "group_id": group_id,
+            "members": members,
+            "remaining_invites": remaining_invites
+        }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:

@@ -45,7 +45,12 @@ const App = () => {
 
       <Routes>
         <Route path="/floorplans" element={<FloorPlans />} />
-        <Route path="/" element={<FilterComponent username={username} />} />
+        <Route
+          path="/"
+          element={
+            <FilterComponent username={username} adminStatus={adminStatus} />
+          }
+        />
         <Route
           path="/floorplans/hallfloor"
           element={<HallFloor username={username} adminStatus={adminStatus} />}
@@ -57,7 +62,6 @@ const App = () => {
         />
         <Route path="/cart" element={<Cart username={username} />} />
         <Route path="*" element={<InvalidRoute />} />
-        {/* TODO: this should be unavailable to admins */}
         <Route
           path="/mygroup"
           element={<MyGroup username={username} adminStatus={adminStatus} />}

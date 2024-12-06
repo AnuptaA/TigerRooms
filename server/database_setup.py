@@ -31,7 +31,8 @@ def main():
             "RoomReviews", 
             "GroupMembers", 
             "Groups", 
-            "GroupInvites"
+            "GroupInvites",
+            "Users"
         ]
         # Drop each table with autocommit enabled
         for table in tables:
@@ -120,7 +121,6 @@ def main():
                 CREATE TABLE "GroupMembers" (
                     "group_id" INTEGER REFERENCES "Groups"("group_id") ON DELETE CASCADE,
                     "netid" TEXT UNIQUE NOT NULL,
-                    "invite_count" INTEGER DEFAULT 0 CHECK ("invite_count" >= 0),
                     PRIMARY KEY ("group_id", "netid")
                 )
             ''')
@@ -135,6 +135,15 @@ def main():
                 )
             ''')
             print("GroupInvites table created.")
+
+            # Create Users table
+            cursor.execute('''
+                CREATE TABLE "Users" (
+                    "netid" TEXT PRIMARY KEY,
+                    "num_invites" INTEGER DEFAULT 0 CHECK ("num_invites" >= 0)
+                )
+            ''')
+            print("Users table created.")
 
             conn.commit()  # Commit all create table operations at once
         except Exception as e:
