@@ -14,7 +14,7 @@ import smtplib
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
-from test_email import send_simple_message
+import requests
 
 #-----------------------------------------------------------------------
 # Load environment variables from .env file
@@ -157,7 +157,7 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
             f"They will now appear at the bottom of your saved rooms table in your cart.\n"
             f"If you no longer need these drawn rooms for reference, you can remove them at any time.\n\n"
             f"This update reflects the transition from the previous timestamp {past_timestamp} to the current timestamp {current_timestamp}.\n\n"
-            f"View your saved rooms here: https://tigerrooms-backend.onrender.com/cart\n\n"
+            f"View your saved rooms here: https://tigerrooms-l48.onrender.com/cart\n\n"
             f"Best regards,\n"
             f"TigerRooms Team"
         )
@@ -176,32 +176,29 @@ def notify_users_and_update_carts(newly_unavailable, past_timestamp, current_tim
 
 # Function to send email notifications
 def send_email(to_email, subject, body):
-    # print(f"Sending email to {to_email} with subject '{subject}'.")
-    # try:
-    #     smtp_server = "smtp.gmail.com"
-    #     smtp_port = 587
+    try:
+        mailgun_api_key = os.getenv("MAILGUN_API_KEY")
 
-    #     # Load credentials from environment variables
-    #     from_email = os.getenv("EMAIL_ADDRESS")
-    #     app_password = os.getenv("EMAIL_APP_PASSWORD")
+        if not mailgun_api_key:
+            raise ValueError("Mailgun API key is not set in environment variables.")
 
-    #     if not from_email or not app_password:
-    #         raise ValueError("Email credentials are not set in environment variables.")
+        response = requests.post(
+  		    "https://api.mailgun.net/v3/sandbox3a13960088544fad8ca55b092a8c9564.mailgun.org/messages",
+            auth=("api", mailgun_api_key),
+            data={
+                "from": "TigerRooms <tigerroomsteam@gmail.com>",
+                "to": [to_email],
+                "subject": subject,
+                "text": body
+            }
+        )
 
-    #     msg = MIMEText(body)
-    #     msg["Subject"] = subject
-    #     msg["From"] = from_email
-    #     msg["To"] = to_email
-
-    #     with smtplib.SMTP(smtp_server, smtp_port) as server:
-    #         server.starttls()
-    #         server.login(from_email, app_password)
-    #         server.sendmail(from_email, to_email, msg.as_string())
-
-    #     print(f"Email sent to {to_email}")
-    # except Exception as e:
-    #     print(f"Failed to send email to {to_email}: {e}")
-    send_simple_message()
+        if response.status_code == 200:
+            print(f"Email sent to {to_email} using Mailgun")
+        else:
+            print(f"Failed to send email to {to_email}. Response: {response.status_code}, {response.text}")
+    except Exception as e:
+        print(f"Failed to send email to {to_email}: {e}")
 
 #-----------------------------------------------------------------------
 

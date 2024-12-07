@@ -9,8 +9,12 @@ from update_database import get_connection, return_connection
 
 #-----------------------------------------------------------------------
 
-# temporary hashset for testing admin
-admin_set = {'js2694'}
+# hashset for testing admin, remove any of our netids at the end
+admin_set = {'cs-js2694', 'cs-rdondero', 'cs-oe7583', 'aw3592'}
+
+# Remove one netid from this set later, since we can only send emails to 5 verified users
+# Also remove all of our group's netids
+email_set = {'cs-js2694', 'cs-rdondero', 'cs-oe7583', 'js2694', 'rdondero', 'oe7583', 'ky6374', 'aa6328', 'jm7048', 'rm6982', 'ak9157'}
 
 #-----------------------------------------------------------------------
 
@@ -194,5 +198,13 @@ def is_room_saved(netid, room_number, hall, cursor):
 def is_admin(netid):
     ''''Check if a given user is an admin, return true if they are an admin, false otherwise.'''
     if netid in admin_set:
+        return True
+    return False
+
+#-----------------------------------------------------------------------
+
+def can_email(netid):
+    ''''Check if a given user is able to be emailed, return true if they are, false otherwise.'''
+    if netid in email_set:
         return True
     return False

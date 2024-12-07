@@ -14,7 +14,7 @@ from db_config import DATABASE_URL
 from dotenv import load_dotenv
 from update_database import get_last_update_time, get_connection, return_connection
 import CASauth as CASauth
-from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin
+from database_saves import get_room_id, save_room, unsave_room, get_total_saves, is_room_saved, get_saved_rooms_with_saves_and_availability, is_admin, can_email
 from database_setup import main as setup_database
 from database_groups import get_groups_and_members
 from database_reviews import save_review, get_review, delete_review, get_reviews, get_all_user_reviews, get_all_db_reviews
@@ -817,6 +817,9 @@ def add_member():
 
     if not invitee:
         return jsonify({"error": "Missing invitee NetID"}), 400
+    
+    if invitee == inviter:
+        return jsonify({"error": "You cannot invite yourself"}), 400
 
     conn = get_db_connection()
     try:
@@ -887,19 +890,22 @@ def add_member():
                 f"Dear {invitee},\n\n"
                 f"You have been invited to join TigerRooms group {group_id}. "
                 "To accept or decline this invitation, please log in to TigerRooms and navigate to the 'My Group' page at the following link:\n"
-                "https://tigerrooms-backend.onrender.com/mygroup\n\n"
+                "https://tigerrooms-l48.onrender.com/mygroup\n\n"
                 "Best regards,\n"
                 "The TigerRooms Team"
             )
         )
 
-        # Add the invitation to the GroupInvites table only if the email was successfully sent
+        # Add the invitation to the GroupInvites table
         cursor.execute('''
             INSERT INTO "GroupInvites" ("group_id", "invitee_netid") VALUES (%s, %s)
         ''', (group_id, invitee))
 
         conn.commit()
-        return jsonify({"message": f"Invitation sent to {invitee}@princeton.edu"}), 200
+        if can_email(invitee):            
+            return jsonify({"message": f"Invitation sent to {invitee}@princeton.edu"}), 200
+        
+        return jsonify({"message": f"Invitation sent to {invitee}@princeton.edu, but email not sent as it is not a verified email."}), 200
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500
@@ -1268,7 +1274,10 @@ def remove_invite():
 
         conn.commit()
 
-        return jsonify({"message": f"Invitation for {invitee_netid} has been removed, and an email notification has been sent."}), 200
+        if can_email(invitee_netid):
+            return jsonify({"message": f"Invitation for {invitee_netid} has been removed, and an email notification has been sent."}), 200
+        return jsonify({"message": f"Invitation for {invitee_netid} has been removed, but email not sent as it is not a verified email."}), 200
+
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500
