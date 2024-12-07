@@ -116,7 +116,7 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
   return !adminStatus || adminToggle ? (
     <div className="filter-container">
       <h1 className="filter-container-title">
-        {adminStatus
+        {adminStatus && !adminToggle
           ? `Welcome admin, ${username}.` // If adminStatus is true
           : `Welcome to TigerRooms, ${username}!`}
       </h1>

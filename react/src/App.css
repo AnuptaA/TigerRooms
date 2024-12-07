@@ -494,10 +494,11 @@ tbody tr td[colspan="3"] {
   width: 40%;
   margin-top: 5vh; /* sum of this and margin-top in pdf-upload-text should be 17.5vh */
   padding: 2vh;
-  border: 1px solid #333333;
+  border: 0.1vw solid #333333;
   border-radius: 2vh;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0.2vw 0.4vw rgba(0, 0, 0, 0.2);
   background-color: white;
+  box-sizing: border-box;
 }
 
 #file-upload {
@@ -506,11 +507,12 @@ tbody tr td[colspan="3"] {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #e77500;
-  padding: 12.5vh 20vh;
+  border: 0.1vw dashed #e77500;
+  padding: 12.5vh 16vw;
   border-radius: 1vh;
   margin-bottom: 2vh;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 #file-upload * {
@@ -531,6 +533,14 @@ tbody tr td[colspan="3"] {
   color: #333333;
 }
 
+#file-upload .pdf-text {
+  display: block;
+  font-size: 2vw;
+}
+#file-upload small {
+  display: block;
+  font-size: 1.5vw;
+}
 #file-upload label {
   display: flex;
   flex-direction: column;
@@ -550,13 +560,13 @@ tbody tr td[colspan="3"] {
 }
 
 #upload-pdfs-cont button {
-  padding: 10px 15px;
+  padding: 2vh 3vw;
   color: #fff;
   background-color: #007bff;
   border: none;
-  border-radius: 4px;
+  border-radius: 1vw;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1vw;
   user-select: none;
 }
 
@@ -567,7 +577,7 @@ tbody tr td[colspan="3"] {
 .uploaded-file-name {
   margin-top: 2vh;
   color: #333333;
-  font-size: 0.85em;
+  font-size: 1vw;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -582,15 +592,15 @@ tbody tr td[colspan="3"] {
   background: #ff4742;
   border: 1vh solid #ff4742;
   border-radius: 1vh;
-  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0.25vw 0.5vw 1vw;
   box-sizing: border-box;
   color: #ffffff;
   cursor: pointer;
   display: inline-block;
-  font-size: 1em;
+  font-size: 1vw;
   font-weight: 800;
   line-height: 1vh;
-  min-height: 40px;
+  min-height: 5vh;
   padding: 0.8vh;
   text-align: center;
   user-select: none;
@@ -626,7 +636,7 @@ tbody tr td[colspan="3"] {
   margin-top: 5vh;
   margin-bottom: 2vh;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.5vw;
   word-wrap: break-word;
 }
 
@@ -781,6 +791,59 @@ input[type="number"] {
   -moz-appearance: textfield; /* Removes the spin button in Firefox */
 }
 /*--------------------------------------------------------------------*/
+/* This is the styling for  Reviews page.                   */
+/*--------------------------------------------------------------------*/
+.reviews-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow-x: scroll;
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: orange #f1f1f1; /* Firefox */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+  text-align: center;
+}
+
+.reviews-container::-webkit-scrollbar {
+  height: 1vh;
+}
+
+.reviews-container::-webkit-scrollbar-thumb {
+  background-color: orange; /* Thumb (scroll indicator) color */
+  border-radius: 0.5vw; /* Rounded corners for the thumb */
+}
+
+.reviews-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Scrollbar track color */
+}
+
+.reviews-table {
+  width: 80%;
+  border-collapse: collapse;
+  margin-bottom: 2vh;
+  table-layout: auto;
+  white-space: nowrap;
+  max-width: none;
+}
+
+.reviews-table th {
+  padding: 1vw;
+  text-align: left;
+  border: 0.2vw solid #ddd;
+  background-color: orange;
+  font-size: 1vw;
+}
+
+.reviews-table td {
+  padding: 0.5vw;
+  border: 0.2vw solid #ddd;
+  font-size: 1vw;
+}
+
+/*--------------------------------------------------------------------*/
 /* This is the styling for  Floorplan Results page.                   */
 /*--------------------------------------------------------------------*/
 .results-page-title {
@@ -793,13 +856,28 @@ input[type="number"] {
 
 /* Center container */
 .table-container-results {
-  width: 90%; /* Increase width for smaller screens */
-  max-width: 100%; /* Allow it to fill the screen on very narrow devices */
-  margin: 0vh auto; /* Reduce vertical margins for better proportions */
+  width: 90%;
+  max-width: 100%;
+  margin: 0vh auto;
   display: block;
-  box-sizing: border-box; /* Include padding in width calculations */
-  overflow-x: auto; /* Enable horizontal scrolling */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
+  box-sizing: border-box;
+  overflow-x: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: orange #f1f1f1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-container-results::-webkit-scrollbar {
+  height: 1vh; /* Horizontal scrollbar height */
+}
+
+.table-container-results::-webkit-scrollbar-thumb {
+  background-color: orange;
+  border-radius: 0.5vh;
+}
+
+.table-container-results::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
 
 .res-college-title {
@@ -1059,6 +1137,7 @@ ul {
 }
 
 .create-group-button,
+.accept,
 .add-member button {
   padding: 1vh;
   font-size: 1vw;
@@ -1068,10 +1147,14 @@ ul {
   border-color: orange;
   color: white;
 }
+.accept:hover,
 .add-member button:hover {
   background-color: rgb(213, 177, 109);
 }
-.leave-button {
+
+.leave-button,
+.decline,
+.remove-invitation {
   padding: 1.5vh;
   margin: 1vh;
   font-weight: bold;
@@ -1080,7 +1163,9 @@ ul {
   border-color: red;
   color: white;
 }
-.leave-button:hover {
+.leave-button:hover,
+.decline:hover,
+.remove-invitation {
   background-color: rgb(163, 123, 136);
 }
 

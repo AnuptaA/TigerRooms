@@ -133,119 +133,51 @@ const ModerateReviews = ({ username, adminStatus, adminToggle }) => {
         textAlign: "center",
       }}
     >
-      <h1>Review Moderation</h1>
+      <h1 style={{ fontSize: "3vw" }}>Review Moderation</h1>
       {reviews.length === 0 ? (
-        <p>No reviews available.</p>
+        <p style={{ fontSize: "1.5vw" }}>No reviews available.</p>
       ) : (
-        <table
-          style={{
-            width: "70%",
-            borderCollapse: "collapse",
-            marginBottom: "20px",
-          }}
-        >
-          <thead>
-            <tr>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                  backgroundColor: "#f4f4f4",
-                }}
-              >
-                NetID
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                  backgroundColor: "#f4f4f4",
-                }}
-              >
-                Room ID
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                  backgroundColor: "#f4f4f4",
-                }}
-              >
-                Rating
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                  backgroundColor: "#f4f4f4",
-                }}
-              >
-                Comments
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                  backgroundColor: "#f4f4f4",
-                }}
-              >
-                Review Date
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                  backgroundColor: "#f4f4f4",
-                }}
-              >
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {reviews.map((review) => (
-              <tr key={review.room_id}>
-                <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                  {review.netid}
-                </td>
-                <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                  {review.room_id}
-                </td>
-                <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                  {review.rating}
-                </td>
-                <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                  {review.review_date}
-                </td>
-                <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                  {review.comments}
-                </td>
-                <td style={{ padding: "8px", border: "1px solid #ddd" }}>
-                  <button
-                    onClick={() => deleteReview(review.netid, review.room_id)}
-                    style={{
-                      padding: "8px 12px",
-                      backgroundColor: "#ff4d4d",
-                      color: "white",
-                      border: "none",
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
+        <div className="reviews-container">
+          <table className="reviews-table">
+            <thead>
+              <tr>
+                <th>NetID</th>
+                <th>Room ID</th>
+                <th>Rating</th>
+                <th>Comments</th>
+                <th>Review Date</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {reviews.map((review) => (
+                <tr key={review.room_id}>
+                  <td>{review.netid}</td>
+                  <td>{review.room_id}</td>
+                  <td>{review.rating}</td>
+                  <td>{review.review_date}</td>
+                  <td>{review.comments}</td>
+                  <td>
+                    <button
+                      onClick={() => deleteReview(review.netid, review.room_id)}
+                      style={{
+                        padding: "0.5vw 1.5vw",
+                        backgroundColor: "#ff4d4d",
+                        color: "white",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "1vw",
+                        borderRadius: "0.5vw",
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   ) : (

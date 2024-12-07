@@ -371,10 +371,15 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
           ))}
         </ul>
         <div>
-          <button onClick={() => handleAcceptInvite(currentInvite.group_id)}>
+          <button
+            className="accept"
+            onClick={() => handleAcceptInvite(currentInvite.group_id)}
+          >
             Accept
           </button>
-          <button onClick={handleDeclineInvite}>Decline</button>
+          <button className="decline" onClick={handleDeclineInvite}>
+            Decline
+          </button>
           {error && <p className="error">{error}</p>}
         </div>
       </div>

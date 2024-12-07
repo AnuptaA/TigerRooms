@@ -69,7 +69,10 @@ const NavBar = ({ adminStatus, adminToggle, setAdminToggle }) => {
                 <input
                   type="checkbox"
                   checked={adminToggle}
-                  onChange={handleClick}
+                  onChange={() => {
+                    handleClick();
+                    navigator("/");
+                  }}
                 />
                 <span class="slider round">
                   {adminToggle ? "Student" : "Admin"}

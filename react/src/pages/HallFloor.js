@@ -587,7 +587,6 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           handleModifyReview={handleModifyReview}
           handleDisplayReview={handleDisplayReview}
           hallName={hall}
-          adminStatus={!adminStatus}
           username={username}
         />
       </div>
@@ -607,7 +606,6 @@ const RoomInfoTable = ({
   handleModifyReview,
   handleDisplayReview,
   hallName,
-  adminStatus,
   username,
 }) => {
   return (
@@ -656,38 +654,28 @@ const RoomInfoTable = ({
                     <strong>Total Saves: {oneRoomInfo.total_saves}</strong>
                     <br />
                     <div className="buttons-box">
-                      {adminStatus && (
-                        <button
-                          onClick={() =>
-                            oneRoomInfo.has_reviewed
-                              ? handleModifyReview(
-                                  oneRoomInfo.room_id,
-                                  username
-                                )
-                              : handleCreateReview(
-                                  oneRoomInfo.room_id,
-                                  username
-                                )
-                          }
-                        >
-                          {oneRoomInfo.has_reviewed
-                            ? "Modify Review"
-                            : "Write Review"}
-                        </button>
-                      )}
+                      <button
+                        onClick={() =>
+                          oneRoomInfo.has_reviewed
+                            ? handleModifyReview(oneRoomInfo.room_id, username)
+                            : handleCreateReview(oneRoomInfo.room_id, username)
+                        }
+                      >
+                        {oneRoomInfo.has_reviewed
+                          ? "Modify Review"
+                          : "Write Review"}
+                      </button>
 
-                      {adminStatus && (
-                        <button
-                          onClick={() =>
-                            handleDisplayReview(
-                              oneRoomInfo.room_id,
-                              oneRoomInfo.name
-                            )
-                          }
-                        >
-                          Display Reviews
-                        </button>
-                      )}
+                      <button
+                        onClick={() =>
+                          handleDisplayReview(
+                            oneRoomInfo.room_id,
+                            oneRoomInfo.name
+                          )
+                        }
+                      >
+                        Display Reviews
+                      </button>
                     </div>
                     <div>
                       {oneRoomInfo.isAvailable === "T" && (

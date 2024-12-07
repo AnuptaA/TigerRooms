@@ -163,7 +163,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
         </h2>
         <ul style={{ listStyleType: "none", padding: "0" }}>
           <li style={{ marginBottom: "1rem" }}>
-            <h3 style={{ margin: "0" }}>
+            <h3 style={{ margin: "0", textAlign: "center" }}>
               <a
                 href={require("../img/misc/Excel_Sample.xlsx")}
                 download="Excel_Sample.xlsx"
@@ -177,7 +177,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
             </h3>
           </li>
           <li>
-            <h3 style={{ margin: "0" }}>
+            <h3 style={{ margin: "0", textAlign: "center" }}>
               <a
                 href={require("../img/misc/PDF_Sample.pdf")}
                 download="PDF_Sample.pdf"
