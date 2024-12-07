@@ -235,8 +235,10 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
   };
 
   const handleAddMember = () => {
-    // Regular expression to match 2-8 lowercase letters and numbers
-    const netIDRegex = /^[a-z0-9]{2,8}$/;
+    // Updated regular expression to match:
+    // - 2-8 lowercase letters/numbers (original)
+    // - or "cs-" followed by 2-8 lowercase letters/numbers
+    const netIDRegex = /^(cs-)?[a-z0-9]{2,8}$/;
 
     if (remainingInvites === 0) {
       setError("No remaining invites available.");
