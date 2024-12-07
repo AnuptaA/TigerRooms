@@ -11,3 +11,4 @@ pdfplumber
 psycopg2-binary
 openpyxl
 sendgrid
+requests
