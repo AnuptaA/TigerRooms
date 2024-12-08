@@ -1093,85 +1093,355 @@ input[type="number"] {
 /*--------------------------------------------------------------------*/
 /* This is the styling for the MyGroup page.                          */
 /*--------------------------------------------------------------------*/
-p,
-ul {
-  text-align: left;
-}
-.my-group {
-  margin: 2vw;
-  font-family: Arial, sans-serif;
+
+.create-group-container {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  justify-content: center; /* Center the button horizontally */
+  align-items: center; /* Align vertically if needed */
+  margin-top: 2rem; /* Add relative space above the button */
 }
 
+.create-group-button {
+  padding: 1rem 2rem; /* Relative padding for consistent spacing */
+  font-size: 1.2rem; /* Relative font size for scalability */
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(90deg, #4caf50, #2e7d32);
+  border: none;
+  border-radius: 2rem; /* Fully rounded button */
+  cursor: pointer;
+  box-shadow: 0 0.4rem 0.6rem rgba(0, 0, 0, 0.2); /* Relative shadow */
+  transition: all 0.3s ease-in-out;
+}
+
+.create-group-button:hover {
+  background: linear-gradient(90deg, #66bb6a, #388e3c);
+  transform: translateY(-0.3rem); /* Slight lift effect */
+  box-shadow: 0 0.6rem 1rem rgba(0, 0, 0, 0.25); /* Larger shadow on hover */
+}
+
+.create-group-button:active {
+  transform: translateY(0); /* Reset lift effect */
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.15); /* Subtle shadow */
+}
+
+.create-group-button:focus {
+  outline: none;
+  border: 0.2rem solid #a5d6a7; /* Focus border using relative units */
+}
+
+.my-group {
+  font-family: Arial, sans-serif;
+  padding: 4vh 5vw;
+  max-width: 70%;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* Headings */
 .my-group h1 {
-  font-size: 2vw;
-  margin-bottom: 1vh;
+  font-size: 3.5rem;
+  color: #333;
+  margin-bottom: 3vh;
+  text-align: center;
+}
+
+.my-group h2 {
+  font-size: 2.5rem;
+  color: #444;
+  margin: 1.5rem 0;
 }
 
 .my-group p {
-  font-size: 1.5vw;
-  margin: 0.5vh 0;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2vh;
 }
 
-.my-group ul {
+/* Group Members and Pending Members (Side by Side) */
+.members-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 4vh;
+}
+
+.members-column {
+  flex: 1;
+  min-width: 45%;
+  text-align: center; /* Center contents within the columns */
+}
+
+.members-column h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.members-list {
   list-style: none;
   padding: 0;
-}
-
-.my-group ul li {
-  margin: 0.5vh 0;
-  font: 1vw;
+  margin: 0 auto;
+  background-color: #f0f0f0;
+  border: 0.1rem solid #ddd;
+  border-radius: 0.5rem;
+  padding: 2vh 1vw;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center items vertically */
+  align-items: center; /* Center items horizontally */
+  gap: 1rem;
 }
 
 .add-member {
-  margin-top: 2vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 2rem; /* Add padding on the sides */
+  margin-bottom: 3vh;
 }
 
-.add-member input {
-  padding: 1vh;
-  font-size: 1vw;
-  margin-right: 1vw;
-  border-radius: 0.5vw;
+.add-member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem; /* Spacing between elements in the row */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
-.create-group-button,
-.accept,
+.add-member-label {
+  flex: 1; /* Take up 1/3 of the row */
+  font-size: 1.5rem;
+  margin: 0; /* Remove default margin */
+  text-align: center; /* Center the label text */
+}
+
+.add-member-row h2 {
+  margin: 0; /* Remove default margin */
+  font-size: 1.5rem; /* Adjust size for row alignment */
+  flex-shrink: 0; /* Prevent label from shrinking */
+}
+
+.netid-input {
+  flex: 1; /* Take up 1/3 of the row */
+  max-width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.send-invitation-button {
+  flex: 1; /* Take up 1/3 of the row */
+  padding: 0.5rem;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+.send-invitation-button:hover {
+  background-color: #0056b3;
+}
+
+.send-invitation-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.members-list li {
+  font-size: 2rem;
+  color: #333;
+}
+
+.add-member input[type="text"] {
+  flex: 3;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  border: 0.1rem solid #ddd;
+  border-radius: 0.5rem;
+}
+
 .add-member button {
-  padding: 1vh;
-  font-size: 1vw;
-  background-color: orange;
-  border-radius: 0.5vw;
-  font-weight: bold;
-  border-color: orange;
+  flex: 1;
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  background-color: #007bff;
   color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-.accept:hover,
+
 .add-member button:hover {
-  background-color: rgb(213, 177, 109);
+  background-color: #0056b3;
 }
 
-.leave-button,
-.decline,
-.remove-invitation {
-  padding: 1.5vh;
-  margin: 1vh;
+/* Center and Style Pending Members */
+.pending-member {
+  font-size: 2rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Space between the NetID and the X */
+  gap: 1rem;
+}
+
+/* Style the Red X */
+.remove-x {
+  font-size: 2rem; /* Make the X large */
   font-weight: bold;
-  background-color: red;
-  border-radius: 0.5vw;
-  border-color: red;
+  color: #dc3545; /* Red color for the X */
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.remove-x:hover {
+  color: #c82333; /* Darker red on hover */
+  transform: scale(1.2); /* Slight enlargement on hover */
+}
+
+.remaining-invites {
+  font-size: 1.2rem;
+  color: #333;
+  text-align: center;
+}
+
+.remaining-invites.error {
+  color: red;
+}
+
+/* Leave Button */
+.leave-button {
+  background-color: #dc3545;
+  width: 100%;
+  padding: 1.5rem;
+  font-size: 2rem;
+  margin-top: 3vh;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.leave-button:hover {
+  background-color: #c82333;
+}
+
+/* Error Message Styling */
+.error-message {
+  font-size: 0.8rem;
+  color: #dc3545; /* Red color to indicate error */
+  margin-top: 1rem; /* Space above the error */
+  text-align: center; /* Align text to the left */
+  background-color: #f8d7da; /* Light red background for visibility */
+  border: 1px solid #f5c2c7; /* Border to match the background */
+  border-radius: 4px; /* Rounded corners for a modern look */
+  padding: 0.5rem 1rem; /* Add padding for better readability */
+  max-width: 100%; /* Ensure it doesn’t exceed its container */
+}
+
+.current-members {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center; /* Center list items */
+  gap: 2rem; /* Add spacing between items */
+}
+
+.member-item {
+  font-size: 1.5rem; /* Make NetID bigger */
+  color: #333;
+}
+
+.invite-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  gap: 1rem; /* Add spacing between buttons */
+}
+
+.accept,
+.decline {
+  padding: 0.8rem 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.accept {
+  background-color: #007bff;
   color: white;
 }
-.leave-button:hover,
-.decline:hover,
-.remove-invitation {
-  background-color: rgb(163, 123, 136);
+
+.accept:hover {
+  background-color: #0056b3;
 }
 
-.error {
-  color: red;
-  margin-top: 1vh;
+.decline {
+  background-color: #dc3545;
+  color: white;
+}
+
+.decline:hover {
+  background-color: #c82333;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .members-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .add-member-row {
+    flex-direction: column; /* Stack items on smaller screens */
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .members-column {
+    min-width: 100%;
+    text-align: center;
+  }
+
+  .add-member {
+    flex-direction: column;
+  }
+
+  .add-member input[type="text"] {
+    width: 100%;
+  }
+
+  .add-member button {
+    width: 100%;
+  }
+
+  .remaining-invites {
+    text-align: center;
+  }
+
+  .add-member-label,
+  .netid-input,
+  .send-invitation-button {
+    flex: none; /* Remove flex resizing */
+    width: 100%; /* Full width for smaller screens */
+  }
 }
 
 /*--------------------------------------------------------------------*/

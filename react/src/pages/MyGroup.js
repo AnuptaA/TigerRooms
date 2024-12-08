@@ -218,12 +218,26 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       },
       body: JSON.stringify({ netid: username }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.group_id) {
+      .then((response) =>
+        response.json().then((data) => ({ status: response.status, data }))
+      )
+      .then(({ status, data }) => {
+        if (status === 201) {
+          // Successfully created a group
           setGroup(data.group_id);
           setMembers([username]); // Initialize the group with the creator
           setRemainingInvites(data.remaining_invites);
+        } else if (status === 403) {
+          // Pending invites prevent group creation
+          setError(
+            data.error ||
+              "You cannot create a group while you have pending invitations. Please refresh the page."
+          );
+        } else {
+          // Other errors
+          setError(
+            data.error || "An unknown error occurred while creating the group."
+          );
         }
         setLoading(false);
       })
@@ -367,12 +381,14 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
         <p>
           <strong>Current Members:</strong>
         </p>
-        <ul>
+        <ul className="current-members">
           {currentInvite.members.map((member, index) => (
-            <li key={index}>{member}</li>
+            <li key={index} className="member-item">
+              {member}
+            </li>
           ))}
         </ul>
-        <div>
+        <div className="invite-actions">
           <button
             className="accept"
             onClick={() => handleAcceptInvite(currentInvite.group_id)}
@@ -382,8 +398,8 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
           <button className="decline" onClick={handleDeclineInvite}>
             Decline
           </button>
-          {error && <p className="error">{error}</p>}
         </div>
+        {error && <p className="error">{error}</p>}
       </div>
     );
   }
@@ -394,9 +410,11 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       <div className="my-group">
         <h1>My Group</h1>
         <p>You are not currently in a group.</p>
-        <button className="create-group-button" onClick={handleCreateGroup}>
-          Create Group
-        </button>
+        <div className="create-group-container">
+          <button className="create-group-button" onClick={handleCreateGroup}>
+            Create Group
+          </button>
+        </div>
         {error && <p className="error">{error}</p>}
       </div>
     );
@@ -409,48 +427,62 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       <p>
         <strong>Group ID:</strong> {group}
       </p>
-      <p>
-        <strong>Group Members:</strong>
-      </p>
-      <ul>
-        {members.map((member, index) => (
-          <li key={index}>{member}</li>
-        ))}
-      </ul>
-      <p>
-        <strong>Pending Members:</strong>
-      </p>
-      <ul>
-        {pendingMembers.map((pendingMember, index) => (
-          <li key={index}>
-            {pendingMember}{" "}
-            <button
-              onClick={() => handleRemoveInvitation(pendingMember)}
-              className="remove-invitation"
-            >
-              Remove Invitation
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="members-section">
+        <div className="members-column">
+          <h2>Group Members</h2>
+          <ul className="members-list">
+            {members.map((member, index) => (
+              <li key={index}>{member}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="members-column">
+          <h2>Pending Members</h2>
+          <ul className="members-list">
+            {pendingMembers.map((pendingMember, index) => (
+              <li key={index} className="pending-member">
+                {pendingMember}{" "}
+                <span
+                  onClick={() => handleRemoveInvitation(pendingMember)}
+                  className="remove-x"
+                >
+                  ✖
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
       <div className="add-member">
-        <h2>Add Member</h2>
-        <p>
-          <strong>Remaining Invites:</strong> {remainingInvites}
-        </p>{" "}
-        {/* New line */}
-        <input
-          type="text"
-          placeholder="Enter NetID"
-          value={newMemberNetID}
-          onChange={(e) => setNewMemberNetID(e.target.value)}
-        />
-        <button onClick={handleAddMember}>Send Invitation</button>
+        <div className="add-member-row">
+          <h2 className="add-member-label">Add Member</h2>
+          <input
+            type="text"
+            placeholder="Enter NetID"
+            value={newMemberNetID}
+            onChange={(e) => setNewMemberNetID(e.target.value)}
+            className="netid-input"
+          />
+          <button
+            onClick={handleAddMember}
+            disabled={remainingInvites === 0}
+            className="send-invitation-button"
+          >
+            Send Invitation
+          </button>
+        </div>
+        <div
+          className={`remaining-invites ${
+            remainingInvites === 0 ? "error" : ""
+          }`}
+        >
+          Remaining Invites: {remainingInvites}
+        </div>
       </div>
       <button className="leave-button" onClick={handleLeaveGroup}>
         Leave Group
       </button>
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error-message">{error}</p>}
     </div>
   ) : (
     <StudentAccessOnly />

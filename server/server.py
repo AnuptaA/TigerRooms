@@ -729,6 +729,17 @@ def create_group():
     try:
         cursor = conn.cursor()
 
+        # Check if the user has pending invites
+        cursor.execute('''
+            SELECT COUNT(*) FROM "GroupInvites" WHERE "invitee_netid" = %s
+        ''', (netid,))
+        pending_invites = cursor.fetchone()[0]
+
+        if pending_invites > 0:
+            return jsonify({
+                "error": "You cannot create a group while you have pending invitations. Please refresh the page."
+            }), 403
+
         # Check if the user is already in a group
         cursor.execute('''
             SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
