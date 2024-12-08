@@ -52,9 +52,9 @@ const AllGroups = ({ username, adminStatus, adminToggle }) => {
             });
     }, [username]);
 
-    // if (error) {
-    //     return <div>Error: {error}</div>;
-    // }
+    if (error && adminStatus && !adminToggle) {
+        return <div>Error: {error}</div>;
+    }
 
     // Toggle collapse/expand state for a single group
     const toggleCollapse = (group) => {

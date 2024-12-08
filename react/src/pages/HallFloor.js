@@ -65,7 +65,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
         setRoomInfo(data);
       })
       .catch((error) => console.error("Error fetching room data:", error));
-  }, [floor, username]);
+  }, [floor, username, hall, occupancyFromCookie, minSquareFootageFromCookie]);
 
   let imageSrc;
 
@@ -431,7 +431,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-              "Something went wrong while submitting your review. Please try again.",
+            "Something went wrong while submitting your review. Please try again.",
             "error"
           );
         }
@@ -476,7 +476,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-              "Something went wrong while removing your review. Please try again.",
+            "Something went wrong while removing your review. Please try again.",
             "error"
           );
         }
@@ -515,8 +515,8 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                   <div class="review" style="margin-bottom: 15px;">
                     <p style="margin: 5px 0;"><strong>User:</strong> ${netid}
                     <span style="margin-left: 10px;"><strong>Rating:</strong> ${"★".repeat(
-                      rating
-                    )}${"☆".repeat(5 - rating)}</span></p>
+                  rating
+                )}${"☆".repeat(5 - rating)}</span></p>
                     <p style="margin: 5px 0;"><strong>Date:</strong> ${review_date}</p>
                     <p style="margin: 5px 0;"><strong>Review:</strong> ${comments}</p>
                     <hr style="margin-top: 10px;"/>
