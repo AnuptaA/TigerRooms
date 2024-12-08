@@ -37,7 +37,7 @@ PORT = os.getenv('SERVER_PORT')
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-ALLOWED_INVITES = 4 # change to 10 later
+ALLOWED_INVITES = 10
 
 #-----------------------------------------------------------------------
 
