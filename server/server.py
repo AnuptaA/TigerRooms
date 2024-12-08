@@ -550,6 +550,9 @@ def get_review_of_user():
 #-----------------------------------------------------------------------
 
 @app.route('/api/reviews/delete_review_of_user', methods=['POST'])
+# Overloaded
+# 1) User deleting their own review
+# 2) Admin deleting the review of a student
 def delete_review_of_user():
     if require_login():
         require_login
@@ -563,7 +566,7 @@ def delete_review_of_user():
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
     
-    if not is_admin(netid):
+    if not (is_admin(netid) or netid != session['username']):
         print("Error: Invalid permissions.")
         return jsonify({"error": "Invalid permissions"}), 403     
     
