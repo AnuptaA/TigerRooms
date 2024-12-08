@@ -47,8 +47,8 @@ def get_db_connection():
 
 #-----------------------------------------------------------------------
 
+# Helper function that forces user to log-in
 def require_login():
-    # Helper function that forces user to log-in
     if 'username' not in session:
         return redirect(url_for('index'))
     return None
@@ -75,21 +75,20 @@ def catch_all(path):
 
     if username:
         session['username'] = username
-        if not is_admin(username):
-            # Add the user to the Users table if not already present
-            conn = get_db_connection()
-            try:
-                cursor = conn.cursor()
-                cursor.execute('''
-                    INSERT INTO "Users" ("netid") VALUES (%s)
-                    ON CONFLICT ("netid") DO NOTHING
-                ''', (username,))
-                conn.commit()
-            except Exception as e:
-                print(f"Error adding user to the database: {e}")
-            finally:
-                cursor.close()
-                return_connection(conn)
+        # Add the user to the Users table if not already present
+        conn = get_db_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO "Users" ("netid") VALUES (%s)
+                ON CONFLICT ("netid") DO NOTHING
+            ''', (username,))
+            conn.commit()
+        except Exception as e:
+            print(f"Error adding user to the database: {e}")
+        finally:
+            cursor.close()
+            return_connection(conn)
 
     # Exclude API and static routes
     if path.startswith("api") or path.startswith("static"):
@@ -196,14 +195,13 @@ def get_unique_halls_and_floors():
 
 #-----------------------------------------------------------------------
 
-#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
+# Gets all floorplans that have at least one available room that matches the user's query
 @app.route('/api/floorplans/hallfloor', methods=['GET'])
 def get_hallfloor():
-    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
-    netid = request.args.get('netid')  # Get netid from query parameters
+    netid = request.args.get('netid')
 
     # Must be logged in as the user to obtain data
     if netid != session['username']:
@@ -278,22 +276,17 @@ def get_hallfloor():
         return jsonify(room_info), 200
 
     except Exception as e:
-        # Log the error and return a server error response
         print(f"Error fetching data: {e}")
         return jsonify({"error": "Error fetching data"}), 500
 
     finally:
-        # Close the connection and return it to the pool
         return_connection(conn)
 
 #-----------------------------------------------------------------------
 
 # Save a room
-
-#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/save_room', methods=['POST'])
 def api_save_room():
-    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
@@ -315,11 +308,8 @@ def api_save_room():
 #-----------------------------------------------------------------------
 
 # Unsave a room
-
-#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
 @app.route('/api/unsave_room', methods=['POST'])
 def api_unsave_room():
-    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
@@ -343,10 +333,9 @@ def api_unsave_room():
 
 #-----------------------------------------------------------------------
 
-#-SFOIjdkfjgiodfkgjkldfgjkljklgjdklsjgkl jklJW WIPPPPPPP!!!! CHECK!! sfdkfsdklkfldsjkldsjfkljklsdfjkldsjfklsdjklfjklsfjklsdjfkljsdklfjklsdfklsdjfkljslkdfjklsdjfklsdjf
+# Get all saved rooms for a user
 @app.route('/api/saved_rooms', methods=['GET'])
 def api_get_saved_rooms():
-    # Ensure user is logged in before accessing the API
     if require_login():
         return require_login()
 
@@ -400,7 +389,10 @@ def api_get_saved_rooms():
 
 @app.route('/api/uploadpdf', methods=['POST'])
 def upload_pdf():
-    # Debugging
+    netid = session['username']
+    if not is_admin(netid):
+        return jsonify({"error": "Invalid permissions."}), 400
+
     try:
         request_type = request.form.get('request-type')
 
@@ -408,14 +400,12 @@ def upload_pdf():
             return jsonify({"error": "Request type is missing."}), 400
 
         try:
-            # Convert to an integer, as it's sent as a string
             request_type = int(request_type)
         except ValueError:
             return jsonify({"error": "Invalid request type format."}), 400
 
-        # Handle different request types
+        # Handle different request types: 1 is updating the database, 0 is resetting it
         if request_type == 1:
-            # Retrieve the file from the request
             if 'rooms-pdf' not in request.files:
                 return jsonify({"error": "No file part in the request."}), 400
 
@@ -457,7 +447,7 @@ def upload_pdf():
             # Reset the database directly by calling setup_database()
             try:
                 print("Resetting the database...")
-                setup_database()  # Call the setup function directly
+                setup_database()
                 print("Database reset successfully.")
                 return jsonify({"message": "Database reset successfully!"}), 200
             except Exception as e:
@@ -473,6 +463,7 @@ def upload_pdf():
 
 #-----------------------------------------------------------------------
 
+# Function to get timestamp of most recently uploaded PDF
 @app.route('/api/getupdatedtime', methods=['GET'])
 def get_updated_time():
     last_update = get_last_update_time()
@@ -481,15 +472,13 @@ def get_updated_time():
 
 #-----------------------------------------------------------------------
 
+# Clear all unavailable rooms in cart (which have been drawn)
 @app.route('/api/clear_drawn_rooms', methods=['POST'])
 def clear_drawn_rooms():
-    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
-    print("Endpoint '/api/clear_drawn_rooms' was hit.")
     data = request.json
-    print(f"Request data received: {data}")
 
     netid = data.get('netid')
     if not netid:
@@ -503,7 +492,6 @@ def clear_drawn_rooms():
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        print(f"Executing DELETE query for netid: {netid}")
 
         # Execute the DELETE query
         cursor.execute('''
@@ -516,10 +504,8 @@ def clear_drawn_rooms():
 
         # Fetch the number of rows deleted
         rows_deleted = cursor.rowcount
-        print(f"Rows deleted: {rows_deleted}")
 
         conn.commit()
-        print("Transaction committed successfully.")
         return jsonify({"message": f"All drawn rooms cleared from cart. Rows affected: {rows_deleted}"}), 200
     except Exception as e:
         print(f"Error during clearing drawn rooms: {e}")
@@ -533,7 +519,6 @@ def clear_drawn_rooms():
 
 @app.route('/api/reviews/get_review_of_user', methods=['POST'])
 def get_review_of_user():
-    # Ensure user is logged in before accessing API
     if require_login():
         require_login
 
@@ -543,7 +528,6 @@ def get_review_of_user():
     netid = data.get('netid')
 
     if not netid:
-        print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
 
     if netid != session['username']:
@@ -567,7 +551,6 @@ def get_review_of_user():
 
 @app.route('/api/reviews/delete_review_of_user', methods=['POST'])
 def delete_review_of_user():
-    # Ensure user is logged in before accessing API
     if require_login():
         require_login
 
@@ -580,8 +563,9 @@ def delete_review_of_user():
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
     
-    # if netid != session['username']:
-    #     return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
+    if not is_admin(netid):
+        print("Error: Invalid permissions.")
+        return jsonify({"error": "Invalid permissions"}), 403     
     
     room_id = data.get('room_id')
 
@@ -599,7 +583,6 @@ def delete_review_of_user():
 
 @app.route('/api/reviews/submit_review', methods=['POST'])
 def submit_review():
-    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
 
@@ -637,7 +620,6 @@ def submit_review():
 
     message = save_review(room_id, netid, rating, comments, review_date)
 
-    # Return success or error message
     if "Error" in message:
         return jsonify({"error": message}), 500
 
@@ -647,7 +629,6 @@ def submit_review():
 
 @app.route('/api/reviews/get_all_reviews_for_room', methods=['POST'])
 def get_all_reviews_for_room():
-    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
     
@@ -659,10 +640,6 @@ def get_all_reviews_for_room():
     if not netid:
         print("Error: Missing netid in request.")
         return jsonify({"error": "Missing netid"}), 400
-
-    # Must be logged in as the user to submit review
-    if netid != session['username']:
-        return jsonify({"error": "Unauthorized: netid does not match session username"}), 403
 
     room_id = data.get('room_id')
 
@@ -682,12 +659,11 @@ def get_all_reviews_for_room():
 
 @app.route('/api/get_all_groups', methods=['GET'])
 def get_all_groups():
-    # Ensure user is logged in before accessing API
     if require_login():
         return require_login()
     
     print("Endpoint '/api/get_all_groups'")
-    netid = request.args.get('netid')   # Get netid from query params
+    netid = request.args.get('netid')
     print(f"Netid of caller: {netid}")
 
     if not netid:
@@ -715,11 +691,10 @@ def get_all_groups():
 
 @app.route('/api/reviews/get_all_reviews', methods=['POST'])
 def get_all_reviews():
-    # Ensure user is logged in before accessing API
     if require_login():
         require_login()
 
-    netid = request.args.get('netid')   # Get netid from query params
+    netid = request.args.get('netid')
 
     if not netid:
         print("Error: Missing netid in request for getting all reviews.")
@@ -940,7 +915,7 @@ def accept_invite():
         invite_exists = cursor.fetchone()
 
         if not invite_exists:
-            return jsonify({"error": "Invalid or expired invitation"}), 400
+            return jsonify({"error": "Invalid or expired invitation. Please refresh the page."}), 400
 
         # Check if the invitee is already in a group
         cursor.execute('''
@@ -1142,10 +1117,22 @@ def group_pending_members():
     group_id = request.args.get('group_id')
     if not group_id:
         return jsonify({"error": "Missing group_id parameter"}), 400
-
+    
+    netid = session['username']
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
+
+        # Check if the requester is a member of the group
+        cursor.execute('''
+            SELECT 1 
+            FROM "GroupMembers"
+            WHERE "group_id" = %s AND "netid" = %s
+        ''', (group_id, netid))
+        is_member = cursor.fetchone()
+
+        if not is_member:
+            return jsonify({"error": "Requester is not a member of the group"}), 403
 
         # Query to fetch all pending invitees for the given group_id
         cursor.execute('''
@@ -1226,8 +1213,8 @@ def remove_invite():
 
     inviter = session['username']
     data = request.json
-    group_id = data.get('group_id')  # Group ID to which the invitee was invited
-    invitee_netid = data.get('invitee_netid')  # The NetID of the invitee to remove
+    group_id = data.get('group_id')
+    invitee_netid = data.get('invitee_netid')
 
     if not group_id or not invitee_netid:
         return jsonify({"error": "Missing group_id or invitee_netid"}), 400
