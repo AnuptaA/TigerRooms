@@ -1098,7 +1098,8 @@ input[type="number"] {
   display: flex;
   justify-content: center; /* Center the button horizontally */
   align-items: center; /* Align vertically if needed */
-  margin-top: 2rem; /* Add relative space above the button */
+  margin-top: 1rem; /* Add relative space above the button */
+  margin-bottom: 1rem; /* Add relative space below the button */
 }
 
 .create-group-button {
@@ -1359,11 +1360,13 @@ input[type="number"] {
   display: flex;
   justify-content: center; /* Center list items */
   gap: 2rem; /* Add spacing between items */
+  align-items: center;
 }
 
 .member-item {
   font-size: 1.5rem; /* Make NetID bigger */
   color: #333;
+  text-align: center;
 }
 
 .invite-actions {
@@ -1400,6 +1403,142 @@ input[type="number"] {
 
 .decline:hover {
   background-color: #c82333;
+}
+
+/* Responsive Styling for Buttons */
+/* Expand All Button */
+.expand-all-button {
+  font-size: 1rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, #42a5f5, #1e88e5); /* Blue gradient */
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.expand-all-button:hover {
+  background: linear-gradient(
+    90deg,
+    #64b5f6,
+    #2196f3
+  ); /* Lighter blue on hover */
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, 0.3);
+}
+
+.expand-all-button:active {
+  transform: translateY(0);
+  box-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.15);
+}
+
+.expand-all-button:focus {
+  outline: none;
+  border: 0.1rem solid #bbdefb; /* Light blue border for focus */
+}
+
+/* Collapse All Button */
+.collapse-all-button {
+  font-size: 1rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, #ff7043, #e64a19); /* Orange gradient */
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.collapse-all-button:hover {
+  background: linear-gradient(
+    90deg,
+    #ff8a65,
+    #f4511e
+  ); /* Lighter orange on hover */
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.3rem 0.6rem rgba(0, 0, 0, 0.3);
+}
+
+.collapse-all-button:active {
+  transform: translateY(0);
+  box-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.15);
+}
+
+.collapse-all-button:focus {
+  outline: none;
+  border: 0.1rem solid #ffe0b2; /* Light orange border for focus */
+}
+
+/* Pending Invites Container */
+.pending-invites-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2vh;
+}
+
+.invite-card {
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+  background-color: #f9f9f9;
+  border: 0.1rem solid #ddd;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.invite-card:hover {
+  box-shadow: 0 0.8rem 1.6rem rgba(0, 0, 0, 0.2);
+}
+
+.invite-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center; /* Center the text */
+  margin-bottom: 1rem; /* Add spacing below */
+  cursor: default; /* Remove pointer style on hover */
+}
+
+.invite-details {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  text-align: center;
+  color: #666;
+}
+
+.invite-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+.invite-details li {
+  font-size: 1.4rem;
+  color: #444;
+}
+
+/* Buttons Inside Invite Cards */
+.accept-button {
+  font-size: 1rem;
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(90deg, #4caf50, #388e3c);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.accept-button:hover {
+  background: linear-gradient(90deg, #66bb6a, #43a047);
+  transform: translateY(-0.2rem);
+}
+
+.accept-button:active {
+  transform: translateY(0);
 }
 
 /* Responsiveness */
@@ -1441,6 +1580,33 @@ input[type="number"] {
   .send-invitation-button {
     flex: none; /* Remove flex resizing */
     width: 100%; /* Full width for smaller screens */
+  }
+
+  .pending-invites-container {
+    gap: 1.5rem;
+  }
+
+  .invite-card {
+    padding: 1.5rem;
+  }
+
+  .invite-title {
+    font-size: 1.6rem;
+  }
+
+  .invite-details {
+    font-size: 1rem;
+  }
+
+  .accept-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .expand-all-button,
+  .collapse-all-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
   }
 }
 

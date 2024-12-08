@@ -729,17 +729,6 @@ def create_group():
     try:
         cursor = conn.cursor()
 
-        # Check if the user has pending invites
-        cursor.execute('''
-            SELECT COUNT(*) FROM "GroupInvites" WHERE "invitee_netid" = %s
-        ''', (netid,))
-        pending_invites = cursor.fetchone()[0]
-
-        if pending_invites > 0:
-            return jsonify({
-                "error": "You cannot create a group while you have pending invitations. Please refresh the page."
-            }), 403
-
         # Check if the user is already in a group
         cursor.execute('''
             SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
@@ -909,7 +898,7 @@ def accept_invite():
 
     invitee = session['username']
     data = request.json
-    group_id = data.get('group_id')  # Use group_id from the request
+    group_id = data.get('group_id')
 
     if not group_id:
         return jsonify({"error": "Missing group_id parameter"}), 400
@@ -942,48 +931,14 @@ def accept_invite():
             INSERT INTO "GroupMembers" ("group_id", "netid") VALUES (%s, %s)
         ''', (group_id, invitee))
 
-        # Remove all other pending invitations for the user
+        # Remove the specific invitation for the accepted group
         cursor.execute('''
             DELETE FROM "GroupInvites"
-            WHERE "invitee_netid" = %s
-        ''', (invitee,))
+            WHERE "group_id" = %s AND "invitee_netid" = %s
+        ''', (group_id, invitee))
 
         conn.commit()
         return jsonify({"message": "You have joined the group", "group_id": group_id}), 200
-    except Exception as e:
-        conn.rollback()
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-        return_connection(conn)
-
-#-----------------------------------------------------------------------
-
-# Decline an invitation to join a group
-@app.route('/api/decline_invite', methods=['POST'])
-def decline_invite():
-    if require_login():
-        return require_login()
-
-    invitee = session['username']
-    data = request.json
-    group_id = data.get('group_id')
-
-    if not group_id:
-        return jsonify({"error": "Missing group_id parameter"}), 400
-
-    conn = get_db_connection()
-    try:
-        cursor = conn.cursor()
-
-        # Remove the specific invitation for the invitee and group
-        cursor.execute('''
-            DELETE FROM "GroupInvites"
-            WHERE "invitee_netid" = %s AND "group_id" = %s
-        ''', (invitee, group_id))
-
-        conn.commit()
-        return jsonify({"message": "Invitation declined"}), 200
     except Exception as e:
         conn.rollback()
         return jsonify({"error": str(e)}), 500
@@ -1004,38 +959,6 @@ def my_group():
     try:
         cursor = conn.cursor()
 
-        # Check if the user has a pending invitation
-        cursor.execute('''
-            SELECT "Groups"."group_id"
-            FROM "GroupInvites"
-            JOIN "Groups" ON "GroupInvites"."group_id" = "Groups"."group_id"
-            WHERE "invitee_netid" = %s
-        ''', (netid,))
-        invitation = cursor.fetchone()
-
-        if invitation:
-            group_id = invitation[0]
-            # Get members of the invited group
-            cursor.execute('''
-                SELECT "netid" FROM "GroupMembers" WHERE "group_id" = %s
-            ''', (group_id,))
-            members = [row[0] for row in cursor.fetchall()]
-
-            # Fetch remaining invites for the user
-            cursor.execute('''
-                SELECT "num_invites" FROM "Users" WHERE "netid" = %s
-            ''', (netid,))
-            remaining_invites = max(ALLOWED_INVITES - cursor.fetchone()[0], 0)
-
-            return jsonify({
-                "invitation": {
-                    "group_id": group_id,
-                    "members": members,
-                    "remaining_invites": remaining_invites
-                }
-            }), 200
-
-        # If no invitation, check for the user's group
         cursor.execute('''
             SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
         ''', (netid,))
@@ -1244,6 +1167,17 @@ def remove_invite():
 
         if not is_member:
             return jsonify({"error": "You are not authorized to manage this group"}), 403
+
+        # Check if the invitee is already a member of the group
+        cursor.execute('''
+            SELECT 1
+            FROM "GroupMembers"
+            WHERE "group_id" = %s AND "netid" = %s
+        ''', (group_id, invitee_netid))
+        already_member = cursor.fetchone()
+
+        if already_member:
+            return jsonify({"error": f"{invitee_netid} has already accepted the invitation and is part of the group. Please refresh the page"}), 400
 
         # Remove the pending invitation
         cursor.execute('''

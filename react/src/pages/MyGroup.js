@@ -7,59 +7,107 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
   const [members, setMembers] = useState([]); // Group members
   const [pendingMembers, setPendingMembers] = useState([]); // Pending members in the group
   const [pendingInvites, setPendingInvites] = useState([]); // Pending invites
-  const [currentInviteIndex, setCurrentInviteIndex] = useState(0); // Index of the invite being shown
   const [newMemberNetID, setNewMemberNetID] = useState(""); // Input for adding a new member
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(""); // Error message
+  const [collapsedStates, setCollapsedStates] = useState({});
   const [remainingInvites, setRemainingInvites] = useState(0); // Track remaining invites
 
   useEffect(() => {
-    // Fetch user's group information and pending invites when the component mounts
-    fetch("/api/my_group")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.group_id) {
-          setGroup(data.group_id);
-          setMembers(data.members);
+    const fetchGroupData = async () => {
+      try {
+        // Fetch user's group information
+        const groupResponse = await fetch("/api/my_group");
+        const groupData = await groupResponse.json();
 
-          // Set remaining invites from the API response
-          setRemainingInvites(data.remaining_invites);
+        if (groupData.group_id) {
+          setGroup(groupData.group_id);
+          setMembers(groupData.members);
+          setRemainingInvites(groupData.remaining_invites);
 
-          // Fetch pending members for the group
-          fetch(`/api/group_pending_members?group_id=${data.group_id}`)
-            .then((response) => response.json())
-            .then((pendingData) => {
-              if (pendingData.pending_members) {
-                setPendingMembers(pendingData.pending_members);
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching pending members:", error);
-            });
+          try {
+            // Fetch pending members for the group
+            const pendingMembersResponse = await fetch(
+              `/api/group_pending_members?group_id=${groupData.group_id}`
+            );
+            const pendingData = await pendingMembersResponse.json();
+
+            if (pendingData.pending_members) {
+              setPendingMembers(pendingData.pending_members);
+            }
+          } catch (error) {
+            console.error("Error fetching pending members:", error);
+          }
         } else {
           setGroup(null);
         }
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching group data:", error);
         setError("Failed to load group data. Please try again later.");
         setLoading(false);
-      });
+      }
+    };
 
-    fetch("/api/my_pending_invites")
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.invites) {
-          setPendingInvites(data.invites);
+    const fetchPendingInvites = async () => {
+      try {
+        // Fetch pending invites
+        const invitesResponse = await fetch("/api/my_pending_invites");
+        const invitesData = await invitesResponse.json();
+
+        if (invitesData.invites) {
+          setPendingInvites(invitesData.invites);
+
+          // Initialize collapsed states: oldest invite expanded, others collapsed
+          const initialCollapsedStates = invitesData.invites.reduce(
+            (acc, invite, index) => {
+              acc[invite.group_id] = index !== 0; // Expand only the oldest (index 0)
+              return acc;
+            },
+            {}
+          );
+          setCollapsedStates(initialCollapsedStates);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching pending invites:", error);
-      });
+      }
+    };
+
+    // Execute both fetch functions
+    fetchGroupData();
+    fetchPendingInvites();
   }, []);
 
+  const toggleCollapse = (groupId) => {
+    setCollapsedStates((prevStates) => ({
+      ...prevStates,
+      [groupId]: !prevStates[groupId],
+    }));
+  };
+
+  const expandAll = () => {
+    setCollapsedStates((prevStates) =>
+      Object.keys(prevStates).reduce((acc, key) => {
+        acc[key] = false; // Expand all
+        return acc;
+      }, {})
+    );
+  };
+
+  const collapseAll = () => {
+    setCollapsedStates((prevStates) =>
+      Object.keys(prevStates).reduce((acc, key) => {
+        acc[key] = true; // Collapse all
+        return acc;
+      }, {})
+    );
+  };
+
   const handleAcceptInvite = (groupId) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to join group ${groupId}?`
+    );
+    if (!confirmed) return;
     setLoading(true);
     fetch("/api/accept_invite", {
       method: "POST",
@@ -72,8 +120,9 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       .then((data) => {
         if (data.message) {
           setGroup(data.group_id); // Update the group state
-          setPendingInvites([]); // Clear all pending invites since the user joined a group
-
+          setPendingInvites((prevInvites) =>
+            prevInvites.filter((invite) => invite.group_id !== groupId)
+          ); // Remove the accepted invite
           // Fetch updated group data and members
           fetch(`/api/my_group`)
             .then((response) => response.json())
@@ -115,43 +164,6 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       .catch((error) => {
         console.error("Error accepting invite:", error);
         setError("Failed to accept invite. Please try again later.");
-        setLoading(false);
-      });
-  };
-
-  const handleDeclineInvite = () => {
-    const currentInvite = pendingInvites[currentInviteIndex];
-
-    setLoading(true);
-    fetch("/api/decline_invite", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ group_id: currentInvite.group_id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message) {
-          // Update the pending invites and reset the index
-          setPendingInvites((prev) => {
-            const updatedInvites = prev.filter(
-              (_, index) => index !== currentInviteIndex
-            );
-            // Adjust the index if it's the last item in the list
-            if (currentInviteIndex >= updatedInvites.length) {
-              setCurrentInviteIndex(0);
-            }
-            return updatedInvites;
-          });
-        } else if (data.error) {
-          setError(data.error);
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error declining invite:", error);
-        setError("Failed to decline invite. Please try again later.");
         setLoading(false);
       });
   };
@@ -210,6 +222,13 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
   };
 
   const handleCreateGroup = () => {
+    const confirmCreate = window.confirm(
+      "Are you sure you want to create a group?"
+    );
+    if (!confirmCreate) {
+      // User canceled the action
+      return;
+    }
     setLoading(true);
     fetch("/api/create_group", {
       method: "POST",
@@ -227,17 +246,9 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
           setGroup(data.group_id);
           setMembers([username]); // Initialize the group with the creator
           setRemainingInvites(data.remaining_invites);
-        } else if (status === 403) {
-          // Pending invites prevent group creation
-          setError(
-            data.error ||
-              "You cannot create a group while you have pending invitations. Please refresh the page."
-          );
         } else {
           // Other errors
-          setError(
-            data.error || "An unknown error occurred while creating the group."
-          );
+          setError(data.error || "An error occurred while creating the group.");
         }
         setLoading(false);
       })
@@ -345,9 +356,35 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
           setGroup(null);
           setMembers([]);
           setPendingMembers([]);
-          setPendingInvites([]);
-          setCurrentInviteIndex(0);
           setError(""); // Clear error state
+
+          // Re-fetch pending invites
+          fetch("/api/my_pending_invites")
+            .then((response) => response.json())
+            .then((invitesData) => {
+              if (invitesData.invites) {
+                setPendingInvites(invitesData.invites);
+
+                // Initialize collapsed states: oldest invite expanded, others collapsed
+                const initialCollapsedStates = invitesData.invites.reduce(
+                  (acc, invite, index) => {
+                    acc[invite.group_id] = index !== 0; // Expand only the oldest (index 0)
+                    return acc;
+                  },
+                  {}
+                );
+                setCollapsedStates(initialCollapsedStates);
+              } else {
+                setPendingInvites([]); // No invites
+                setCollapsedStates({}); // Clear collapsed states
+              }
+            })
+            .catch((error) => {
+              console.error(
+                "Error fetching pending invites after leaving group:",
+                error
+              );
+            });
         } else if (data.error) {
           setError(data.error);
         }
@@ -364,40 +401,56 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
     return <p>Loading...</p>;
   }
 
-  // Show invitations one by one
-  if (
-    !group &&
-    pendingInvites.length > 0 &&
-    currentInviteIndex < pendingInvites.length
-  ) {
-    const currentInvite = pendingInvites[currentInviteIndex];
+  // Show all invitations
+  if (!group && pendingInvites.length > 0) {
     return (
       <div className="my-group">
         <h1>My Group</h1>
-        <p>
-          You have been invited to join group{" "}
-          <strong>{currentInvite.group_id}</strong>.
-        </p>
-        <p>
-          <strong>Current Members:</strong>
-        </p>
-        <ul className="current-members">
-          {currentInvite.members.map((member, index) => (
-            <li key={index} className="member-item">
-              {member}
-            </li>
+        <div className="create-group-container">
+          <button className="create-group-button" onClick={handleCreateGroup}>
+            Create Group
+          </button>
+        </div>
+        <p>You have been invited to join the following groups:</p>
+        <div className="controls">
+          <button onClick={expandAll} className="expand-all-button">
+            Expand All
+          </button>
+          <button onClick={collapseAll} className="collapse-all-button">
+            Collapse All
+          </button>
+        </div>
+        <div className="pending-invites-container">
+          {pendingInvites.map((invite, index) => (
+            <div key={index} className="invite-card">
+              <h3
+                className="invite-title"
+                onClick={() => toggleCollapse(invite.group_id)}
+                style={{ cursor: "pointer" }}
+              >
+                Group {invite.group_id}{" "}
+                {collapsedStates[invite.group_id] ? "➕" : "➖"}
+              </h3>
+              {!collapsedStates[invite.group_id] && (
+                <div className="invite-details">
+                  <p>Current Members:</p>
+                  <ul className="current-members">
+                    {invite.members.map((member, idx) => (
+                      <li key={idx} className="member-item">
+                        {member}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    className="accept-button"
+                    onClick={() => handleAcceptInvite(invite.group_id)}
+                  >
+                    Accept
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
-        </ul>
-        <div className="invite-actions">
-          <button
-            className="accept"
-            onClick={() => handleAcceptInvite(currentInvite.group_id)}
-          >
-            Accept
-          </button>
-          <button className="decline" onClick={handleDeclineInvite}>
-            Decline
-          </button>
         </div>
         {error && <p className="error">{error}</p>}
       </div>
