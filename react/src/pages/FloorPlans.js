@@ -67,15 +67,58 @@ const FloorPlans = ({ adminStatus, adminToggle }) => {
       })
       .catch((error) => console.error("Error fetching floor plans:", error));
   }, [resCollege, hall, floor, occupancy, minSquareFootage]);
+
+  // Function to generate dynamic title based on query parameters
+  const generateTitle = () => {
+    if (!resCollege && !hall && !floor && !occupancy && !minSquareFootage)
+      return "Showing results for all floor plans";
+
+    let title = "Showing results for";
+
+    // No resco, hall, or floor provided
+    if (!resCollege && !hall && !floor) {
+      title += " floorplans with rooms";
+      if (occupancy && minSquareFootage) {
+        title += ` of occupancy ${occupancy} and min. sqft. of ${minSquareFootage}`;
+        return title;
+      } else if (occupancy) {
+        title += ` of occupancy ${occupancy}`;
+        return title;
+      } else {
+        title += ` of min. sqft. of ${minSquareFootage}`;
+        return title;
+      }
+    }
+
+    if (resCollege) title += ` ${resCollege} College`;
+    if (hall) title += ` ${hall} Hall`;
+    if (floor) title += ` Floor ${floor}`;
+
+    if (!occupancy && !minSquareFootage) {
+      title += " floorplans";
+      return title;
+    }
+
+    title += " floorplans with rooms";
+
+    if (occupancy && minSquareFootage) {
+      title += ` of occupancy ${occupancy} and min. sqft. of ${minSquareFootage}`;
+    } else if (occupancy) {
+      title += ` of occupancy ${occupancy}`;
+    } else {
+      title += ` of min. sqft. of ${minSquareFootage}`;
+    }
+
+    return title;
+  };
+
   return !adminStatus || adminToggle ? (
     <div>
-      <h1 className="results-page-title">
-        Showing results for all floor plans
-      </h1>
-      <h1 className="res-college-title">
-        {/* Adding ternary comparator to handle case where resco isn't provided */}
-        {resCollege === null ? "Whitman College" : resCollege}
-      </h1>
+      <h1 className="results-page-title">{generateTitle()}</h1>
+      {/* <h1 className="res-college-title"> */}
+      {/* Adding ternary comparator to handle case where resco isn't provided */}
+      {/* {resCollege === null ? "Whitman College" : resCollege} */}
+      {/* </h1> */}
       <AvailabilityTable
         availabilityInfo={availabilityInfo}
         occupancy={occupancy || ""}
@@ -110,6 +153,9 @@ const AvailabilityTable = ({
         <h2 className="res-college-title">
           No results matched your parameters
         </h2>
+        <h3 style={{ textAlign: "center" }}>
+          Click <a href="/">here</a> to do another search.
+        </h3>
         <img id="lockup" src="/misc/PU_lockup.png" alt="lockup" />
       </div>
     );
@@ -155,6 +201,9 @@ const AvailabilityTable = ({
           ))}
         </tbody>
       </table>
+      <h3 style={{ textAlign: "center" }}>
+        Click <a href="/">here</a> to do another search.
+      </h3>
     </div>
   );
 };

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import StudentAccessOnly from "../Components/StudentAccessOnly";
 import "../App.css";
 
@@ -12,6 +14,7 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
   const [error, setError] = useState(""); // Error message
   const [collapsedStates, setCollapsedStates] = useState({});
   const [remainingInvites, setRemainingInvites] = useState(0); // Track remaining invites
+  const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     const fetchGroupData = async () => {
@@ -104,165 +107,210 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
   };
 
   const handleAcceptInvite = (groupId) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to join group ${groupId}?`
-    );
-    if (!confirmed) return;
-    setLoading(true);
-    fetch("/api/accept_invite", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ group_id: groupId }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message) {
-          setGroup(data.group_id); // Update the group state
-          setPendingInvites((prevInvites) =>
-            prevInvites.filter((invite) => invite.group_id !== groupId)
-          ); // Remove the accepted invite
-          // Fetch updated group data and members
+    MySwal.fire({
+      title: `Are you sure you want to join group ${groupId}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, join!",
+      cancelButtonText: "No, cancel",
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      setLoading(true);
+
+      fetch("/api/accept_invite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ group_id: groupId }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message) {
+            setGroup(data.group_id); // Update the group state
+            setPendingInvites((prevInvites) =>
+              prevInvites.filter((invite) => invite.group_id !== groupId)
+            ); // Remove the accepted invite
+
+            // Fetch updated group data and members
+            fetch(`/api/my_group`)
+              .then((response) => response.json())
+              .then((groupData) => {
+                if (groupData.group_id) {
+                  setGroup(groupData.group_id);
+                  setMembers(groupData.members);
+                  setRemainingInvites(groupData.remaining_invites);
+
+                  // Fetch updated pending members for the group
+                  fetch(
+                    `/api/group_pending_members?group_id=${groupData.group_id}`
+                  )
+                    .then((response) => response.json())
+                    .then((pendingData) => {
+                      if (pendingData.pending_members) {
+                        setPendingMembers(pendingData.pending_members);
+                      }
+                      setLoading(false);
+                    })
+                    .catch((error) => {
+                      console.error("Error fetching pending members:", error);
+                      setLoading(false);
+                    });
+                } else {
+                  setLoading(false);
+                }
+              })
+              .catch((error) => {
+                console.error("Error fetching group data:", error);
+                setError("Failed to fetch updated group data.");
+                setLoading(false);
+              });
+          } else if (data.error) {
+            setError(data.error);
+            setLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.error("Error accepting invite:", error);
+          setError("Failed to accept invite. Please try again later.");
+          setLoading(false);
+        });
+    });
+  };
+
+  const handleRemoveInvitation = (inviteeNetID) => {
+    MySwal.fire({
+      title: `Are you sure you want to remove the invitation for ${inviteeNetID}?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, remove it!",
+      cancelButtonText: "No, cancel",
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      setLoading(true);
+      setError(""); // Clear any existing error
+
+      fetch("/api/remove_invite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ group_id: group, invitee_netid: inviteeNetID }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            setError(data.error);
+            setLoading(false);
+            return;
+          }
+
+          MySwal.fire({
+            title: data.message,
+            icon: "success",
+          });
+
+          // Fetch updated pending members
+          fetch(`/api/group_pending_members?group_id=${group}`)
+            .then((response) => response.json())
+            .then((pendingData) => {
+              if (pendingData.pending_members) {
+                setPendingMembers(pendingData.pending_members);
+              }
+            })
+            .catch((error) =>
+              console.error("Error fetching updated pending members:", error)
+            );
+
+          // Fetch updated current members
           fetch(`/api/my_group`)
             .then((response) => response.json())
             .then((groupData) => {
               if (groupData.group_id) {
-                setGroup(groupData.group_id);
                 setMembers(groupData.members);
                 setRemainingInvites(groupData.remaining_invites);
-
-                // Fetch updated pending members for the group
-                fetch(
-                  `/api/group_pending_members?group_id=${groupData.group_id}`
-                )
-                  .then((response) => response.json())
-                  .then((pendingData) => {
-                    if (pendingData.pending_members) {
-                      setPendingMembers(pendingData.pending_members);
-                    }
-                    setLoading(false);
-                  })
-                  .catch((error) => {
-                    console.error("Error fetching pending members:", error);
-                    setLoading(false);
-                  });
-              } else {
-                setLoading(false);
               }
             })
-            .catch((error) => {
-              console.error("Error fetching group data:", error);
-              setError("Failed to fetch updated group data.");
-              setLoading(false);
-            });
-        } else if (data.error) {
-          setError(data.error);
+            .catch((error) =>
+              console.error("Error fetching updated group members:", error)
+            );
+
           setLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error accepting invite:", error);
-        setError("Failed to accept invite. Please try again later.");
-        setLoading(false);
-      });
-  };
-
-  const handleRemoveInvitation = (inviteeNetID) => {
-    setLoading(true);
-    setError(""); // Clear any existing error
-
-    fetch("/api/remove_invite", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ group_id: group, invitee_netid: inviteeNetID }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setError(data.error);
+        })
+        .catch((error) => {
+          console.error("Error removing invitation:", error);
+          setError("Failed to remove invitation. Please try again later.");
           setLoading(false);
-          return;
-        }
-        alert(data.message);
-        // Fetch updated pending members
-        fetch(`/api/group_pending_members?group_id=${group}`)
-          .then((response) => response.json())
-          .then((pendingData) => {
-            if (pendingData.pending_members) {
-              setPendingMembers(pendingData.pending_members);
-            }
-          })
-          .catch((error) =>
-            console.error("Error fetching updated pending members:", error)
-          );
-
-        // Fetch updated current members
-        fetch(`/api/my_group`)
-          .then((response) => response.json())
-          .then((groupData) => {
-            if (groupData.group_id) {
-              setMembers(groupData.members);
-              setRemainingInvites(groupData.remaining_invites);
-            }
-          })
-          .catch((error) =>
-            console.error("Error fetching updated group members:", error)
-          );
-
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error removing invitation:", error);
-        setError("Failed to remove invitation. Please try again later.");
-        setLoading(false);
-      });
+        });
+    });
   };
 
   const handleCreateGroup = () => {
-    const confirmCreate = window.confirm(
-      "Are you sure you want to create a group?"
-    );
-    if (!confirmCreate) {
-      // User canceled the action
-      return;
-    }
-    setLoading(true);
-    fetch("/api/create_group", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ netid: username }),
-    })
-      .then((response) =>
-        response.json().then((data) => ({ status: response.status, data }))
-      )
-      .then(({ status, data }) => {
-        if (status === 201) {
-          // Successfully created a group
-          setGroup(data.group_id);
-          setMembers([username]); // Initialize the group with the creator
-          setRemainingInvites(data.remaining_invites);
-        } else {
-          // Other errors
-          setError(data.error || "An error occurred while creating the group.");
-        }
-        setLoading(false);
+    MySwal.fire({
+      title: "Are you sure you want to create a group?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, create it!",
+      cancelButtonText: "No, cancel",
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      setLoading(true);
+
+      // Make the API call to create the group
+      fetch("/api/create_group", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ netid: username }),
       })
-      .catch((error) => {
-        console.error("Error creating group:", error);
-        setError("Failed to create group. Please try again later.");
-        setLoading(false);
-      });
+        .then((response) =>
+          response.json().then((data) => ({ status: response.status, data }))
+        )
+        .then(({ status, data }) => {
+          if (status === 201) {
+            // Successfully created a group
+            setGroup(data.group_id);
+            setMembers([username]); // Initialize the group with the creator
+            setRemainingInvites(data.remaining_invites);
+
+            MySwal.fire({
+              title: "Group created successfully!",
+              icon: "success",
+            });
+          } else {
+            // Other errors
+            setError(
+              data.error || "An error occurred while creating the group."
+            );
+
+            MySwal.fire({
+              title: "Error!",
+              text: data.error || "An error occurred while creating the group.",
+              icon: "error",
+            });
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error creating group:", error);
+          setError("Failed to create group. Please try again later.");
+
+          MySwal.fire({
+            title: "Error!",
+            text: "Failed to create group. Please try again later.",
+            icon: "error",
+          });
+          setLoading(false);
+        });
+    });
   };
 
   const handleAddMember = () => {
-    // Updated regular expression to match:
-    // - 2-8 lowercase letters/numbers (original)
-    // - or "cs-" followed by 2-8 lowercase letters/numbers
+    // Regular expression to match valid NetIDs
     const netIDRegex = /^(cs-)?[a-z0-9]{2,8}$/;
 
     if (remainingInvites === 0) {
@@ -293,7 +341,10 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.message) {
-          alert(data.message); // Notify user of success
+          MySwal.fire({
+            title: data.message,
+            icon: "success",
+          });
 
           // Fetch updated pending members
           fetch(`/api/group_pending_members?group_id=${group}`)
@@ -324,77 +375,105 @@ const MyGroup = ({ username, adminStatus, adminToggle }) => {
           setNewMemberNetID("");
         } else if (data.error) {
           setError(data.error);
+
+          MySwal.fire({
+            title: "Error!",
+            text: data.error,
+            icon: "error",
+          });
         }
         setLoading(false);
       })
       .catch((error) => {
         console.error("Error adding member:", error);
         setError("Failed to send invitation. Please try again later.");
+
+        MySwal.fire({
+          title: "Error!",
+          text: "Failed to send invitation. Please try again later.",
+          icon: "error",
+        });
+
         setLoading(false);
       });
   };
 
   const handleLeaveGroup = () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to leave this group?"
-    );
-    if (!confirmed) return;
+    MySwal.fire({
+      title: "Are you sure you want to leave this group?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, leave it!",
+      cancelButtonText: "No, cancel",
+    }).then((result) => {
+      if (!result.isConfirmed) return;
 
-    setLoading(true);
-    fetch("/api/leave_group", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message) {
-          alert(data.message); // Notify user of success
-
-          // Reset state to initial state for "create group" screen
-          setGroup(null);
-          setMembers([]);
-          setPendingMembers([]);
-          setError(""); // Clear error state
-
-          // Re-fetch pending invites
-          fetch("/api/my_pending_invites")
-            .then((response) => response.json())
-            .then((invitesData) => {
-              if (invitesData.invites) {
-                setPendingInvites(invitesData.invites);
-
-                // Initialize collapsed states: oldest invite expanded, others collapsed
-                const initialCollapsedStates = invitesData.invites.reduce(
-                  (acc, invite, index) => {
-                    acc[invite.group_id] = index !== 0; // Expand only the oldest (index 0)
-                    return acc;
-                  },
-                  {}
-                );
-                setCollapsedStates(initialCollapsedStates);
-              } else {
-                setPendingInvites([]); // No invites
-                setCollapsedStates({}); // Clear collapsed states
-              }
-            })
-            .catch((error) => {
-              console.error(
-                "Error fetching pending invites after leaving group:",
-                error
-              );
-            });
-        } else if (data.error) {
-          setError(data.error);
-        }
-        setLoading(false);
+      setLoading(true);
+      fetch("/api/leave_group", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch((error) => {
-        console.error("Error leaving group:", error);
-        setError("Failed to leave group. Please try again later.");
-        setLoading(false);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message) {
+            MySwal.fire({
+              title: data.message,
+              icon: "success",
+            });
+
+            setGroup(null);
+            setMembers([]);
+            setPendingMembers([]);
+            setError(""); // Clear error state
+
+            fetch("/api/my_pending_invites")
+              .then((response) => response.json())
+              .then((invitesData) => {
+                if (invitesData.invites) {
+                  setPendingInvites(invitesData.invites);
+
+                  const initialCollapsedStates = invitesData.invites.reduce(
+                    (acc, invite, index) => {
+                      acc[invite.group_id] = index !== 0; // Expand only the oldest (index 0)
+                      return acc;
+                    },
+                    {}
+                  );
+                  setCollapsedStates(initialCollapsedStates);
+                } else {
+                  setPendingInvites([]); // No invites
+                  setCollapsedStates({}); // Clear collapsed states
+                }
+              })
+              .catch((error) => {
+                console.error(
+                  "Error fetching pending invites after leaving group:",
+                  error
+                );
+              });
+          } else if (data.error) {
+            setError(data.error);
+            MySwal.fire({
+              title: "Error!",
+              text: data.error,
+              icon: "error",
+            });
+          }
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error leaving group:", error);
+          setError("Failed to leave group. Please try again later.");
+          MySwal.fire({
+            title: "Error!",
+            text: "Failed to leave group. Please try again later.",
+            icon: "error",
+          });
+          setLoading(false);
+        });
+    });
   };
 
   if (loading) {

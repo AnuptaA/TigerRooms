@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 
@@ -57,6 +57,50 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
   // Hardcoded occupancies for Wendell B Hall
   const wendellBOccupancies = [1, 2, 3, 4];
 
+  // Function to get cookies by key
+  const getCookie = (key) => {
+    const cookies = document.cookie.split("; ");
+    for (const cookie of cookies) {
+      const [cookieKey, cookieValue] = cookie.split("=");
+      if (cookieKey === key) {
+        return decodeURIComponent(cookieValue || ""); // Decode the cookie value
+      }
+    }
+    return ""; // Return empty string if cookie key doesn't exist
+  };
+
+  // Initialize state from cookies if they exist
+  useEffect(() => {
+    setResidentialCollege(getCookie("residentialCollege") || "");
+    setHall(getCookie("hall") || "");
+    setFloor(getCookie("floor") || "");
+    setOccupancy(getCookie("occupancy") || "");
+    setMinSquareFootage(getCookie("minSquareFootage") || "");
+  }, []);
+
+  // Save filter values to cookies
+  const saveFiltersToCookies = () => {
+    document.cookie = `residentialCollege=${encodeURIComponent(
+      residentialCollege
+    )}; path=/; max-age=604800`; // 7 days expiration
+    document.cookie = `hall=${encodeURIComponent(
+      hall
+    )}; path=/; max-age=604800`;
+    document.cookie = `floor=${encodeURIComponent(
+      floor
+    )}; path=/; max-age=604800`;
+    document.cookie = `occupancy=${encodeURIComponent(
+      occupancy
+    )}; path=/; max-age=604800`;
+    document.cookie = `minSquareFootage=${encodeURIComponent(
+      minSquareFootage
+    )}; path=/; max-age=604800`;
+  };
+
+  const removeCookie = (key) => {
+    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
+
   const handleSubmit = () => {
     // Check if the "Residential College" field is filled out
     if (!residentialCollege) {
@@ -66,6 +110,9 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
 
     setError(false); // Reset error if residentialCollege is selected
     setSquareFootageError(""); // Reset square footage error if valid
+
+    // Save filters to cookies
+    saveFiltersToCookies();
 
     // Build URL path based on filled fields
     let url = "/floorplans?";
@@ -101,7 +148,7 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
     // navigate(`/floorplans`);
   };
 
-  // Reset function to clear all selections
+  // Reset function to clear all selections and cookies
   const handleResetFilters = () => {
     setResidentialCollege("");
     setHall("");
@@ -110,6 +157,13 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
     setMinSquareFootage(0); // Reset square footage filter
     setError(false);
     setSquareFootageError(""); // Reset square footage error
+
+    // Remove cookies
+    removeCookie("residentialCollege");
+    removeCookie("hall");
+    removeCookie("floor");
+    removeCookie("occupancy");
+    removeCookie("minSquareFootage");
   };
 
   return !adminStatus || adminToggle ? (

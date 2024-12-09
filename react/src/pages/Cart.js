@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import StudentAccessOnly from "../Components/StudentAccessOnly";
 import "../App.css";
 
@@ -6,6 +8,7 @@ const Cart = ({ username, adminStatus, adminToggle }) => {
   const [savedRooms, setSavedRooms] = useState({});
   const [groupMembers, setGroupMembers] = useState([username]); // Start with the user only
   const [collapsedStates, setCollapsedStates] = useState({ [username]: false }); // User's section starts expanded
+  const MySwal = withReactContent(Swal);
 
   // Fetch saved rooms for the user
   useEffect(() => {
@@ -116,69 +119,115 @@ const Cart = ({ username, adminStatus, adminToggle }) => {
 
   // Handle room unsave
   const handleUnsaveRoom = (room_id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to remove this room from your cart?"
-    );
-    if (!confirmed) return;
-
-    fetch("/api/unsave_room", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        netid: username,
-        room_id: room_id,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Failed to unsave room: ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then(() => {
-        setSavedRooms((prevRooms) => ({
-          ...prevRooms,
-          [username]: prevRooms[username].filter(
-            (room) => !(room.room_id === room_id)
-          ),
-        }));
-      })
-      .catch((error) => console.error("Error unsaving room:", error));
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You want to remove this room from your cart?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, remove it!",
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch("/api/unsave_room", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            netid: username,
+            room_id: room_id,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Failed to unsave room: ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(() => {
+            setSavedRooms((prevRooms) => ({
+              ...prevRooms,
+              [username]: prevRooms[username].filter(
+                (room) => !(room.room_id === room_id)
+              ),
+            }));
+          })
+          .catch((error) => console.error("Error unsaving room:", error));
+      }
+    });
   };
 
   // Handle clearing all drawn rooms
   const handleClearDrawnRooms = () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to clear all drawn rooms from the cart?"
+    // Check if there are drawn rooms to clear
+    const drawnRooms = savedRooms[username]?.filter(
+      (room) => room.availability === false
     );
-    if (!confirmed) return;
 
-    fetch("/api/clear_drawn_rooms", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ netid: username }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Failed to clear drawn rooms: ${response.statusText}`
-          );
-        }
-        return response.json();
-      })
-      .then(() => {
-        setSavedRooms((prevRooms) => ({
-          ...prevRooms,
-          [username]: prevRooms[username].filter(
-            (room) => room.availability === true
-          ),
-        }));
-      })
-      .catch((error) => console.error("Error clearing drawn rooms:", error));
+    if (!drawnRooms || drawnRooms.length === 0) {
+      // If there are no drawn rooms, show a message and exit
+      MySwal.fire({
+        title: "No drawn rooms",
+        text: "There are no drawn rooms to clear.",
+        icon: "info",
+        confirmButtonText: "Okay",
+      });
+      return;
+    }
+
+    // If there are drawn rooms, show confirmation dialog
+    MySwal.fire({
+      title: "Are you sure?",
+      text: "You want to clear all drawn rooms from the cart?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, clear them!",
+      cancelButtonText: "No, keep them",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch("/api/clear_drawn_rooms", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ netid: username }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(
+                `Failed to clear drawn rooms: ${response.statusText}`
+              );
+            }
+            return response.json();
+          })
+          .then(() => {
+            // Update the savedRooms state after clearing
+            setSavedRooms((prevRooms) => ({
+              ...prevRooms,
+              [username]: prevRooms[username].filter(
+                (room) => room.availability === true
+              ), // Assuming cleared rooms are now unavailable
+            }));
+
+            // Show success message after clearing
+            MySwal.fire({
+              title: "Success!",
+              text: "All drawn rooms have been cleared from your cart.",
+              icon: "success",
+              confirmButtonText: "Great",
+            });
+          })
+          .catch((error) => {
+            console.error("Error clearing drawn rooms:", error);
+            MySwal.fire({
+              title: "Error",
+              text: "There was an issue clearing the drawn rooms. Please try again.",
+              icon: "error",
+              confirmButtonText: "Okay",
+            });
+          });
+      }
+    });
   };
 
   return !adminStatus || adminToggle ? (

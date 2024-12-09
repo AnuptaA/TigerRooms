@@ -171,7 +171,8 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
             <span class="star-icon" data-value="5">★</span>
           </div>
         </div>
-        <textarea id="review-comments" class="swal2-input" placeholder="Write your review here..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;"></textarea>`,
+        <textarea id="review-comments" class="swal2-input" placeholder="Write your review here (max 200 characters)..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;" maxlength="200"></textarea>
+        <div id="char-count" style="font-size: 0.9rem; color: gray; margin-top: 5px;">200 characters remaining</div>`,
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: "Submit Review",
@@ -237,6 +238,22 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           ratingStars[i].style.color = "gold"; // Highlight selected stars
         }
       });
+    });
+
+    // Update the character count as the user types in the textarea
+    const reviewTextarea = document.getElementById("review-comments");
+    const charCountDisplay = document.getElementById("char-count");
+
+    reviewTextarea.addEventListener("input", () => {
+      const remainingChars = 200 - reviewTextarea.value.length;
+      charCountDisplay.textContent = `${remainingChars} characters remaining`;
+
+      // Change color of character count if it's getting low
+      if (remainingChars <= 20) {
+        charCountDisplay.style.color = "red";
+      } else {
+        charCountDisplay.style.color = "gray";
+      }
     });
   };
 
@@ -431,7 +448,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-            "Something went wrong while submitting your review. Please try again.",
+              "Something went wrong while submitting your review. Please try again.",
             "error"
           );
         }
@@ -476,7 +493,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-            "Something went wrong while removing your review. Please try again.",
+              "Something went wrong while removing your review. Please try again.",
             "error"
           );
         }
@@ -515,8 +532,8 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                   <div class="review" style="margin-bottom: 15px;">
                     <p style="margin: 5px 0;"><strong>User:</strong> ${netid}
                     <span style="margin-left: 10px;"><strong>Rating:</strong> ${"★".repeat(
-                  rating
-                )}${"☆".repeat(5 - rating)}</span></p>
+                      rating
+                    )}${"☆".repeat(5 - rating)}</span></p>
                     <p style="margin: 5px 0;"><strong>Date:</strong> ${review_date}</p>
                     <p style="margin: 5px 0;"><strong>Review:</strong> ${comments}</p>
                     <hr style="margin-top: 10px;"/>

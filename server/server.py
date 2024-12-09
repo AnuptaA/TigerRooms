@@ -429,7 +429,7 @@ def upload_pdf():
                 # Check subprocess output for a specific message indicating no update was needed
                 if "NO_UPDATE" in result.stdout:
                     print("No update performed: New timestamp is not more recent.")
-                    return jsonify({"message": "No update was made because the new timestamp is not more recent than the existing timestamp."}), 200
+                    return jsonify({"message": "No update was made because the uploaded PDF timestamp is not more recent than the existing timestamp in the footer."}), 200
 
                 # Handle other subprocess errors
                 if result.returncode != 0:
@@ -438,7 +438,7 @@ def upload_pdf():
                     return jsonify({"error": "Database update failed.", "details": result.stderr}), 500
 
                 print(f"Database updated successfully with file: {file.filename}")
-                return jsonify({"message": "PDF uploaded and database updated successfully!"}), 200
+                return jsonify({"message": "PDF uploaded and database updated successfully! The footer timestamp will update upon refresh."}), 200
 
             else:
                 return jsonify({"error": "Invalid file type. Only PDFs are allowed."}), 400
@@ -449,7 +449,7 @@ def upload_pdf():
                 print("Resetting the database...")
                 setup_database()
                 print("Database reset successfully.")
-                return jsonify({"message": "Database reset successfully!"}), 200
+                return jsonify({"message": "Database reset successfully! The footer timestamp will update upon refresh."}), 200
             except Exception as e:
                 print(f"Error resetting database: {str(e)}")
                 return jsonify({"error": "Database reset failed.", "details": str(e)}), 500
