@@ -74,7 +74,7 @@ const FloorPlans = ({ adminStatus, adminToggle }) => {
       </h1>
       <h1 className="res-college-title">
         {/* Adding ternary comparator to handle case where resco isn't provided */}
-        {resCollege === null ? "All Residential Colleges" : resCollege}
+        {resCollege === null ? "Whitman College" : resCollege}
       </h1>
       <AvailabilityTable
         availabilityInfo={availabilityInfo}

@@ -121,7 +121,7 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
       </h1>
       <br></br>
       <h3 className="filter-container-subtitle">
-        Looking for an available room?
+        Looking to save an available room or review a room?
       </h3>
       <div className="dropdown-container">
         <div className="dropdown-group">
