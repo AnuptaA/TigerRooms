@@ -7,7 +7,7 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
   const [hall, setHall] = useState("");
   const [floor, setFloor] = useState("");
   const [occupancy, setOccupancy] = useState("");
-  const [minSquareFootage, setMinSquareFootage] = useState(0); // New state for square footage filter
+  const [minSquareFootage, setMinSquareFootage] = useState(""); // New state for square footage filter
   const [error, setError] = useState(false);
   const [squareFootageError, setSquareFootageError] = useState("");
 
@@ -241,7 +241,7 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
               }
             }}
             className="filter-select"
-            placeholder="Enter min sqft"
+            placeholder="0"
           />
           {squareFootageError && (
             <p className="error-message">{squareFootageError}</p>
