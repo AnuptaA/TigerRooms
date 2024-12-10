@@ -86,9 +86,8 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
     });
   };
 
-  // wait for user to submit
+  // wait for user to submot
   const handleSubmit = async (event) => {
-    // prevent default and multiple submission
     event.preventDefault();
     if (!canSubmit) return;
 
@@ -101,7 +100,6 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
     MySwal.showLoading();
 
     if (!file) {
-      //   alert("Please select a file to upload.");
       MySwal.hideLoading();
       MySwal.fire({
         icon: "error",
@@ -112,12 +110,10 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
       return;
     }
 
-    // store file into FormData object
     const formData = new FormData();
-    formData.append("request-type", 1); // request type
+    formData.append("request-type", 1); // request type for uploading
     formData.append("rooms-pdf", file); // file
 
-    // send POST request with file
     try {
       const response = await fetch("/api/uploadpdf", {
         method: "POST",
@@ -126,19 +122,29 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
 
       const result = await response.json();
 
-      // display server response
+      // Hide loading message
       MySwal.hideLoading();
+
       if (response.ok) {
-        MySwal.fire({
-          title: "Thank you!",
-          text: result.message,
-          icon: "success",
-        });
+        // handle successful parse but no update
+        if (result.message.includes("No update was made")) {
+          MySwal.fire({
+            title: "No Update Made",
+            text: result.message,
+            icon: "info",
+          });
+        } else {
+          MySwal.fire({
+            title: "Thank you!",
+            text: result.message,
+            icon: "success",
+          });
+        }
       } else {
         MySwal.fire({
           icon: "error",
           title: "Oops...",
-          text: result.error,
+          text: result.error || result.details,
         });
       }
     } catch (error) {
