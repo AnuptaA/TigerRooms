@@ -30,7 +30,15 @@ def validate_tables(tables):
     'HOLDER', 'JOLINE', 'Jose Enrique Feliciano Hall',
     'Kwanza Marion Jones Hall', 'LAUGHLIN', 'LAURITZEN', 'LITTLE', 'LOCKHART',
     'Mannion Hall', 'MURLEY', 'PATTON', 'PYNE', 'SCULLY', 'SPELMAN', 'WALKER',
-    'WENDELL', 'WILF', 'WITHERSPOON', 'WRIGHT', 'YOSELOFF']
+    'WENDELL', 'WILF', 'WITHERSPOON', 'WRIGHT', 'YOSELOFF',
+    'Baker-E',
+    'Baker-S',
+    'Fisher',
+    'Hargadon',
+    'Lauritzen',
+    'Murley-Pivirotto',
+    'Wendell-B',
+    'Wendell-C']
 
     valid_occupancy = ['TRIPLE', 'DOUBLE', 'SINGLE', 'QUAD', 'DA', 'QUINT', '6PERSON']
 
@@ -56,6 +64,8 @@ def validate_tables(tables):
     
     # check that value in sqft is an integer and is a small enough integer
     for value in sqft_list:
+        print(value)
+        print(type(value))
         # if the sqft value is 0, then the parsed input was not an integer
         if value == 0:
             raise ValueError(f"{value} is invalid. Square footage must be an integer greater than 0.")
