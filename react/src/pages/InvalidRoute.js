@@ -13,7 +13,7 @@ const InvalidRoute = () => {
                 <a href="/" className="back-to-floorplans">
                     here
                 </a>{" "}
-                to do a room search
+                to go to the home page
             </h3>
         </div>
     );

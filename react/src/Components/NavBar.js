@@ -71,7 +71,7 @@ const NavBar = ({ adminStatus, adminToggle, setAdminToggle }) => {
                   checked={adminToggle}
                   onChange={() => {
                     handleClick();
-                    navigator("/");
+                    navigator(adminToggle ? "/upload-pdfs" : "/");
                   }}
                 />
                 <span class="slider round">
