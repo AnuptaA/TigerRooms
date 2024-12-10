@@ -17,7 +17,7 @@ const StudentAccessOnly = () => {
       <h1
         style={{
           color: "red",
-          fontSize: "8vw",
+          fontSize: "5vw",
           fontWeight: "bold",
           textAlign: "center",
           marginBottom: "2vh",
@@ -26,19 +26,19 @@ const StudentAccessOnly = () => {
           wordWrap: "break-word",
         }}
       >
-        Not a student.
+        This page is only accessible via the student interface
       </h1>
       <p
         style={{
           color: "darkred",
-          fontSize: "4vw",
+          fontSize: "2vw",
           fontWeight: "bold",
           textAlign: "center",
           marginTop: "1vh",
           wordWrap: "break-word",
         }}
       >
-        You cannot participate in room draw.
+        Please click the toggle on the top-right corner to access this page
       </p>
     </div>
   );
