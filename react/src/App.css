@@ -963,6 +963,31 @@ input[type="number"] {
   color: #777;
 }
 
+.group-members-table {
+  width: 50%;
+  max-width: 50%;
+  margin: 2rem auto; /* Add spacing above and below the table */
+  border-collapse: collapse;
+  background-color: #fff;
+}
+.group-members-table th,
+.group-members-table td {
+  padding: 1vw;
+  border: 0.1vw solid #ddd;
+  text-align: center;
+  font-size: 1vw;
+}
+
+.group-members-table th {
+  background-color: #f7a600;
+  color: #fff;
+  font-weight: bold;
+}
+
+.group-members-table td {
+  color: #555;
+}
+
 /*--------------------------------------------------------------------*/
 /* This is the styling for Cart page.                                 */
 /*--------------------------------------------------------------------*/
