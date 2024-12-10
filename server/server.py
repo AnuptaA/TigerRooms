@@ -38,6 +38,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_INVITES = 10
+MAX_GROUP_SIZE = 4
 
 #-----------------------------------------------------------------------
 
@@ -831,8 +832,8 @@ def add_member():
 
         total_size = current_members + pending_invitations
 
-        if total_size >= 4:
-            return jsonify({"error": "Maximum group size of 4 reached"}), 400
+        if total_size >= MAX_GROUP_SIZE:
+            return jsonify({"error": "You cannot have more than 4 current + pending members."}), 400
 
         # Check if the invitee is already in a group
         cursor.execute('''
