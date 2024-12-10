@@ -340,14 +340,17 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
               const { room_id, netid, rating, comments, review_date } =
                 result.value;
 
-              // Call the function to submit the modified review
-              submitReviewToDatabase(
-                room_id,
-                netid,
-                rating,
-                comments,
-                review_date
-              );
+              // First, remove the existing review before submitting the new one
+              removeReviewFromDatabase(room_id, username).then(() => {
+                // Now submit the new review after the old one is removed
+                submitReviewToDatabase(
+                  room_id,
+                  netid,
+                  rating,
+                  comments,
+                  review_date
+                );
+              });
             }
           });
 
@@ -390,8 +393,13 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                 cancelButtonText: "No, keep it",
               }).then((removeResult) => {
                 if (removeResult.isConfirmed) {
-                  // Call the function to delete the review
-                  removeReviewFromDatabase(room_id, username);
+                  removeReviewFromDatabase(room_id, username).then(() => {
+                    MySwal.fire(
+                      "Review Removed!",
+                      "Your review has been successfully removed.",
+                      "success"
+                    );
+                  });
                 }
               });
             });
@@ -463,8 +471,9 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
       });
   };
 
+  // Function to remove the review from the database
   const removeReviewFromDatabase = (room_id, username) => {
-    fetch("/api/reviews/delete_review_of_user", {
+    return fetch("/api/reviews/delete_review_of_user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -476,35 +485,24 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
+        if (!data.success) {
           MySwal.fire(
-            "Review Removed!",
-            "Your review has been successfully removed.",
-            "success"
-          );
-
-          // Update the roomInfo state to reflect that the room has no review
-          setRoomInfo((prevRoomInfo) =>
-            prevRoomInfo.map((room) =>
-              room.room_id === room_id ? { ...room, has_reviewed: false } : room
-            )
-          );
-        } else if (data.error) {
-          MySwal.fire(
-            "Error.",
+            "Error",
             data.error ||
               "Something went wrong while removing your review. Please try again.",
             "error"
           );
         }
+        return data.success;
       })
       .catch((err) => {
         MySwal.fire(
-          "Error.",
+          "Error",
           "Something went wrong while removing your review. Please try again.",
           "error"
         );
         console.error(err);
+        return false;
       });
   };
 

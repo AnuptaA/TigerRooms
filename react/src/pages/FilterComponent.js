@@ -108,6 +108,16 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
       return;
     }
 
+    // Ensure hall is part of the selected residential college
+    if (
+      residentialCollege &&
+      hall &&
+      !collegeHalls[residentialCollege].includes(hall)
+    ) {
+      setError(true); // Show error if the selected hall is not valid for this residential college
+      return;
+    }
+
     setError(false); // Reset error if residentialCollege is selected
     setSquareFootageError(""); // Reset square footage error if valid
 
@@ -144,8 +154,6 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
 
     // Navigate to the constructed URL
     navigate(url);
-
-    // navigate(`/floorplans`);
   };
 
   // Reset function to clear all selections and cookies
@@ -164,6 +172,16 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
     removeCookie("floor");
     removeCookie("occupancy");
     removeCookie("minSquareFootage");
+  };
+
+  const handleResidentialCollegeChange = (e) => {
+    const selectedCollege = e.target.value;
+    setResidentialCollege(selectedCollege);
+    
+    // Reset the hall to empty if the new residential college doesn't include the previous hall
+    if (selectedCollege && !collegeHalls[selectedCollege].includes(hall)) {
+      setHall(""); // Reset hall
+    }
   };
 
   return !adminStatus || adminToggle ? (
@@ -186,7 +204,7 @@ const FilterComponent = ({ username, adminStatus, adminToggle }) => {
             className="filter-select"
             id="residentialCollege"
             value={residentialCollege}
-            onChange={(e) => setResidentialCollege(e.target.value)}
+            onChange={handleResidentialCollegeChange}
             style={{ borderColor: error ? "red" : "" }} // Highlight border if error
           >
             <option value="" className="placeholder-option">
