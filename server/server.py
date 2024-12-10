@@ -431,6 +431,9 @@ def upload_pdf():
                 if "NO_UPDATE" in result.stdout:
                     print("No update performed: New timestamp is not more recent.")
                     return jsonify({"message": "No update was made because the uploaded PDF timestamp is not more recent than the existing timestamp in the footer."}), 200
+                elif "TIME_TRAVELER" in result.stdout:
+                    print("No update performed: New timestamp is in the future.")
+                    return jsonify({"message": "No update was made because the uploaded PDF timestamp is in the future."}), 200
 
                 # Handle other subprocess errors
                 if result.returncode != 0:

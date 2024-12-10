@@ -274,7 +274,7 @@ def main():
         )
 
         # Proceed with update if current timestamp is "N/A" or older than last_updated
-        if update_time == "N/A" or last_updated_dt > update_time:
+        if (update_time == "N/A" or last_updated_dt > update_time) and last_updated_dt <= datetime.now():
             print("New timestamp is more recent. Proceeding with update.")
 
             # Take a snapshot of available rooms
@@ -289,7 +289,10 @@ def main():
             # Update timestamp
             update_timestamp(last_updated)  # Store in original format
         else:
-            print("NO_UPDATE: New timestamp is not more recent than the current timestamp.")
+            if last_updated_dt > datetime.now():
+                print(f"TIME_TRAVELER: New timestamp {last_updated_dt} is in the future")
+            else:
+                print("NO_UPDATE: New timestamp is not more recent than the current timestamp.")
             sys.exit(0)
 
         print_room_availability()
