@@ -10,7 +10,7 @@ from update_database import get_connection, return_connection
 #-----------------------------------------------------------------------
 
 # hashset for testing admin, remove any of our netids at the end
-admin_set = {'cs-js2694', 'cs-rdondero', 'cs-oe7583', 'ky6374'}
+admin_set = {'cs-js2694', 'cs-rdondero', 'cs-oe7583', 'ky6374', 'cg6149', 'an7278', 'jn6727'}
 
 # Remove one netid from this set later, since we can only send emails to 5 verified users
 # Also remove all of our group's netids
