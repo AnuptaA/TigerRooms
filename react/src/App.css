@@ -217,7 +217,7 @@ input:checked + .slider:before {
 }
 
 #middle-text-cont {
-  display: flex;
+  display: block;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -255,14 +255,15 @@ footer {
   align-items: center;
   font-size: 0.8rem;
   text-align: right;
-  padding: 0.85% 3.5%;
+  padding: 0.85% 2.5%;
   position: fixed;
   height: 9.5%;
   margin-top: 9.5vh;
 }
 @media (max-width: 1200px) {
   footer {
-    font-size: 2vw;
+    font-size: 0.7rem;
+    gap: 0.2rem;
   }
 }
 /*--------------------------------------------------------------------*/
@@ -1089,7 +1090,7 @@ input[type="number"] {
   margin: 2rem auto; /* Add spacing above and below the table */
   border-collapse: collapse;
   background-color: #fff;
-  table-layout: fixed;
+  table-layout: auto;
 }
 .saved-rooms-thead {
   position: sticky;
@@ -1168,6 +1169,62 @@ input[type="number"] {
   background-color: #f1b0b7; /* Even softer red background when active */
   transform: scale(1);
   box-shadow: 0 0.05vh 0.1vh rgba(0, 0, 0, 0.1); /* Reduced shadow on click */
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 2vw; /* Increase spacing between buttons */
+  margin-bottom: 2rem; /* Add more space below the buttons */
+  margin-top: 2rem; /* Add space above the buttons */
+}
+
+.expand-button,
+.collapse-button {
+  background-color: #4caf50; /* Green background */
+  border: none;
+  color: white;
+  padding: 1.5vh 3vw; /* Increase padding for larger buttons */
+  margin: 0 1vw; /* Add more horizontal space between buttons */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.8vw; /* Increase font size */
+  font-weight: bold; /* Make the text more prominent */
+  border-radius: 0.8vh; /* Slightly rounder corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Add hover effects */
+}
+
+.expand-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly increase size on hover */
+}
+
+.collapse-button {
+  background-color: #f44336; /* Red background */
+}
+
+.collapse-button:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+  transform: scale(1.05); /* Slightly increase size on hover */
+}
+
+.saved-rooms-title {
+  font-size: 1.8rem; /* Increase font size */
+  font-weight: bold; /* Make the text bold */
+  color: #333;
+  margin: 0; /* Remove default margins */
+}
+
+@media (max-width: 1200px) {
+  .saved-rooms-table th,
+  .saved-rooms-table td {
+    font-size: 2vw;
+  }
+  .trash-button {
+    font-size: 2vw; /* Increase the font size to make the icon bigger */
+  }
 }
 
 /*--------------------------------------------------------------------*/
@@ -1700,62 +1757,5 @@ input[type="number"] {
   .collapse-all-button {
     font-size: 0.9rem;
     padding: 0.6rem 1.2rem;
-  }
-}
-
-/*--------------------------------------------------------------------*/
-/* This is the styling for the Cart page.                          */
-/*--------------------------------------------------------------------*/
-
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 2vw; /* Increase spacing between buttons */
-  margin-bottom: 2rem; /* Add more space below the buttons */
-  margin-top: 2rem; /* Add space above the buttons */
-}
-
-.expand-button,
-.collapse-button {
-  background-color: #4caf50; /* Green background */
-  border: none;
-  color: white;
-  padding: 1.5vh 3vw; /* Increase padding for larger buttons */
-  margin: 0 1vw; /* Add more horizontal space between buttons */
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1.8vw; /* Increase font size */
-  font-weight: bold; /* Make the text more prominent */
-  border-radius: 0.8vh; /* Slightly rounder corners */
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Add hover effects */
-}
-
-.expand-button:hover {
-  background-color: #45a049; /* Darker green on hover */
-  transform: scale(1.05); /* Slightly increase size on hover */
-}
-
-.collapse-button {
-  background-color: #f44336; /* Red background */
-}
-
-.collapse-button:hover {
-  background-color: #d32f2f; /* Darker red on hover */
-  transform: scale(1.05); /* Slightly increase size on hover */
-}
-
-.saved-rooms-title {
-  font-size: 1.8rem; /* Increase font size */
-  font-weight: bold; /* Make the text bold */
-  color: #333;
-  margin: 0; /* Remove default margins */
-}
-
-@media (max-width: 1200px) {
-  .saved-rooms-table th,
-  .saved-rooms-table td {
-    font-size: 5vw;
   }
 }
