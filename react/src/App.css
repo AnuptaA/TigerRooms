@@ -262,7 +262,7 @@ footer {
 }
 @media (max-width: 1200px) {
   footer {
-    font-size: 0rem;
+    font-size: 3vw;
   }
 }
 /*--------------------------------------------------------------------*/
@@ -1751,4 +1751,11 @@ input[type="number"] {
   font-weight: bold; /* Make the text bold */
   color: #333;
   margin: 0; /* Remove default margins */
+}
+
+@media (max-width: 1200px) {
+  .saved-rooms-table th,
+  .saved-rooms-table td {
+    font-size: 5vw;
+  }
 }
