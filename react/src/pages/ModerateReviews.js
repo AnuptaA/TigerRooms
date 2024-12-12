@@ -133,9 +133,9 @@ const ModerateReviews = ({ username, adminStatus, adminToggle }) => {
         textAlign: "center",
       }}
     >
-      <h1 style={{ fontSize: "3vw" }}>Review Moderation</h1>
+      <h1 style={{ fontSize: "3rem" }}>Review Moderation</h1>
       {reviews.length === 0 ? (
-        <p style={{ fontSize: "1.5vw" }}>No reviews available.</p>
+        <p style={{ fontSize: "2rem" }}>No reviews available.</p>
       ) : (
         <div className="reviews-container">
           <table className="reviews-table">

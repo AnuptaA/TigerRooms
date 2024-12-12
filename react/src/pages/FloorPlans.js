@@ -168,40 +168,42 @@ const AvailabilityTable = ({
   };
 
   return (
-    <div className="table-container-results">
-      <table className="availability-table-all">
-        <thead>
-          <tr>
-            {availabilityInfo.map((info, index) => (
-              <th key={index}>{info.hall}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="floorplan-table">
-          {[...Array(maxFloors)].map((_, rowIndex) => (
-            <tr key={rowIndex}>
-              {availabilityInfo.map((info, colIndex) => (
-                <td key={colIndex}>
-                  {info.floors[rowIndex] ? (
-                    <a
-                      href={generateLink(
-                        "Whitman",
-                        info.hall,
-                        info.floors[rowIndex]
-                      )}
-                    >
-                      {info.floors[rowIndex]}
-                    </a>
-                  ) : (
-                    ""
-                  )}
-                </td>
+    <div>
+      <div className="table-container-results">
+        <table className="availability-table-all">
+          <thead>
+            <tr>
+              {availabilityInfo.map((info, index) => (
+                <th key={index}>{info.hall}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <h3 style={{ textAlign: "center" }}>
+          </thead>
+          <tbody className="floorplan-table">
+            {[...Array(maxFloors)].map((_, rowIndex) => (
+              <tr key={rowIndex}>
+                {availabilityInfo.map((info, colIndex) => (
+                  <td key={colIndex}>
+                    {info.floors[rowIndex] ? (
+                      <a
+                        href={generateLink(
+                          "Whitman",
+                          info.hall,
+                          info.floors[rowIndex]
+                        )}
+                      >
+                        {info.floors[rowIndex]}
+                      </a>
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <h3 style={{ textAlign: "center", fontSize: "1.5rem" }}>
         Click <a href="/">here</a> to do another search.
       </h3>
     </div>

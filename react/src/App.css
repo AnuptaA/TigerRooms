@@ -60,7 +60,7 @@ nav ul li {
 nav ul li a {
   color: white;
   text-decoration: none;
-  font-size: 1.75vw;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 
@@ -97,11 +97,11 @@ nav ul li a:hover {
 #cart-btn {
   background-clip: padding-box;
   background-color: #e77500;
-  border: 1px solid transparent;
+  border: 0.1vh solid transparent;
   border-radius: 0.75rem;
   cursor: pointer;
   min-height: 0.35rem;
-  padding: calc(0.3rem - 1px) calc(1.25rem - 1px);
+  padding: calc(0.3rem - 0.1vh) calc(1.25rem - 0.1vh);
   transition: all 0.3s;
   touch-action: manipulation;
   vertical-align: baseline;
@@ -115,7 +115,7 @@ nav ul li a:hover {
 }
 
 #cart-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-0.1vh);
 }
 
 #cart-btn:active {
@@ -207,8 +207,8 @@ input:checked + .slider:before {
 /*--------------------------------------------------------------------*/
 
 #lockup {
-  height: 5.5vh;
-  width: auto;
+  height: 3vw;
+  width: 11vw;
 }
 
 #middle-text-cont {
@@ -248,7 +248,7 @@ footer {
   align-content: center;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.85vw;
+  font-size: 0.8rem;
   text-align: right;
   padding: 0.85% 3.5%;
   position: fixed;
@@ -535,11 +535,11 @@ tbody tr td[colspan="3"] {
 
 #file-upload .pdf-text {
   display: block;
-  font-size: 2vw;
+  font-size: 2rem;
 }
 #file-upload small {
   display: block;
-  font-size: 1.5vw;
+  font-size: 1.5rem;
 }
 #file-upload label {
   display: flex;
@@ -566,7 +566,7 @@ tbody tr td[colspan="3"] {
   border: none;
   border-radius: 1vw;
   cursor: pointer;
-  font-size: 1vw;
+  font-size: 1rem;
   user-select: none;
 }
 
@@ -577,12 +577,13 @@ tbody tr td[colspan="3"] {
 .uploaded-file-name {
   margin-top: 2vh;
   color: #333333;
-  font-size: 1vw;
+  font-size: 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   white-space: nowrap;
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
   user-select: none;
 }
@@ -597,7 +598,7 @@ tbody tr td[colspan="3"] {
   color: #ffffff;
   cursor: pointer;
   display: inline-block;
-  font-size: 1vw;
+  font-size: 1rem;
   font-weight: 800;
   line-height: 1vh;
   min-height: 5vh;
@@ -689,17 +690,6 @@ tbody tr td[colspan="3"] {
   padding: 3vh;
 }
 
-@media (max-width: 768px) {
-  /* Target devices with width 768px or less */
-  .dropdown-container {
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    flex-direction: column;
-    justify-content: center; /* Horizontally center items */
-    align-items: center; /* Vertically center items (for single row) */
-    align-content: center;
-    gap: 1vw; /* Adjust gap for better alignment */
-  }
-}
 .dropdown-group {
   display: flex;
   flex-direction: column;
@@ -728,7 +718,7 @@ tbody tr td[colspan="3"] {
 /* Target the placeholder option */
 .placeholder-option {
   color: #888; /* Optional: lighter color for placeholder text */
-  font-size: 0.5em; /* Reduced font size for placeholder */
+  font-size: 1rem; /* Reduced font size for placeholder */
 }
 .filter-submit-button,
 .filter-reset-button {
@@ -775,7 +765,7 @@ tbody tr td[colspan="3"] {
 
 .filter-label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0.5vh;
 }
 
 /* Removing up and down arrows for numerical input fields */
@@ -789,6 +779,69 @@ input[type="number"]::-webkit-inner-spin-button {
 /* For Firefox */
 input[type="number"] {
   -moz-appearance: textfield; /* Removes the spin button in Firefox */
+}
+@media (max-width: 1200px) {
+  .filter-container-title {
+    color: orange;
+    text-align: center;
+    font-size: 3rem;
+  }
+  .filter-container-subtitle {
+    color: orange;
+    text-align: center;
+    font-size: 2rem;
+  }
+  /* Target devices with width 768px or less */
+  .dropdown-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 2vh;
+    flex-direction: column;
+    justify-content: center; /* Horizontally center items */
+    align-items: center; /* Vertically center items (for single row) */
+    align-content: center;
+    max-width: 70vw;
+    margin-bottom: 2vh;
+  }
+  .filter-label {
+    margin-bottom: 1vh;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: left;
+    width: 80vw;
+  }
+  .filter-select {
+    padding: 1.1782vh;
+    font-size: 2rem;
+    border-radius: 0.5891vh;
+    border: 0.147vh solid #ccc;
+    width: 80vw;
+  }
+
+  .placeholder-option {
+    color: #888; /* Optional: lighter color for placeholder text */
+    font-size: 2rem; /* Reduced font size for placeholder */
+  }
+  .cookie-recommendation {
+    color: black;
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 5vh auto;
+  }
+  .filter-label {
+    display: block;
+    margin-bottom: 1vh;
+  }
+  .filter-submit-button,
+  .filter-reset-button {
+    padding: 1vw 2vh;
+    font-size: 2rem;
+    border-style: solid;
+    border-radius: 1vw;
+    cursor: pointer;
+    margin-top: 3vh;
+    margin-left: 3vw;
+  }
 }
 /*--------------------------------------------------------------------*/
 /* This is the styling for  Reviews page.                   */
@@ -821,7 +874,7 @@ input[type="number"] {
 }
 
 .reviews-table {
-  width: 80%;
+  width: 100%;
   border-collapse: collapse;
   margin-bottom: 2vh;
   table-layout: auto;
@@ -834,13 +887,13 @@ input[type="number"] {
   text-align: left;
   border: 0.2vw solid #ddd;
   background-color: orange;
-  font-size: 1vw;
+  font-size: 1.2rem;
 }
 
 .reviews-table td {
   padding: 0.5vw;
   border: 0.2vw solid #ddd;
-  font-size: 1vw;
+  font-size: 1rem;
 }
 
 /*--------------------------------------------------------------------*/
@@ -848,7 +901,7 @@ input[type="number"] {
 /*--------------------------------------------------------------------*/
 .results-page-title {
   margin-top: 12.4vh;
-  font-size: 2vw;
+  font-size: 2rem;
   font-weight: bold;
   color: orange;
   text-align: center;
@@ -883,7 +936,7 @@ input[type="number"] {
 .res-college-title {
   color: orange;
   text-align: center;
-  font: 8vw;
+  font: 3rem;
 }
 
 /* Table styles */
@@ -903,7 +956,7 @@ input[type="number"] {
   padding: 1.24vh 2.48vh;
   text-align: center;
   white-space: normal;
-  font: 1vw;
+  font: 2rem;
   word-wrap: no-wrap;
 }
 
@@ -911,7 +964,7 @@ input[type="number"] {
 .availability-table-all td {
   border-bottom: 0.15vh solid #ddd;
   padding: 1.24vh 2.48vh;
-  font: 0.5vw;
+  font: 1.5rem;
   text-align: center;
   white-space: normal;
   word-wrap: no-wrap;
@@ -1002,7 +1055,7 @@ input[type="number"] {
 }
 
 .cart-title {
-  font-size: 2.5vw; /* Larger font size */
+  font-size: 3rem; /* Larger font size */
   color: #333;
   margin-top: 4rem; /* Add space above the title */
   margin-bottom: 3rem; /* Add space below the title */
@@ -1013,8 +1066,8 @@ input[type="number"] {
   margin-bottom: 3rem; /* Add spacing between sections */
   padding: 1.5rem; /* Add padding inside each section */
   background-color: #ffffff; /* Optional: Add a light background for contrast */
-  border-radius: 8px; /* Slightly round the section corners */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better separation */
+  border-radius: 0.8vh; /* Slightly round the section corners */
+  box-shadow: 0 0.2vh 0.8vw rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better separation */
 }
 
 .saved-rooms-table {
@@ -1033,7 +1086,7 @@ input[type="number"] {
   padding: 1vw;
   border: 0.1vw solid #ddd;
   text-align: center;
-  font-size: 1vw;
+  font-size: 1.5rem;
 }
 
 .saved-rooms-table th {
@@ -1051,7 +1104,7 @@ input[type="number"] {
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 1 vw;
+  font-size: 1rem;
   color: #777;
   margin-top: 20vh;
 }
@@ -1061,7 +1114,7 @@ input[type="number"] {
   border: none;
   cursor: pointer;
   color: #ff4c4c;
-  font-size: 1.5vw; /* Increase the font size to make the icon bigger */
+  font-size: 1.5rem; /* Increase the font size to make the icon bigger */
   line-height: 0; /* Ensure there's no extra spacing around the icon */
 }
 
@@ -1077,7 +1130,7 @@ input[type="number"] {
   display: block;
   margin: 0.2vh auto;
   padding: 0.1vh 0.2vw;
-  font-size: 1vw;
+  font-size: 1.5rem;
   font-weight: bold;
   color: red;
   border: 0.2vh solid #d9534f; /* Adds a more defined border with a red tone */
@@ -1258,8 +1311,8 @@ input[type="number"] {
   max-width: 100%;
   padding: 0.5rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 0.1vh solid #ccc;
+  border-radius: 0.4vh;
 }
 
 .send-invitation-button {
@@ -1269,7 +1322,7 @@ input[type="number"] {
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 0.4vh;
   cursor: pointer;
   transition: background-color 0.3s ease;
   text-align: center;
@@ -1372,8 +1425,8 @@ input[type="number"] {
   margin-top: 1rem; /* Space above the error */
   text-align: center; /* Align text to the left */
   background-color: #f8d7da; /* Light red background for visibility */
-  border: 1px solid #f5c2c7; /* Border to match the background */
-  border-radius: 4px; /* Rounded corners for a modern look */
+  border: 0.1vh solid #f5c2c7; /* Border to match the background */
+  border-radius: 0.4vh; /* Rounded corners for a modern look */
   padding: 0.5rem 1rem; /* Add padding for better readability */
   max-width: 100%; /* Ensure it doesn’t exceed its container */
 }
@@ -1642,7 +1695,7 @@ input[type="number"] {
 .controls {
   display: flex;
   justify-content: center;
-  gap: 20px; /* Increase spacing between buttons */
+  gap: 2vw; /* Increase spacing between buttons */
   margin-bottom: 2rem; /* Add more space below the buttons */
   margin-top: 2rem; /* Add space above the buttons */
 }
@@ -1652,14 +1705,14 @@ input[type="number"] {
   background-color: #4caf50; /* Green background */
   border: none;
   color: white;
-  padding: 15px 30px; /* Increase padding for larger buttons */
-  margin: 0 10px; /* Add more horizontal space between buttons */
+  padding: 1.5vh 3vw; /* Increase padding for larger buttons */
+  margin: 0 1vw; /* Add more horizontal space between buttons */
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 18px; /* Increase font size */
+  font-size: 1.8vw; /* Increase font size */
   font-weight: bold; /* Make the text more prominent */
-  border-radius: 8px; /* Slightly rounder corners */
+  border-radius: 0.8vh; /* Slightly rounder corners */
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease; /* Add hover effects */
 }

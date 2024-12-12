@@ -277,8 +277,8 @@ const Cart = ({ username, adminStatus, adminToggle }) => {
                         <td>
                           <div
                             style={{
-                              width: "1vw",
-                              height: "1vw",
+                              width: "1.5rem",
+                              height: "1.5rem",
                               borderRadius: "0.2vw",
                               backgroundColor: room.availability
                                 ? "green"
