@@ -1011,7 +1011,7 @@ input[type="number"] {
 }
 
 .all-groups-title {
-  font-size: 2.5vw; /* Larger font size */
+  font-size: 2rem; /* Larger font size */
   color: #333;
   margin-top: 4rem; /* Add space above the title */
   margin-bottom: 3rem; /* Add space below the title */
@@ -1189,7 +1189,7 @@ input[type="number"] {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 1.8vw; /* Increase font size */
+  font-size: 1.5rem; /* Increase font size */
   font-weight: bold; /* Make the text more prominent */
   border-radius: 0.8vh; /* Slightly rounder corners */
   cursor: pointer;
