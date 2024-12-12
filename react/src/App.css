@@ -211,6 +211,7 @@ input:checked + .slider:before {
 /*--------------------------------------------------------------------*/
 
 #lockup {
+  display: block;
   height: 3vw;
   width: 11vw;
 }
@@ -228,14 +229,14 @@ input:checked + .slider:before {
 }
 
 #middle-text-cont ul {
-  display: flex;
+  display: block;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
 #right-text-cont {
-  display: block; /* Ensures the container becomes a flexbox */
+  display: block;
   flex-direction: column; /* Align text vertically */
   justify-content: center; /* Vertically aligns the text */
   text-align: right; /* Keeps the text aligned to the right */
@@ -261,7 +262,7 @@ footer {
 }
 @media (max-width: 1200px) {
   footer {
-    font-size: 0.5rem;
+    font-size: 0rem;
   }
 }
 /*--------------------------------------------------------------------*/
@@ -1100,6 +1101,7 @@ input[type="number"] {
   border: 0.1vw solid #ddd;
   text-align: center;
   font-size: 1rem;
+  white-space: nowrap;
 }
 
 .saved-rooms-table th {
