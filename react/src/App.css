@@ -660,6 +660,27 @@ tbody tr td[colspan="3"] {
   word-wrap: break-word;
 }
 
+@media (max-width: 1200px) {
+  .uploaded-file-name {
+    font-size: 3vw;
+  }
+  #file-upload .pdf-text {
+    font-size: 3vw;
+  }
+  #file-upload small {
+    display: block;
+    font-size: 2vw;
+  }
+  #reset-pdf-btn,
+  .uploaded-file-name {
+    font-size: 3vw;
+  }
+  #upload-pdfs-cont button {
+    padding: 1vh;
+    font-size: 3vw;
+  }
+}
+
 /*--------------------------------------------------------------------*/
 /* This is the styling for the homepage route for filtering.          */
 /*--------------------------------------------------------------------*/
