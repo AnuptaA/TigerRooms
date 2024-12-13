@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "../App.css";
 import StudentAccessOnly from "../Components/StudentAccessOnly";
+import DOMPurify from 'dompurify';
 
 const HallFloor = ({ username, adminStatus, adminToggle }) => {
   console.log("hallfloor route hit");
@@ -190,6 +191,16 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           return false;
         }
 
+        // Sanitize the input and check for XSS
+        const sanitizedComments = DOMPurify.sanitize(comments);
+        if (sanitizedComments !== comments.trim()) {
+          // If the sanitized input differs from the original, it indicates a potential XSS attempt
+          MySwal.showValidationMessage(
+            "Nice try with the attempted XSS attack ;)"
+          );
+          return false;
+        }
+
         // Get the current date and time
         const currentDate = new Date();
         const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -214,7 +225,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           room_id: room_id,
           netid: username,
           rating: parseInt(rating),
-          comments: comments,
+          comments: sanitizedComments,
           review_date: reviewDate,
         };
       },
@@ -309,6 +320,16 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                 return false;
               }
 
+              // Sanitize the input and check for XSS
+              const sanitizedComments = DOMPurify.sanitize(comments);
+              if (sanitizedComments !== comments.trim()) {
+                // If the sanitized input differs from the original, it indicates a potential XSS attempt
+                MySwal.showValidationMessage(
+                  "Nice try with the attempted XSS attack ;)"
+                );
+                return false;
+              }
+
               const currentDate = new Date();
               const formattedDate = new Intl.DateTimeFormat("en-US", {
                 year: "numeric",
@@ -331,7 +352,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                 room_id: room_id,
                 netid: username,
                 rating: parseInt(rating),
-                comments: comments,
+                comments: sanitizedComments,
                 review_date: reviewDate,
               };
             },
@@ -456,7 +477,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-              "Something went wrong while submitting your review. Please try again.",
+            "Something went wrong while submitting your review. Please try again.",
             "error"
           );
         }
@@ -489,7 +510,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error",
             data.error ||
-              "Something went wrong while removing your review. Please try again.",
+            "Something went wrong while removing your review. Please try again.",
             "error"
           );
         }
@@ -525,15 +546,18 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
             const reviewsHTML = data.review
               .map((review) => {
                 const { netid, rating, comments, review_date } = review;
+                console.log("comments =", comments)
+                const sanitizedComments = DOMPurify.sanitize(comments);
+                console.log("sanitizedComments =", sanitizedComments)
 
                 return `
                   <div class="review" style="margin-bottom: 15px;">
                     <p style="margin: 5px 0;"><strong>User:</strong> ${netid}
                     <span style="margin-left: 10px;"><strong>Rating:</strong> ${"★".repeat(
-                      rating
-                    )}${"☆".repeat(5 - rating)}</span></p>
+                  rating
+                )}${"☆".repeat(5 - rating)}</span></p>
                     <p style="margin: 5px 0;"><strong>Date:</strong> ${review_date}</p>
-                    <p style="margin: 5px 0;"><strong>Review:</strong> ${comments}</p>
+                    <p style="margin: 5px 0;"><strong>Review:</strong> ${sanitizedComments}</p>
                     <hr style="margin-top: 10px;"/>
                   </div>
                 `;
