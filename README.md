@@ -36,6 +36,10 @@ Run the following to install certificates for CAS
 `/Applications/Python\ 3.12/Install\ Certificates.command`
 `export APP_SECRET_KEY=example`
 
+# XSS validations
+
+`npm install dompurify`
+
 # Updated server build instructions
 
 1. Create the two .env files in the server/ and react/ directories
