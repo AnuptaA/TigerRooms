@@ -68,12 +68,14 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
               text: result.message,
               icon: "success",
             });
+            setFileName("No file selected");
           } else {
             MySwal.fire({
               icon: "error",
               title: "Oops...",
               text: result.error,
             });
+            setFileName("No file selected");
           }
         } catch (error) {
           MySwal.fire({
@@ -81,6 +83,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
             title: "Oops...",
             text: "An error occurred while resetting the file.",
           });
+          setFileName("No file selected");
         }
       }
     });
@@ -133,12 +136,14 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
             text: result.message,
             icon: "info",
           });
+          setFileName("No file selected");
         } else {
           MySwal.fire({
             title: "Thank you!",
             text: result.message,
             icon: "success",
           });
+          setFileName("No file selected");
         }
       } else {
         MySwal.fire({
@@ -146,6 +151,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
           title: "Oops...",
           text: result.error || result.details,
         });
+        setFileName("No file selected");
       }
     } catch (error) {
       MySwal.fire({
@@ -153,6 +159,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
         title: "Oops...",
         text: "An error occurred while uploading the file.",
       });
+      setFileName("No file selected");
     }
     setCanSubmit(true);
   };
