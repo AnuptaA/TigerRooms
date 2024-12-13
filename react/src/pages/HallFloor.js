@@ -432,7 +432,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
               });
             });
         } else {
-          MySwal.fire("Error", "No review found for this room.", "error");
+          MySwal.fire("Error", "No review found for this room. Please try refreshing.", "error");
         }
       })
       .catch((err) => {
