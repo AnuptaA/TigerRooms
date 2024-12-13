@@ -531,18 +531,12 @@ tbody tr td[colspan="3"] {
   height: 100%;
 }
 
-/* when adjusting this, adjust margin-top in pdf-form accordingly */
-/* #pdf-upload-text {
-  margin-top: 12.5vh;
-  margin-bottom: 0;
-} */
-
 #pdf-form {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 40%;
+  width: 50%;
   margin-top: 5vh; /* sum of this and margin-top in pdf-upload-text should be 17.5vh */
   padding: 2vh;
   border: 0.1vw solid #333333;
@@ -552,6 +546,12 @@ tbody tr td[colspan="3"] {
   box-sizing: border-box;
 }
 
+@media (max-width: 768px) {
+  #pdf-upload-text {
+    display: none;
+  }
+}
+
 #file-upload {
   width: 100%;
   display: flex;
@@ -559,7 +559,8 @@ tbody tr td[colspan="3"] {
   align-items: center;
   justify-content: center;
   border: 0.1vw dashed #e77500;
-  padding: 12.5vh 16vw;
+  /* padding: 12.5vh 16vw; */
+  padding: 2vh;
   border-radius: 1vh;
   margin-bottom: 2vh;
   cursor: pointer;
@@ -611,7 +612,7 @@ tbody tr td[colspan="3"] {
 }
 
 #upload-pdfs-cont button {
-  padding: 2vh 3vw;
+  padding: 2vh 2vw;
   color: #fff;
   background-color: #007bff;
   border: none;
@@ -630,11 +631,11 @@ tbody tr td[colspan="3"] {
   color: #333333;
   font-size: 1rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   white-space: nowrap;
-  overflow: visible;
+  overflow-x: auto;
+  width: 100%;
   text-overflow: ellipsis;
   user-select: none;
 }

@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.ea3dedf3.css",
-    "main.js": "/static/js/main.8c48397d.js",
+    "main.css": "/static/css/main.9d6227f3.css",
+    "main.js": "/static/js/main.0cb8bc8a.js",
     "static/js/453.080d68db.chunk.js": "/static/js/453.080d68db.chunk.js",
     "static/media/Whitman_Wendell-C_2.png": "/static/media/Whitman_Wendell-C_2.2f89dc4cfeb722231cca.png",
     "static/media/Whitman_1981_2.png": "/static/media/Whitman_1981_2.19e3949e254e803318b4.png",
@@ -42,12 +42,12 @@
     "static/media/Excel_Sample.xlsx": "/static/media/Excel_Sample.870843de4716404b9946.xlsx",
     "static/media/upload-file-svgrepo-com.svg": "/static/media/upload-file-svgrepo-com.74656e884378cf85d429b09387e4521a.svg",
     "index.html": "/index.html",
-    "main.ea3dedf3.css.map": "/static/css/main.ea3dedf3.css.map",
-    "main.8c48397d.js.map": "/static/js/main.8c48397d.js.map",
+    "main.9d6227f3.css.map": "/static/css/main.9d6227f3.css.map",
+    "main.0cb8bc8a.js.map": "/static/js/main.0cb8bc8a.js.map",
     "453.080d68db.chunk.js.map": "/static/js/453.080d68db.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ea3dedf3.css",
-    "static/js/main.8c48397d.js"
+    "static/css/main.9d6227f3.css",
+    "static/js/main.0cb8bc8a.js"
   ]
 }

@@ -15,12 +15,19 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
   // get uploaded file, set filename and file
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
-    setFileName(selectedFile ? selectedFile.name : "No file selected");
-    setFile(selectedFile || null);
+    if (selectedFile) {
+      setFileName(selectedFile.name); // Set filename to the selected file
+      setFile(selectedFile); // Save the file object
+    } else {
+      setFileName("No file selected"); // Reset the filename if no file is selected
+      setFile(null); // Reset the file object
+    }
+    // setFileName(selectedFile ? selectedFile.name : "No file selected");
+    // setFile(selectedFile || null);
   };
 
   // make entire dashed box clickable
-  const handleDivClick = () => {
+  const handleDivClick = (event) => {
     document.getElementById("upload-pdf").click();
   };
 
@@ -140,6 +147,9 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
             icon: "success",
           });
         }
+        // Clear file selection after successful upload
+        setFileName("No file selected");
+        setFile(null);
       } else {
         MySwal.fire({
           icon: "error",
