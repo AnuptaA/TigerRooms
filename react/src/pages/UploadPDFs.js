@@ -12,33 +12,54 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
   const [canSubmit, setCanSubmit] = useState(true);
   const MySwal = withReactContent(Swal);
 
-  // get uploaded file, set filename and file
+  // Check if the selected file is a PDF
+  const isPDF = (file) => file && file.type === "application/pdf";
+
+  // Handle file input change (from browse button)
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      // Save file
-      setFileName(selectedFile.name);
-      setFile(selectedFile);
+      if (isPDF(selectedFile)) {
+        setFileName(selectedFile.name);
+        setFile(selectedFile);
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "Invalid File Type",
+          text: "Please select a PDF file.",
+        });
+        setFileName("No file selected");
+        setFile(null);
+      }
     } else {
-      // Reset file
       setFileName("No file selected");
       setFile(null);
     }
   };
 
-  // Handle file drop
+  // Handle file drop (drag and drop)
   const handleFileDrop = (event) => {
     event.preventDefault();
     event.stopPropagation();
 
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile) {
-      setFileName(droppedFile.name);
-      setFile(droppedFile);
+      if (isPDF(droppedFile)) {
+        setFileName(droppedFile.name);
+        setFile(droppedFile);
+      } else {
+        MySwal.fire({
+          icon: "error",
+          title: "Invalid File Type",
+          text: "Please drop a PDF file.",
+        });
+        setFileName("No file selected");
+        setFile(null);
+      }
     }
   };
 
-  // Handle drag over to prevent default behavior
+  // Handle drag over to allow drop
   const handleDragOver = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -111,7 +132,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
     });
   };
 
-  // wait for user to submot
+  // Wait for user to submit
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!canSubmit) return;
@@ -151,7 +172,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
       MySwal.hideLoading();
 
       if (response.ok) {
-        // handle successful parse but no update
+        // Handle successful upload
         if (result.message.includes("No update was made")) {
           MySwal.fire({
             title: "No Update Made",
@@ -227,7 +248,11 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
         </ul>
       </div>
 
-      <div id="upload-pdfs-cont" onDrop={handleFileDrop} onDragOver={handleDragOver}>
+      <div
+        id="upload-pdfs-cont"
+        onDrop={handleFileDrop}
+        onDragOver={handleDragOver}
+      >
         <form id="pdf-form" onSubmit={handleSubmit}>
           <div id="file-upload" onClick={handleDivClick}>
             <label htmlFor="upload-pdf">
