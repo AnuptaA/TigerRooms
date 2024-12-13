@@ -64,8 +64,6 @@ def validate_tables(tables):
     
     # check that value in sqft is an integer and is a small enough integer
     for value in sqft_list:
-        print(value)
-        print(type(value))
         # if the sqft value is 0, then the parsed input was not an integer
         if value == 0:
             raise ValueError(f"{value} is invalid. Square footage must be an integer greater than 0.")
@@ -169,6 +167,7 @@ def main():
         # Output the last updated time and the parsed data
         print(f"Timestamp: {last_updated}")
         print(tables.to_string(index=False))
+        print(f"Total number of rooms: {len(tables)}")
     except Exception as e:
         # Handle exceptions gracefully
         print(f"Error: {e}")
