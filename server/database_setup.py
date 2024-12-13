@@ -28,11 +28,9 @@ def main():
             "RoomSaves", 
             "RoomDetails", 
             "RoomOverview",
-            "RoomReviews", 
             "GroupMembers", 
             "Groups", 
-            "GroupInvites",
-            "Users"
+            "GroupInvites"
         ]
         # Drop each table with autocommit enabled
         for table in tables:
@@ -85,18 +83,18 @@ def main():
             ''')
             print("RoomSaves table created.")
 
-            # Create RoomReviews table
-            cursor.execute('''
-                CREATE TABLE "RoomReviews" (
-                    "netid" TEXT,
-                    "room_id" INTEGER REFERENCES "RoomOverview"("room_id"),
-                    "rating" INTEGER CHECK ("rating" BETWEEN 1 AND 5),
-                    "review_date" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    "comments" TEXT,
-                    PRIMARY KEY ("netid", "room_id")
-                )
-            ''')
-            print("RoomReviews table created.")
+            # # Create RoomReviews table
+            # cursor.execute('''
+            #     CREATE TABLE "RoomReviews" (
+            #         "netid" TEXT,
+            #         "room_id" INTEGER REFERENCES "RoomOverview"("room_id"),
+            #         "rating" INTEGER CHECK ("rating" BETWEEN 1 AND 5),
+            #         "review_date" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            #         "comments" TEXT,
+            #         PRIMARY KEY ("netid", "room_id")
+            #     )
+            # ''')
+            # print("RoomReviews table created.")
 
             # Create LastTimestamp table
             cursor.execute('''
@@ -136,14 +134,14 @@ def main():
             ''')
             print("GroupInvites table created.")
 
-            # Create Users table
-            cursor.execute('''
-                CREATE TABLE "Users" (
-                    "netid" TEXT PRIMARY KEY,
-                    "num_invites" INTEGER DEFAULT 0 CHECK ("num_invites" >= 0)
-                )
-            ''')
-            print("Users table created.")
+            # # Create Users table
+            # cursor.execute('''
+            #     CREATE TABLE "Users" (
+            #         "netid" TEXT PRIMARY KEY,
+            #         "num_invites" INTEGER DEFAULT 0 CHECK ("num_invites" >= 0)
+            #     )
+            # ''')
+            # print("Users table created.")
 
             conn.commit()  # Commit all create table operations at once
         except Exception as e:
