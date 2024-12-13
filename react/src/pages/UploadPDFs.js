@@ -16,17 +16,35 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFileName(selectedFile.name); // Set filename to the selected file
-      setFile(selectedFile); // Save the file object
+      // Save file
+      setFileName(selectedFile.name);
+      setFile(selectedFile);
     } else {
-      setFileName("No file selected"); // Reset the filename if no file is selected
-      setFile(null); // Reset the file object
+      // Reset file
+      setFileName("No file selected");
+      setFile(null);
     }
-    // setFileName(selectedFile ? selectedFile.name : "No file selected");
-    // setFile(selectedFile || null);
   };
 
-  // make entire dashed box clickable
+  // Handle file drop
+  const handleFileDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const droppedFile = event.dataTransfer.files[0];
+    if (droppedFile) {
+      setFileName(droppedFile.name);
+      setFile(droppedFile);
+    }
+  };
+
+  // Handle drag over to prevent default behavior
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
+  // Make entire dashed box clickable
   const handleDivClick = (event) => {
     document.getElementById("upload-pdf").click();
   };
@@ -209,7 +227,7 @@ const UploadPDFs = ({ adminStatus, adminToggle }) => {
         </ul>
       </div>
 
-      <div id="upload-pdfs-cont">
+      <div id="upload-pdfs-cont" onDrop={handleFileDrop} onDragOver={handleDragOver}>
         <form id="pdf-form" onSubmit={handleSubmit}>
           <div id="file-upload" onClick={handleDivClick}>
             <label htmlFor="upload-pdf">
