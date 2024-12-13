@@ -129,7 +129,7 @@ def parse_pdf(filepath):
     rem_pages = []
     for table in tables_list[1:]:
         # Skip the header row for subsequent pages
-        rem_pages.append(pd.DataFrame(table[header_row_idx + 1:]))  # No columns specified, let pandas auto number the columns
+        rem_pages.append(pd.DataFrame(table))  # No columns specified, let pandas auto number the columns
 
     concatenated_tables = pd.concat([first_page] + rem_pages, ignore_index=True)
     
