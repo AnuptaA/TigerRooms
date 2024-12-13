@@ -301,6 +301,12 @@ footer {
     justify-content: center;
     align-items: center;
   }
+  .floor-plan-title {
+    font-size: 2rem;
+  }
+  .back-link {
+    font-size: 1.5rem;
+  }
 }
 
 @media (min-width: 1000px) {
@@ -467,7 +473,42 @@ tbody tr td[colspan="3"] {
   color: blue;
   text-decoration: underline;
 }
+@media (max-width: 999px) {
+  .floor-plan-flexbox {
+    flex-direction: column; /* Stack items vertically */
+    align-items: stretch; /* Ensure items take full width */
+  }
+  .room-availability-table {
+    float: none;
+    margin: 10vh auto;
+    text-align: center;
+  }
 
+  /* for the availability table to occupy the middle space*/
+  .available-rooms-table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .floor-plan-title {
+    font-size: 1.5rem;
+  }
+  .back-link {
+    font-size: 1rem;
+  }
+}
+
+@media (min-width: 1000px) {
+  .available-rooms-table {
+    flex-shrink: 0;
+    table-layout: fixed;
+    width: 20vw;
+  }
+
+  .floor-plan-map {
+    width: 70vw;
+  }
+}
 /*--------------------------------------------------------------------*/
 /* This is the styling for the upload pdfs route.                     */
 /*--------------------------------------------------------------------*/
