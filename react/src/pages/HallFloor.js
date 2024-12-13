@@ -421,6 +421,13 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                       "success"
                     );
                   });
+
+                  // Update the roomInfo state to reflect that the review has been removed
+                  setRoomInfo((prevRoomInfo) =>
+                    prevRoomInfo.map((room) =>
+                      room.room_id === room_id ? { ...room, has_reviewed: false } : room
+                    )
+                  );
                 }
               });
             });
