@@ -30,7 +30,8 @@ def main():
             "RoomOverview",
             "GroupMembers", 
             "Groups", 
-            "GroupInvites"
+            "GroupInvites",
+            "Users"
         ]
         # Drop each table with autocommit enabled
         for table in tables:
@@ -134,14 +135,14 @@ def main():
             ''')
             print("GroupInvites table created.")
 
-            # # Create Users table
-            # cursor.execute('''
-            #     CREATE TABLE "Users" (
-            #         "netid" TEXT PRIMARY KEY,
-            #         "num_invites" INTEGER DEFAULT 0 CHECK ("num_invites" >= 0)
-            #     )
-            # ''')
-            # print("Users table created.")
+            # Create Users table
+            cursor.execute('''
+                CREATE TABLE "Users" (
+                    "netid" TEXT PRIMARY KEY,
+                    "num_invites" INTEGER DEFAULT 0 CHECK ("num_invites" >= 0)
+                )
+            ''')
+            print("Users table created.")
 
             conn.commit()  # Commit all create table operations at once
         except Exception as e:
