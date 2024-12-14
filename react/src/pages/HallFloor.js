@@ -321,7 +321,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
               }
 
               // Sanitize the input and check for XSS
-              const sanitizedComments = DOMPurify.sanitize(comments);
+              const sanitizedComments = DOMPurify.sanitize(comments).trim();
               if (sanitizedComments !== comments.trim()) {
                 // If the sanitized input differs from the original, it indicates a potential XSS attempt
                 MySwal.showValidationMessage(
@@ -554,7 +554,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
               .map((review) => {
                 const { netid, rating, comments, review_date } = review;
                 console.log("comments =", comments)
-                const sanitizedComments = DOMPurify.sanitize(comments);
+                const sanitizedComments = DOMPurify.sanitize(comments).trim();
                 console.log("sanitizedComments =", sanitizedComments)
 
                 return `
