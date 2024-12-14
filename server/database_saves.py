@@ -14,7 +14,7 @@ admin_set = {'cs-js2694', 'cs-rdondero', 'cs-oe7583', 'ky6374', 'jm7048', 'ak915
 
 # Remove one netid from this set later, since we can only send emails to 5 verified users
 # Also remove all of our group's netids
-email_set = {'cs-rdondero', 'cs-oe7583', 'js2694', 'rdondero', 'oe7583', 'ky6374', 'aa6328', 'jm7048', 'rm6982', 'ak9157'}
+email_set = {'cs-js2694', 'cs-oe7583', 'js2694', 'rdondero', 'oe7583', 'ky6374', 'aa6328', 'jm7048', 'rm6982', 'ak9157'}
 
 #-----------------------------------------------------------------------
 
