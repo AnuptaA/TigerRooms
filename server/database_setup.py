@@ -355,7 +355,7 @@ def main():
 
         # Overrides room data to populate database from excel file rather than hard-coding
         room_data = []
-        df = pd.read_excel('Whitman_data.xlsx')
+        df = pd.read_excel('revised_Whitman.xlsx')
         grouped = df.groupby(['hall', 'floor'])
         for (hall, floor), group in grouped:
             group_dict = {
