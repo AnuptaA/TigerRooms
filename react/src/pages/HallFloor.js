@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import "../App.css";
 import StudentAccessOnly from "../Components/StudentAccessOnly";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 const HallFloor = ({ username, adminStatus, adminToggle }) => {
   console.log("hallfloor route hit");
@@ -280,6 +280,9 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success && data.review.comments) {
+          const initialReview = data.review.comments;
+          const initialCharCount = 200 - initialReview.length; // Calculate remaining characters based on existing review
+
           // Open SweetAlert to modify the review
           MySwal.fire({
             title: "Modify your review.",
@@ -299,7 +302,8 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                   <span class="star-icon" data-value="5">★</span>
                 </div>
               </div>
-              <textarea id="review-comments" class="swal2-input" placeholder="Write your review here..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;">${data.review.comments}</textarea>
+              <textarea id="review-comments" class="swal2-input" placeholder="Write your review here..." rows="6" style="padding: 7.5px; height: 50px; width: 300px;" maxlength="200">${initialReview}</textarea>
+              <div id="char-count" style="font-size: 0.9rem; color: gray; margin-top: 5px;">${initialCharCount} characters remaining</div>
               <br />
               <button id="remove-review" class="swal2-confirm swal2-styled" style="background-color: red; color: white; margin-top: 15px;">Remove Review</button>
             `,
@@ -321,7 +325,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
               }
 
               // Sanitize the input and check for XSS
-              const sanitizedComments = DOMPurify.sanitize(comments).trim();
+              const sanitizedComments = DOMPurify.sanitize(comments);
               if (sanitizedComments !== comments.trim()) {
                 // If the sanitized input differs from the original, it indicates a potential XSS attempt
                 MySwal.showValidationMessage(
@@ -425,14 +429,36 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
                   // Update the roomInfo state to reflect that the review has been removed
                   setRoomInfo((prevRoomInfo) =>
                     prevRoomInfo.map((room) =>
-                      room.room_id === room_id ? { ...room, has_reviewed: false } : room
+                      room.room_id === room_id
+                        ? { ...room, has_reviewed: false }
+                        : room
                     )
                   );
                 }
               });
             });
+
+          // Update the character count as the user types in the textarea
+          const reviewTextarea = document.getElementById("review-comments");
+          const charCountDisplay = document.getElementById("char-count");
+
+          reviewTextarea.addEventListener("input", () => {
+            const remainingChars = 200 - reviewTextarea.value.length;
+            charCountDisplay.textContent = `${remainingChars} characters remaining`;
+
+            // Change color of character count if it's getting low
+            if (remainingChars <= 20) {
+              charCountDisplay.style.color = "red";
+            } else {
+              charCountDisplay.style.color = "gray";
+            }
+          });
         } else {
-          MySwal.fire("Error", "No review found for this room. Please try refreshing.", "error");
+          MySwal.fire(
+            "Error",
+            "No review found for this room. Please try refreshing.",
+            "error"
+          );
         }
       })
       .catch((err) => {
@@ -484,7 +510,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error.",
             data.error ||
-            "Something went wrong while submitting your review. Please try again.",
+              "Something went wrong while submitting your review. Please try again.",
             "error"
           );
         }
@@ -517,7 +543,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
           MySwal.fire(
             "Error",
             data.error ||
-            "Something went wrong while removing your review. Please try again.",
+              "Something went wrong while removing your review. Please try again.",
             "error"
           );
         }
@@ -553,16 +579,16 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
             const reviewsHTML = data.review
               .map((review) => {
                 const { netid, rating, comments, review_date } = review;
-                console.log("comments =", comments)
+                console.log("comments =", comments);
                 const sanitizedComments = DOMPurify.sanitize(comments).trim();
-                console.log("sanitizedComments =", sanitizedComments)
+                console.log("sanitizedComments =", sanitizedComments);
 
                 return `
                   <div class="review" style="margin-bottom: 15px;">
                     <p style="margin: 5px 0;"><strong>User:</strong> ${netid}
                     <span style="margin-left: 10px;"><strong>Rating:</strong> ${"★".repeat(
-                  rating
-                )}${"☆".repeat(5 - rating)}</span></p>
+                      rating
+                    )}${"☆".repeat(5 - rating)}</span></p>
                     <p style="margin: 5px 0;"><strong>Date:</strong> ${review_date}</p>
                     <p style="margin: 5px 0;"><strong>Review:</strong> ${sanitizedComments}</p>
                     <hr style="margin-top: 10px;"/>

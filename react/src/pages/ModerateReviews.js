@@ -10,7 +10,6 @@ const ModerateReviews = ({ username, adminStatus, adminToggle }) => {
   const MySwal = withReactContent(Swal);
 
   useEffect(() => {
-    // skip the first iteration on StrictMode
     if (!username) {
       return;
     }
@@ -18,7 +17,7 @@ const ModerateReviews = ({ username, adminStatus, adminToggle }) => {
     console.log("netid:", username);
     setError(null);
 
-    // Fetch the reviews from the API
+    // Fetch reviews from the API
     fetch(`/api/reviews/get_all_reviews?netid=${username}`, {
       method: "POST",
     })
