@@ -192,7 +192,7 @@ const HallFloor = ({ username, adminStatus, adminToggle }) => {
         }
 
         // Sanitize the input and check for XSS
-        const sanitizedComments = DOMPurify.sanitize(comments);
+        const sanitizedComments = DOMPurify.sanitize(comments).trim();
         if (sanitizedComments !== comments.trim()) {
           // If the sanitized input differs from the original, it indicates a potential XSS attempt
           MySwal.showValidationMessage(
