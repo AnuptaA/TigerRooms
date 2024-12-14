@@ -807,6 +807,15 @@ def add_member():
     try:
         cursor = conn.cursor()
 
+        # Check the inviter's current number of invites
+        cursor.execute('''
+            SELECT "num_invites" FROM "Users" WHERE "netid" = %s
+        ''', (inviter,))
+        num_invites = cursor.fetchone()        
+        num_invites = num_invites[0]
+        if num_invites >= ALLOWED_INVITES:
+            return jsonify({"error": f"You cannot send more than {ALLOWED_INVITES} invitations."}), 400
+
         # Check if the inviter is in a group
         cursor.execute('''
             SELECT "group_id" FROM "GroupMembers" WHERE "netid" = %s
